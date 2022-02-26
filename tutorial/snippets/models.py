@@ -38,3 +38,15 @@ class Snippet(models.Model):
                                   full=True, **options)
         self.highlighted = highlight(self.code, lexer, formatter)
         super().save(*args, **kwargs)
+
+
+class Snippet2(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey('accounts.CustomUser', related_name='snippets2', on_delete=models.CASCADE)
+    snippet = models.ForeignKey(Snippet, related_name='snippets2', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['created']
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
