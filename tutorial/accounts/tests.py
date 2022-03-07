@@ -40,7 +40,7 @@ class UsersManagersTests(TestCase):
         with self.assertRaises(ValueError):
             User.objects.create_superuser(
                 email='super@user.com', password='foo', is_superuser=False)
-# Add the specs to users/tests.py, and then make sure the tests fail.
+# Add the specs to users/measurement_tests.py, and then make sure the tests fail.
 #
 # Model Manager
 # First, we need to add a custom Manager, by subclassing BaseUserManager, that uses an email as the unique identifier instead of a username.

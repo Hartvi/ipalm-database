@@ -8,7 +8,7 @@ from django.contrib.auth import (
 
 User = get_user_model()
 
-# from .models import CustomUser
+# from .models import Organization
 # User = CustomUser
 
 
@@ -32,7 +32,16 @@ class UserRegisterForm(forms.ModelForm):
     def clean(self, *args, **kwargs):
         username = self.cleaned_data.get('username')
         email = self.cleaned_data.get('email')
-        organization = self.cleaned_data.get('organization')
+        # organization = self.cleaned_data.get('organization')
+        organization_str = self.cleaned_data.get('organization')
+        # print(organization_str)
+        # organization = Organization.objects.filter(name=organization_str).first()
+        # print(organization)
+        # if organization is None:
+        #     organization = Organization.objects.create(name=organization_str)
+        # print(organization)
+        # print(organization.customuser_set.__dict__)
+        # self.cleaned_data.update({'organization': organization})
         password = self.cleaned_data.get('password')
         confirm_password = self.cleaned_data.get('confirm_password')
         if password != confirm_password:

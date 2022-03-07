@@ -30,15 +30,17 @@ class DataFormats(ChoiceEnum):
 
 
 class PhysicalQuantities(ChoiceEnum):
-    MASS = 'mass'
-    VOLUME = 'volume'
-    DENSITY = 'density'
-    STIFFNESS = 'stiffness'  # hooke's coefficient
-    XDIM = 'xdim'
-    YDIM = 'ydim'
-    ZDIM = 'zdim'
-    TABLEFRICTION = 'tablefriction'
-    MATERIAL = 'material'
+    MASS = 'mass'  # mean, std, unit
+    VOLUME = 'volume'  # mean, std, unit
+    DENSITY = 'density'  # mean, std, unit
+    STIFFNESS = 'stiffness'  # hooke's coefficient - mean, std, unit
+    YOUNGS_MODULUS = 'youngs_modulus'  # mean, std, unit
+    XDIM = 'xdim'  # mean, std, unit
+    YDIM = 'ydim'  # mean, std, unit
+    ZDIM = 'zdim'  # mean, std, unit
+    TABLEFRICTION = 'tablefriction'  # mean, std, unit, other material
+    MATERIAL = 'material'  # {mat1: {mean, std, unit}, mat2: {mean, std, unit}, ... }
+    MODEL = 'model'  # point-like: 3d mesh, texture
 
 
 class Units(ChoiceEnum):

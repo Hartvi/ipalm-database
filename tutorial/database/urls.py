@@ -1,16 +1,19 @@
 from django.urls import path, include
-# from django.conf.urls import include
 from rest_framework.routers import DefaultRouter
+from django.conf import settings
+from django.urls import path
 
 from . import views
-# from accounts.views import MyFormView
+from . import strings
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
-# router.register(r'snippets', views.SnippetViewSet)
-router.register(r'snippets', eval('views.SnippetViewSet'))
-router.register(r'snippets2', views.Snippet2ViewSet)
-router.register(r'users', views.UserViewSet)
+for v, u in zip(strings.viewset_classes, strings.viewset_urls):
+    router.register(u, eval('views.'+v))
+    print('router registering', u, 'as', v)
+# router.register(r'', views.SnippetViewSet)
+# router.register(r'snippets2', views.Snippet2ViewSet)
+# router.register(r'users', views.UserViewSet)
 
 # The API URLs are now determined automatically by the router.
 # Additionally, we include the login URLs for the browsable API.
@@ -20,3 +23,4 @@ urlpatterns = [
     # path('snippets/', views.SnippetViewSet.as_view({'get': 'list'})),
     # path('users/', views.UserViewSet.as_view({'get': 'list'})),
 ]
+

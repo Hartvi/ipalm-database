@@ -1,5 +1,10 @@
 # Custom
 .idea/
+*.png
+*.jpg
+*.jpeg
+*.dot
+
 
 # Config folder
 .secrets/
