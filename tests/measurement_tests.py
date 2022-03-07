@@ -1,4 +1,4 @@
-
+import json
 import os
 import requests
 from PIL import Image
@@ -14,7 +14,7 @@ def send_request(method="GET", path="/", data=None, img_path=None):
         data = {}
     if img_path is not None:
         with open(img_path, 'rb') as image:
-            img_file = {"image": image}
+            img_file = {"png": image}
             # data['file'] = image
             req = requests.request(method, ENDPOINT + path, auth=('jeff','jeff'), data=data, files=img_file)
     else:
@@ -22,6 +22,13 @@ def send_request(method="GET", path="/", data=None, img_path=None):
     return req.text
 
 
-res = send_request(method="POST", path="measurements/", data=None, img_path=IMG)
+with open('setup.json', 'r') as fp:
+    setup_dict = json.load(fp)
+    setup_json = json.dumps(setup_dict)
+    setup_data = {"setup": setup_json}
+
+    print("post_data:", setup_dict)
+    res = send_request(method="POST", path="measurements/", data=setup_data, img_path=IMG)
+
 
 print(res)

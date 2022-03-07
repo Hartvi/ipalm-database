@@ -64,6 +64,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
     #     return Response(status=204)
 
     def perform_create(self, serializer):  # TODO: save functions
+        print('performing create!!!')
         try:
             file = self.request.data['image']
             # print(self.request.FILES)

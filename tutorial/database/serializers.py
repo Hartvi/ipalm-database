@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .models import *
+from . import validation
+from collections import OrderedDict
 
 User = get_user_model()
 
@@ -160,11 +162,21 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'  # TODO: fill in the remaining fields
 
     def validate(self, data):
+        # print("data:", data)
+        # print("data dict:", data.__dict__)
+        # print('validating!!!')
         content = data.get("content", None)
         request = self.context['request']
+        # print('context:', self.context)
+        # print(list(request.data.items()))
+        data_items = list(request.data.items())
+        print('valid:', validation.validate_data_fields(data_items, 'measurement'))
+
+        # c = request.data.copy()
+        # print('request data:', type(c), c, c.__dict__, list(c.items()))
         # you dont need to set content explicitly to None
         # print('data:',data)
-
+        raise serializers.ValidationError("testing lol")
         if not request.FILES and not content:
             raise serializers.ValidationError("Content or an Image must be provided")
         return data

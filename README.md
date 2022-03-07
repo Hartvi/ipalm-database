@@ -19,6 +19,8 @@
 ## 03/07
 - begin writing tests for uploading
 - image uploading test done
+- begin validation
+- **data can be at most a one layer deep dictionary**
 
 ## 28/02
 - ObjectClass - ClassInstance (real object with unique id) - measurement of a property that one specific real object - grasp
