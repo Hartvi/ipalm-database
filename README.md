@@ -12,6 +12,7 @@
     - object\_instance
   - entries
 - test how to discern existing/new object instances
+  - compare images from the png and this could serve as something akin to the instance id
 - test downloads
   - measurement
   - entries
