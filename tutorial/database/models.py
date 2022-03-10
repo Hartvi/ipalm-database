@@ -23,10 +23,13 @@ class Setup(models.Model):
 class SetupElement(models.Model):
     # this could be from the choices: arm, gripper, camera, depth, camera, microphone, other
     type = models.CharField(max_length=100, )
-    name = models.CharField(max_length=100, )
+    name = models.CharField(max_length=100)
     output_quantities = models.JSONField()  # e.g. time, position, current, force, rgb, depth, bw (as in black & white)
-    parameters = models.JSONField()
+    parameters = models.JSONField(null=True)
     setup = models.ForeignKey(Setup, on_delete=models.CASCADE, related_name='setup_elements', null=True)
+
+    # def __str__(self):
+    #     return str(self.type) + ", " + str(self.name)
 
 
 class Measurement(models.Model):

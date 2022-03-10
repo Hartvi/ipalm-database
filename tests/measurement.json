@@ -1,5 +1,5 @@
 {
-  "object_instance": "0",
+  "object_instance": 0,
   "setup": {
     "arm": "kinova gen3", "gripper": "robotiq 2f85", "camera": "intel d435"
   },

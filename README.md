@@ -20,6 +20,7 @@
 ## 03/10
 - created test measurement json
 - created some validations
+- begin making `perform_create` in `views.py`
 
 ## 03/07
 - begin writing tests for uploading
