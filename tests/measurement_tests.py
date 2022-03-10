@@ -6,7 +6,7 @@ from PIL import Image
 ENDPOINT = "http://127.0.0.1:8000/rest/"
 
 # IMG = r'C:/Users/jhart/PycharmProjects/ipalm-database/utilities/banana.png'
-IMG = 'C:/Users/jhart/PycharmProjects/ipalm-database/utilities/banana300.png'
+# IMG = 'C:/Users/jhart/PycharmProjects/ipalm-database/utilities/banana300.png'
 
 
 def send_request(method="GET", path="/", data=None, img_path=None):
@@ -22,13 +22,14 @@ def send_request(method="GET", path="/", data=None, img_path=None):
     return req.text
 
 
-with open('setup.json', 'r') as fp:
-    setup_dict = json.load(fp)
-    setup_json = json.dumps(setup_dict)
-    setup_data = {"setup": setup_json}
+with open('measurement.json', 'r') as fp:
+    measurement_dict: dict = json.load(fp)
+    measurement_json = json.dumps(measurement_dict)
+    measurement_data = {"measurement": measurement_json}
+    img_path = "C:/Users/jhart/PycharmProjects/ipalm-database/tests/banana300.png"
 
-    print("post_data:", setup_dict)
-    res = send_request(method="POST", path="measurements/", data=setup_data, img_path=IMG)
+    print("post_data:", measurement_dict)
+    res = send_request(method="POST", path="measurements/", data=measurement_data, img_path=img_path)
 
 
 print(res)

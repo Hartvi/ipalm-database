@@ -23,7 +23,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class GraspViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Setup.objects.all()
+    queryset = Grasp.objects.all()
     serializer_class = GraspSerializer
 
 

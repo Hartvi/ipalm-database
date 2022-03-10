@@ -26,7 +26,7 @@ class SetupElement(models.Model):
     name = models.CharField(max_length=100, )
     output_quantities = models.JSONField()  # e.g. time, position, current, force, rgb, depth, bw (as in black & white)
     parameters = models.JSONField()
-    setup = models.ForeignKey(Setup, on_delete=models.CASCADE, related_name='setup_elements')
+    setup = models.ForeignKey(Setup, on_delete=models.CASCADE, related_name='setup_elements', null=True)
 
 
 class Measurement(models.Model):
@@ -51,7 +51,7 @@ class SensorOutput(models.Model):
     #  "other_format": "png", "other": "byte_string"}
     sensor_output = models.JSONField()
     sensor = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='sensor_outputs', )
-    measurement = models.OneToOneField(Measurement, on_delete=models.CASCADE, related_name='sensor_outputs', )
+    measurements = models.ManyToManyField(Measurement, related_name='sensor_outputs', )
 
 
 class Vector3D(models.Model):

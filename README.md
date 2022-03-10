@@ -16,6 +16,10 @@
   - measurement
   - entries
 
+## 03/10
+- created test measurement json
+- created some validations
+
 ## 03/07
 - begin writing tests for uploading
 - image uploading test done

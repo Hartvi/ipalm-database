@@ -1,0 +1,30 @@
+{
+  "object_instance": "0",
+  "setup": {
+    "arm": "kinova gen3", "gripper": "robotiq 2f85", "camera": "intel d435"
+  },
+  "sensor_outputs": {
+    "robotiq 2f85": {
+      "time": [0.01, 0.02, 0.03, 0.04, 0.05],
+      "position": [1, 0.99, 0.98, 0.97, 0.96],
+      "current": [0.05, 0.04, 0.03, 0.05, 0.05]
+    }
+  },
+  "grasp": {
+    "translation": [0.1, 0.05, 0.02],
+    "rotation": [0.5, 1.57, 0.1],
+    "grasped":  true
+  },
+  "entries": [
+    {
+      "type": "continuous",
+      "name": "youngs_modulus",
+      "value": 85000,
+      "std": 5000,
+      "units": "Pa",
+      "algorithm": "http://www.github.com/"
+    }
+  ]
+}
+
+

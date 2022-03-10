@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -159,7 +161,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Measurement
         # this is basically all fields except the created date
-        fields = '__all__'  # TODO: fill in the remaining fields
+        fields = '__all__'
 
     def validate(self, data):
         # print("data:", data)
@@ -170,13 +172,28 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         # print('context:', self.context)
         # print(list(request.data.items()))
         data_items = list(request.data.items())
-        print('valid:', validation.validate_data_fields(data_items, 'measurement'))
+        print("data_items:", data_items)
+        json_data_list = list(filter(lambda x: "measurement" == x[0], data_items))[0]
+        if len(json_data_list) == 0:
+            raise serializers.ValidationError("measurement key not present in request data")
+        im = list(filter(lambda x: "png" == x[0], data_items))[0]
+        if len(im) == 0:
+            raise serializers.ValidationError("png not present in request files")
+        data_dict = json.loads(json_data_list[1])
+        (keys_valid, missing_keys) = validation.validate_data_fields(data_dict, 'measurement')
+        if not keys_valid:
+            raise serializers.ValidationError("measurement doesn't contain fields: "+str(missing_keys))
+        # if not data_dict["png"] == im[1]:
+        #     raise serializers.ValidationError("uploaded image name doesnt match")
+        # print("im name equals im name:", im[1])
+        # print("png:", im)
+        # print("data_dict:", data_dict)
 
         # c = request.data.copy()
         # print('request data:', type(c), c, c.__dict__, list(c.items()))
         # you dont need to set content explicitly to None
         # print('data:',data)
-        raise serializers.ValidationError("testing lol")
+        # raise serializers.ValidationError("testing lol")
         if not request.FILES and not content:
             raise serializers.ValidationError("Content or an Image must be provided")
         return data
@@ -207,12 +224,12 @@ class SetupElementSerializer(serializers.HyperlinkedModelSerializer):
 class SetupSerializer(serializers.HyperlinkedModelSerializer):
 
     # TODO:
-    setupelements = SetupElementSerializer(many=True, read_only=True, source="setup_elements")
+    setup_elements = SetupElementSerializer(many=True, read_only=True, source="setup_elements")
     measurements = MeasurementSerializer(many=True, read_only=True, source="measurements")
 
     class Meta:
         model = Setup
-        fields = ('url', 'created', )
+        fields = '__all__'
 
 
 class ObjectInstanceSerializer(serializers.HyperlinkedModelSerializer):
