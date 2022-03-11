@@ -19,6 +19,9 @@
 
 ## 03/11
 - `Setup` & `SetupElement` are created in `perform_create()` in `views.py`
+- added some todos in `views.py`
+- gotta find out how to override all the saves and properly create the object hierarchies and interlink them in the correct way
+- generated a new graph
 
 ## 03/10
 - created test measurement json
