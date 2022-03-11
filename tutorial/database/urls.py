@@ -10,7 +10,7 @@ from . import strings
 router = DefaultRouter()
 for v, u in zip(strings.viewset_classes, strings.viewset_urls):
     router.register(u, eval('views.'+v))
-    print('router registering', u, 'as', v)
+    # print('router registering', u, 'as', v)
 # router.register(r'', views.SnippetViewSet)
 # router.register(r'snippets2', views.Snippet2ViewSet)
 # router.register(r'users', views.UserViewSet)

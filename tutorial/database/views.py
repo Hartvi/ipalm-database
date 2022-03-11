@@ -73,27 +73,77 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             json_data_list = list(filter(lambda x: "measurement" == x[0], data_items))[0]
             im = list(filter(lambda x: "png" == x[0], data_items))[0]
             data_dict = json.loads(json_data_list[1])
-            print(data_dict)
+            # print(data_dict)
             sensor_outputs: dict = data_dict["sensor_outputs"]
-            sensor_names = sensor_outputs.keys()
-            sensor_modalities = {sn: list(sensor_outputs[sn].keys()) for sn in sensor_names}
+            active_sensor_names = sensor_outputs.keys()
+            sensor_modalities = {sn: list(sensor_outputs[sn].keys()) for sn in active_sensor_names}
 
             setup_elements = data_dict["setup"]
             setup_keys = list(setup_elements.keys())
-            setup_values = list(setup_elements.values())
-            print(sensor_modalities)
-            for sn in sensor_names:
-                sn_query = SetupElement.objects.filter(name=sn)
-                if sn_query.exists():
-                    element = sn_query.values()[0]
-                    print(element)
+            setup_element_names = list(setup_elements.values())
+            # print("setup element names:", setup_element_names)
+            # print("setup element types:", setup_keys)
+            # print(sensor_modalities)
+            # Setup.objects.create()
+            setup_query = Setup.objects.all()
+            setup_elements = SetupElement.objects.all()
+            # print("printing all elements!!")
+            # for e in setup_elements:
+            #     print(e.name)
+            # print('first setup', setup_query.filter(setup_elements__name='robotiq 2f85')[0].__dict__)
+            setup_exists = True
+            new_setup = None
+
+            # iterate through all setup elements present in this entry and add any new output quantities, setup elements
+            for setup_element_name in setup_element_names:  # setup element names are unique
+                # print("setup element name:", setup_element_name)
+
+                setup_element = SetupElement.objects.filter(name=setup_element_name)
+                if setup_element.exists():
+                    if setup_element_name in active_sensor_names:
+                        # add new output quantities if there are any new ones:
+                        # print("updating active sensor output quantities:", setup_element_name,
+                        #       "adding", sensor_modalities[setup_element_name])
+                        # print("setup_element[0].output_quantities", setup_element[0].output_quantities)
+                        # print("sensor_modalities[setup_element_name]", sensor_modalities[setup_element_name])
+                        oq = setup_element[0].output_quantities
+                        setup_element.update(
+                            output_quantities=json.dumps(
+                                list(set(sensor_modalities[setup_element_name])
+                                     .union(set(json.loads("[]" if oq is None else oq))))
+                            )
+                        )
+
+                    # assuming that a setup with these elements exists
+                    # if so, narrow down the search, so we find that one specific setup if it exists
+                    # otherwise create a new setup in the else section
+                    if setup_exists:
+                        # print(setup_query.values())
+                        # print("setup exists, looking for ", setup_element_name)
+                        setup_query = setup_query.filter(setup_elements__name=setup_element_name)
+                        # print("query values", setup_query.values())
+                        # print(setup_query[0].setup_elements.all())
                 else:
+                    if setup_exists:
+                        # print("creating new setup!!!")
+                        new_setup = Setup.objects.create()
+                        setup_exists = False
                     new_element = SetupElement.objects.create(
-                        type=setup_keys[setup_values.index(sn)],
-                        name=sn,
-                        output_quantities=json.dumps(sensor_modalities[sn]),
+                        type=setup_keys[setup_element_names.index(setup_element_name)],
+                        name=setup_element_name,
                     )
-                    print(new_element)
+                    if setup_element_name in active_sensor_names:
+                        # print("updating", new_element.name, "with oputput quantities", json.dumps(sensor_modalities[setup_element_name]))
+                        new_element.output_quantities = json.dumps(sensor_modalities[setup_element_name])
+
+                    new_element.save()
+                    new_element.setup.add(new_setup)
+                    new_element.save()
+                    # print("new element:", setup_element_name, ": ", new_element)
+            if setup_exists:
+                print("first query:", setup_query.first())
+            for setup_element_name in setup_element_names:
+                print("setup element name:", setup_element_name, " exists:", Setup.objects.filter(setup_elements__name=setup_element_name).exists())
             exit(1)
 
             # print(self.request.FILES)

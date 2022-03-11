@@ -4,6 +4,7 @@
 *.jpg
 *.jpeg
 *.dot
+tutorial/database/migrations
 
 
 # Config folder

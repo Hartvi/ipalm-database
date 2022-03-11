@@ -20,5 +20,5 @@ def validate_data_fields(request_items, model_name):
     return len(first_items.intersection(validation_fields)) == len(validation_fields), validation_fields - first_items
 
 
-print(get_first_items(data_fs))
+# print(get_first_items(data_fs))
 

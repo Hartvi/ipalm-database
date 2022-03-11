@@ -17,6 +17,9 @@
   - measurement
   - entries
 
+## 03/11
+- `Setup` & `SetupElement` are created in `perform_create()` in `views.py`
+
 ## 03/10
 - created test measurement json
 - created some validations
