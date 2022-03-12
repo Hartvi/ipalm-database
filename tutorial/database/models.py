@@ -55,7 +55,7 @@ class SensorOutput(models.Model):
     #  "other_format": "png", "other": "byte_string"}
     sensor_output = models.JSONField()
     sensor = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='sensor_outputs', )
-    measurements = models.ManyToManyField(Measurement, related_name='sensor_outputs', )
+    measurements = models.ForeignKey(Measurement, related_name='sensor_outputs', on_delete=models.CASCADE, null=True)
 
 
 class Vector3D(models.Model):

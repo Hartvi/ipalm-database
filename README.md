@@ -17,6 +17,9 @@
   - measurement
   - entries
 
+## 03/12
+- added category & continous property adding - not tested yet
+
 ## 03/11
 - `Setup` & `SetupElement` are created in `perform_create()` in `views.py`
 - added some todos in `views.py`

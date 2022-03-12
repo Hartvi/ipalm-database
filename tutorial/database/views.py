@@ -77,9 +77,10 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             sensor_outputs: dict = data_dict["sensor_outputs"]
 
             # TODO: ObjectInstance ForeignKey
-            measurement = Measurement.objects.create(owner=self.request.user)
+            # measurement = Measurement.objects.create(owner=self.request.user)
 
             # SETUP & SETUP ELEMENT & SENSOR OUTPUT
+            sensor_output_object = None
             active_sensor_names = sensor_outputs.keys()
             sensor_modalities = {sn: list(sensor_outputs[sn].keys()) for sn in active_sensor_names}
 
@@ -110,7 +111,13 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                             )
                         )
                         sensor_output_values = sensor_outputs[setup_element_name]
-                        SensorOutput.objects.create()
+                        # print(sensor_output_values)
+                        # print(json.dumps(sensor_output_values))
+                        sensor_output_object = SensorOutput.objects.create(
+                            sensor_output=json.dumps(sensor_output_values), sensor=setup_element[0]
+                        )
+                        # print("sensor_output_object:", sensor_output_object)
+                        # ADD the measurement foreign key later
 
                     # assuming that a setup with these elements exists
                     # if so, narrow down the search, so we find that one specific setup if it exists
@@ -135,6 +142,75 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 print("first query:", setup_query.first())
             for setup_element_name in setup_element_names:
                 print("setup element name:", setup_element_name, " exists:", Setup.objects.filter(setup_elements__name=setup_element_name).exists())
+
+            # ENTRIES
+            entries: list = data_dict["entries"]
+            entry_objects = list()
+            for entry in entries:
+                # {"type": "continuous", "name": "youngs_modulus", "value": 85000, "std": 5000, "units": "Pa", "algorithm": "http://www.github.com/"}
+                if "algorithm" in entry:
+                    entry["repository"] = entry["algorithm"]
+                if "repository" not in entry and "algorithm" not in entry:
+                    raise ParseError('Request has no `repository`/`algorithm` url field')
+                if "type" not in entry:
+                    raise ParseError('Request has no `type`<-["continuous", "categorical", "size", "other"] field')
+                entry_object = None
+                if entry["type"] == "continuous":
+                    if not ("name" in entry and "value" in entry and "std" in entry and "units" in entry):
+                        raise ParseError('Request is missing'+" name: "+str("name" in entry)+ " value: "+str("value" in entry) +" std: " +str("std" in entry) +" units: "+str("units" in entry))
+                    entry_object = Entry.objects.create(
+                        owner=self.request.user,
+                        repository=entry["repository"]
+                    )
+                    property_object = Property.objects.create(
+                        type=entry["type"],
+                        entry=entry_object
+                    )
+                    continuous_property_object = ContinuousProperty.objects.create(
+                        value=entry["value"],
+                        std=entry["std"],
+                        quantity=entry["name"],
+                        units=entry["units"],
+                        other=(entry["other"] if "other" in entry else "[]")
+                    )
+                    entry_objects.append(entry_object)
+                    # TODO: ADD THE `Measurement` TO THE `Entry` BELOW
+                if entry["type"] == "categorical":
+                    if "category" not in entry:
+                        raise ParseError('Request is missing' + " \"category\": \"something\" field")
+                    if "values" not in entry:
+                        raise ParseError('Request is missing `values` key with the value as a categories dict!')
+                    values_dict = entry["values"]
+                    values_values = values_dict.values()
+                    # sum of probabilities of all categories has to be roughly zero (+-1 %)
+                    values_values_sum = sum(values_values)
+                    if not 0.99 < values_values_sum < 1.01:
+                        raise ParseError(
+                            'Request `values` sum of category probabilities is not equal to 1+-0.01: '+values_values_sum
+                        )
+
+                    entry_object = Entry.objects.create(
+                        owner=self.request.user,
+                        repository=entry["repository"]
+                    )
+                    property_object = Property.objects.create(
+                        type=entry["type"],
+                        entry=entry_object
+                    )
+                    categorical_property_object = CategoricalProperty.objects.create(
+                        type=entry["category"],
+                        property=property_object,
+                    )
+                    cat_objects = list()
+                    for cat in values_dict:
+                        cat_object = Category.objects.create(
+                            category_name=cat,
+                            probability=values_dict[cat]/values_values_sum,
+                            property=categorical_property_object,
+                        )
+                        cat_objects.append(cat_object)
+                    entry_objects.append(entry_object)
+                    # TODO: ADD THE `Measurement` TO THE `Entry` BELOW
             exit(1)
 
             # print(self.request.FILES)
@@ -147,6 +223,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         # TODO either overwrite the model's create method or somehow hack this `save()`;
         #  the save can then be replaced, I think, simply by setting the serializer.instance as the measurement object
         #  and then returning the measurement object
-        serializer.save(owner=self.request.user, png=file)
+        measurement = serializer.save(owner=self.request.user, png=file)
+
 
 

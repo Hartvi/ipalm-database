@@ -212,13 +212,13 @@ class SetupElementSerializer(serializers.HyperlinkedModelSerializer):
     parameters = models.JSONField()
     setup = models.ForeignKey(Setup, on_delete=models.CASCADE, related_name='setup_elements')
     """
-    setup = serializers.HyperlinkedRelatedField(view_name='setup-detail', read_only=True)
+    setup = serializers.HyperlinkedRelatedField(view_name='setup-detail', read_only=True, many=False)
 
-    sensoroutputs = SensorOutputSerializer(many=True, read_only=True, source="sensor_outputs")
+    sensor_outputs = SensorOutputSerializer(many=True, read_only=True)
 
     class Meta:
         model = SetupElement
-        fields = ('url', 'type', 'name', 'output_quantities', 'parameters', 'setup', )
+        fields = ('url', 'type', 'name', 'output_quantities', 'parameters', 'setup', 'sensor_outputs')
 
 
 class SetupSerializer(serializers.HyperlinkedModelSerializer):
