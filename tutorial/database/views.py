@@ -17,6 +17,11 @@ class SetupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SetupSerializer
 
 
+class SensorOutputViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = SensorOutput.objects.all()
+    serializer_class = SensorOutputSerializer
+
+
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -40,6 +45,31 @@ class SetupElementViewSet(viewsets.ReadOnlyModelViewSet):
 class PropertyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
+
+
+class ContinuousPropertyViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = PropertyElement.objects.all()
+    serializer_class = ContinuousPropertySerializer
+
+
+# class CategoricalPropertyViewSet(viewsets.ReadOnlyModelViewSet):
+#     queryset = CategoricalProperty.objects.all()
+#     serializer_class = CategoricalPropertySerializer
+#
+#
+# class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+#     queryset = Category.objects.all()
+#     serializer_class = CategorySerializer
+#
+#
+# class SizePropertyViewSet(viewsets.ReadOnlyModelViewSet):
+#     queryset = SizeProperty.objects.all()
+#     serializer_class = SizePropertySerializer
+#
+#
+class OtherPropertyViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = OtherProperty.objects.all()
+    serializer_class = OtherPropertySerializer
 
 
 class EntryViewSet(viewsets.ModelViewSet):
@@ -88,6 +118,8 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             setup_element_types = list(setup_element_dict.keys())  # gripper, arm, camera, microphone, etc
             setup_element_names = list(setup_element_dict.values())
             setup_query = Setup.objects.all()
+            # print(type(Category.objects))
+            # print(type(Setup.objects))
             """
             dot notation in queries is done as follows:
             print('first setup', setup_query.filter(setup_elements__name='robotiq 2f85')[0].__dict__)
@@ -162,16 +194,18 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                         owner=self.request.user,
                         repository=entry["repository"]
                     )
+
                     property_object = Property.objects.create(
                         type=entry["type"],
                         entry=entry_object
                     )
-                    continuous_property_object = ContinuousProperty.objects.create(
+                    continuous_property_object = PropertyElement.objects.create(
                         value=entry["value"],
                         std=entry["std"],
                         quantity=entry["name"],
                         units=entry["units"],
-                        other=(entry["other"] if "other" in entry else "[]")
+                        other=(entry["other"] if "other" in entry else "[]"),
+                        property=property_object,
                     )
                     entry_objects.append(entry_object)
                     # TODO: ADD THE `Measurement` TO THE `Entry` BELOW
@@ -197,20 +231,55 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                         type=entry["type"],
                         entry=entry_object
                     )
-                    categorical_property_object = CategoricalProperty.objects.create(
-                        type=entry["category"],
-                        property=property_object,
-                    )
-                    cat_objects = list()
-                    for cat in values_dict:
-                        cat_object = Category.objects.create(
-                            category_name=cat,
-                            probability=values_dict[cat]/values_values_sum,
-                            property=categorical_property_object,
-                        )
-                        cat_objects.append(cat_object)
-                    entry_objects.append(entry_object)
+                    # categorical_property_object = CategoricalProperty.objects.create(
+                    #     type=entry["category"],
+                    #     property=property_object,
+                    # )
+                    # cat_objects = list()
+                    # for cat in values_dict:
+                    #     cat_object = Category.objects.create(
+                    #         category_name=cat,
+                    #         probability=values_dict[cat]/values_values_sum,
+                    #         property=categorical_property_object,
+                    #     )
+                    #     # print("cat:", cat_object.__dict__)
+                    #     cat_objects.append(cat_object)
+                    # entry_objects.append(entry_object)
+                    # TODO: `Size` AND `Other`
                     # TODO: ADD THE `Measurement` TO THE `Entry` BELOW
+
+            # GRASP
+            grasp = data_dict["grasp"]
+            if "grasped" not in grasp:
+                raise ParseError('Grasp has no `grasped: bool` field')
+            if "translation" not in grasp:
+                raise ParseError("`translation` not in grasp")
+            if "rotation" not in grasp:
+                raise ParseError("`rotation` not in grasp")
+            if len(grasp["translation"]) != 3:
+                raise ParseError("len(grasp[\"translation\"]) != 3")
+            if len(grasp["rotation"]) != 3:
+                raise ParseError("len(grasp[\"rotation\"]) != 3")
+            if type(grasp["grasped"]) != bool:
+                raise ParseError("type(grasp[\"grasped\"]) != bool")
+            translation = grasp["translation"]
+            translation_object = Vector3D.objects.create(
+                x=translation[0],
+                y=translation[1],
+                z=translation[2]
+            )
+            rotation = grasp["rotation"]
+            rotation_object = Vector3D.objects.create(
+                x=rotation[0],
+                y=rotation[1],
+                z=rotation[2]
+            )
+            # TODO: add the `Measurement` below
+            grasp_object = Grasp.objects.create(
+                translation=translation_object,
+                rotation=rotation_object,
+                grasped=grasp["grasped"],
+            )
             exit(1)
 
             # print(self.request.FILES)

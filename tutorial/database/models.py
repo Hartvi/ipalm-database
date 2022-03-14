@@ -5,14 +5,20 @@ from rest_framework import serializers
 # class ObjectClass(models.Model):
 #     name = models.CharField(max_length=100)
 
+class MyBaseModel(models.Model):
+    objects = models.manager.Manager()
 
-class ObjectInstance(models.Model):
+    class Meta:
+        abstract = True
+
+
+class ObjectInstance(MyBaseModel):
     is_instance = models.BooleanField(default=True)
     instance_id = models.IntegerField()
     dataset = models.CharField(max_length=100, null=True)
 
 
-class Setup(models.Model):
+class Setup(MyBaseModel):
     """
     {"arm": "arm_name", "gripper": "gripper_name", "camera": "camera_model_name",
      "microphone": "microphone_model_name"}
@@ -20,7 +26,7 @@ class Setup(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
 
-class SetupElement(models.Model):
+class SetupElement(MyBaseModel):
     # this could be from the choices: arm, gripper, camera, depth, camera, microphone, other
     type = models.CharField(max_length=100, )
     name = models.CharField(max_length=100, unique=True)
@@ -32,7 +38,7 @@ class SetupElement(models.Model):
     #     return str(self.type) + ", " + str(self.name)
 
 
-class Measurement(models.Model):
+class Measurement(MyBaseModel):
     created = models.DateTimeField(auto_now_add=True)
     png = models.ImageField(upload_to='uploads/measurements/')
     setup = models.ForeignKey(Setup, related_name='measurements', related_query_name='measurement',
@@ -50,7 +56,7 @@ class Measurement(models.Model):
         super().save(*args, **kwargs)
 
 
-class SensorOutput(models.Model):
+class SensorOutput(MyBaseModel):
     # {"time": [0.01, 0.02, ...], "position": [1, 0.99, ...], "current" : [0.05, 0.06, ...],
     #  "other_format": "png", "other": "byte_string"}
     sensor_output = models.JSONField()
@@ -58,20 +64,20 @@ class SensorOutput(models.Model):
     measurements = models.ForeignKey(Measurement, related_name='sensor_outputs', on_delete=models.CASCADE, null=True)
 
 
-class Vector3D(models.Model):
+class Vector3D(MyBaseModel):
     x = models.FloatField()
     y = models.FloatField()
     z = models.FloatField()
 
 
-class Grasp(models.Model):
+class Grasp(MyBaseModel):
     translation = models.OneToOneField(Vector3D, on_delete=models.PROTECT, related_name='translation')
     rotation = models.OneToOneField(Vector3D, on_delete=models.PROTECT, related_name='rotation')
     grasped = models.BooleanField()
-    measurement = models.OneToOneField(Measurement, related_name='grasp', on_delete=models.CASCADE)
+    measurement = models.OneToOneField(Measurement, related_name='grasp', on_delete=models.CASCADE, null=True)
 
 
-class Entry(models.Model):
+class Entry(MyBaseModel):
 
     created = models.DateTimeField(auto_now_add=True)
     measurement = models.ForeignKey(Measurement, related_name='entries', related_query_name='entry',
@@ -89,13 +95,13 @@ class Entry(models.Model):
         super().save(*args, **kwargs)
 
 
-class Property(models.Model):
+class Property(MyBaseModel):
     type = models.CharField(max_length=100)  # continuous, categorical, size, other
     entry = models.OneToOneField(Entry, on_delete=models.CASCADE, related_name='property')
     # maybe point to a measurement and not an object instance
 
 
-class ContinuousProperty(models.Model):  # this should, I think, be possible to bind only in a OneToOneField
+class PropertyElement(MyBaseModel):  # this should, I think, be possible to bind only in a OneToOneField
     quantity = models.CharField(max_length=100)
     value = models.FloatField()
     std = models.FloatField()
@@ -104,26 +110,26 @@ class ContinuousProperty(models.Model):  # this should, I think, be possible to 
     property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='continuous')
 
 
-class CategoricalProperty(models.Model):
-    type = models.CharField(max_length=100)  # material, class
-    property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='categorical')
-
-
-class Category(models.Model):
-    # if type is material, then: plastic, metal, etc. For class: mug, cup, etc.
-    category_name = models.CharField(max_length=100)
-    probability = models.FloatField()  # should be in the interval [0, 1]
-    property = models.ForeignKey(CategoricalProperty, on_delete=models.CASCADE, related_name='categories')
-
-
-class SizeProperty(models.Model):
-    x = models.FloatField()
-    y = models.FloatField()
-    z = models.FloatField()
-    property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='size')
-
-
-class OtherProperty(models.Model):
+# class CategoricalProperty(MyBaseModel):
+#     type = models.CharField(max_length=100)  # material, class
+#     property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='categorical')
+#
+#
+# class Category(MyBaseModel):
+#     # if type is material, then: plastic, metal, etc. For class: mug, cup, etc.
+#     category_name = models.CharField(max_length=100)
+#     probability = models.FloatField()  # should be in the interval [0, 1]
+#     categorical_property = models.ForeignKey(CategoricalProperty, on_delete=models.CASCADE, related_name='categories')
+#
+#
+# class SizeProperty(MyBaseModel):
+#     x = models.FloatField()
+#     y = models.FloatField()
+#     z = models.FloatField()
+#     property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='size')
+#
+#
+class OtherProperty(MyBaseModel):
     name = models.CharField(max_length=100)  # size, model, mesh, half-shell, ply.
     other = models.JSONField()
     property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='other')

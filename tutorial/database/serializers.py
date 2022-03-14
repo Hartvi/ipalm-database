@@ -51,56 +51,56 @@ class ContinuousPropertySerializer(serializers.HyperlinkedModelSerializer):
     property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
 
     class Meta:
-        model = ContinuousProperty
+        model = PropertyElement
         fields = '__all__'
 
 
-class CategorySerializer(serializers.HyperlinkedModelSerializer):
-
-    categoricalproperty = serializers.HyperlinkedRelatedField(many=False, view_name='categoricalproperty-detail',
-                                                              read_only=True)
-
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-
-class CategoricalPropertySerializer(serializers.HyperlinkedModelSerializer):
-
-    property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
-
-    categories = CategorySerializer(many=True, read_only=True)
-
-    class Meta:
-        model = CategoricalProperty
-        fields = '__all__'
-
-
-class SizePropertySerializer(serializers.HyperlinkedModelSerializer):
-
-    property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
-
-    class Meta:
-        model = SizeProperty
-        fields = '__all__'
-
-
-class OtherPropertySerializer(serializers.HyperlinkedModelSerializer):
-
-    property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
-
-    class Meta:
-        model = SizeProperty
-        fields = '__all__'
-
-
+# class CategorySerializer(serializers.HyperlinkedModelSerializer):
+#
+#     categoricalproperty = serializers.HyperlinkedRelatedField(many=False, view_name='categoricalproperty-detail',
+#                                                               read_only=True)
+#
+#     class Meta:
+#         model = Category
+#         fields = '__all__'
+#
+#
+# class CategoricalPropertySerializer(serializers.HyperlinkedModelSerializer):
+#
+#     property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
+#
+#     categories = CategorySerializer(many=True, read_only=True)
+#
+#     class Meta:
+#         model = CategoricalProperty
+#         fields = '__all__'
+#
+#
+# class SizePropertySerializer(serializers.HyperlinkedModelSerializer):
+#
+#     property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
+#
+#     class Meta:
+#         model = SizeProperty
+#         fields = '__all__'
+#
+#
+# class OtherPropertySerializer(serializers.HyperlinkedModelSerializer):
+#
+#     property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
+#
+#     class Meta:
+#         model = SizeProperty
+#         fields = '__all__'
+#
+#
 class PropertySerializer(serializers.HyperlinkedModelSerializer):
 
     entry = serializers.HyperlinkedRelatedField(many=False, view_name='entry-detail', read_only=True)
-    continuousproperty = ContinuousPropertySerializer(many=False, read_only=True, source="continuous")
-    categoricalproperty = CategoricalPropertySerializer(many=False, read_only=True, source="categorical")
-    sizeproperty = SizePropertySerializer(many=False, read_only=True, source="size")
-    otherproperty = OtherPropertySerializer(many=False, read_only=True, source="other")
+    continuous = ContinuousPropertySerializer(many=False, read_only=True)
+    # categorical = CategoricalPropertySerializer(many=False, read_only=True)
+    # size = SizePropertySerializer(many=False, read_only=True)
+    # other = OtherPropertySerializer(many=False, read_only=True)
 
     class Meta:
         model = Property
@@ -133,12 +133,12 @@ class SensorOutputSerializer(serializers.HyperlinkedModelSerializer):
     sensor = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='sensor_outputs', )
     measurement = models.OneToOneField(Measurement, on_delete=models.CASCADE, related_name='sensor_outputs', )
     """
-    sensor = serializers.HyperlinkedRelatedField(view_name='sensor-detail', read_only=True)
+    sensor = serializers.HyperlinkedRelatedField(view_name='setupelement-detail', read_only=True)
     measurement = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True)
 
     class Meta:
         model = SensorOutput
-        fields = ('url', 'sensor', 'measurement', 'sensor_output', )
+        fields = '__all__'
 
 
 class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
@@ -205,27 +205,20 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
 
 class SetupElementSerializer(serializers.HyperlinkedModelSerializer):
 
-    """
-    type = models.CharField(max_length=100, )
-    name = models.CharField(max_length=100, )
-    output_quantities = models.JSONField()  # e.g. time, position, current, force, rgb, depth, bw (as in black & white)
-    parameters = models.JSONField()
-    setup = models.ForeignKey(Setup, on_delete=models.CASCADE, related_name='setup_elements')
-    """
-    setup = serializers.HyperlinkedRelatedField(view_name='setup-detail', read_only=True, many=False)
+    # setup = serializers.HyperlinkedRelatedField(view_name='setup-detail', read_only=True, many=False)
 
     sensor_outputs = SensorOutputSerializer(many=True, read_only=True)
 
     class Meta:
         model = SetupElement
-        fields = ('url', 'type', 'name', 'output_quantities', 'parameters', 'setup', 'sensor_outputs')
+        fields = '__all__'
 
 
 class SetupSerializer(serializers.HyperlinkedModelSerializer):
 
     # TODO:
-    setup_elements = SetupElementSerializer(many=True, read_only=True, source="setup_elements")
-    measurements = MeasurementSerializer(many=True, read_only=True, source="measurements")
+    setup_elements = SetupElementSerializer(many=True, read_only=True)
+    measurements = MeasurementSerializer(many=True, read_only=True)
 
     class Meta:
         model = Setup
