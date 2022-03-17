@@ -17,6 +17,10 @@
   - measurement
   - entries
 
+## 03/17
+- simplified models & structure
+
+
 ## PI day
 - the error ```Could not resolve URL for hyperlinked relationship using view name "continuousproperty-detail". You may have failed to include the related model in your API, or incorrectly configured the `lookup_field` attribute on this field.``` is caused by not having created the `ContinuousPropertyViewSet` **and** not having it registered in the `url router` in `database/urls.py`
 - make the `Property` have N `PropertyElement` children, each with the same fields as the old `ContinuousProperty`, where quantity is also material/class, units mug/bottle/etc., value probability, std=0 for categories

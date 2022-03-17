@@ -20,7 +20,7 @@
       "type": "categorical",
       "category": "class",
       "values": {"lol1": 0.1, "lol2": 0.3, "category3": 0.4, "category4":  0.2},
-      "algorithm": "http://www.github.com/"
+      "repository": "http://www.github.com/"
     }
   ]
 }

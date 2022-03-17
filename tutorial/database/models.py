@@ -64,15 +64,21 @@ class SensorOutput(MyBaseModel):
     measurements = models.ForeignKey(Measurement, related_name='sensor_outputs', on_delete=models.CASCADE, null=True)
 
 
-class Vector3D(MyBaseModel):
-    x = models.FloatField()
-    y = models.FloatField()
-    z = models.FloatField()
-
-
+# class Vector3D(MyBaseModel):
+#     x = models.FloatField()
+#     y = models.FloatField()
+#     z = models.FloatField()
+#
+#
 class Grasp(MyBaseModel):
-    translation = models.OneToOneField(Vector3D, on_delete=models.PROTECT, related_name='translation')
-    rotation = models.OneToOneField(Vector3D, on_delete=models.PROTECT, related_name='rotation')
+    rx = models.FloatField(default=0)
+    ry = models.FloatField(default=0)
+    rz = models.FloatField(default=0)
+    tx = models.FloatField(default=0)
+    ty = models.FloatField(default=0)
+    tz = models.FloatField(default=0)
+    # translation = models.OneToOneField(Vector3D, on_delete=models.PROTECT, related_name='translation')
+    # rotation = models.OneToOneField(Vector3D, on_delete=models.PROTECT, related_name='rotation')
     grasped = models.BooleanField()
     measurement = models.OneToOneField(Measurement, related_name='grasp', on_delete=models.CASCADE, null=True)
 
@@ -85,6 +91,7 @@ class Entry(MyBaseModel):
     repository = models.URLField(null=True, default='http://www.github.com')  # link to repository
     owner = models.ForeignKey('accounts.CustomUser', related_name='entries', related_query_name='entry',
                               on_delete=models.PROTECT)
+    type = models.CharField(max_length=100, null=True)  # categorical => ignore std's, continuous, others
 
     class Meta:
         ordering = ['created']
@@ -95,41 +102,13 @@ class Entry(MyBaseModel):
         super().save(*args, **kwargs)
 
 
-class Property(MyBaseModel):
-    type = models.CharField(max_length=100)  # continuous, categorical, size, other
-    entry = models.OneToOneField(Entry, on_delete=models.CASCADE, related_name='property')
-    # maybe point to a measurement and not an object instance
-
-
 class PropertyElement(MyBaseModel):  # this should, I think, be possible to bind only in a OneToOneField
-    quantity = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     value = models.FloatField()
     std = models.FloatField()
     units = models.CharField(max_length=100)
     other = models.JSONField(null=True)  # for friction, etc.
-    property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='continuous')
+    other_file = models.FileField(null=True)
+    entry = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name='property_element')
 
 
-# class CategoricalProperty(MyBaseModel):
-#     type = models.CharField(max_length=100)  # material, class
-#     property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='categorical')
-#
-#
-# class Category(MyBaseModel):
-#     # if type is material, then: plastic, metal, etc. For class: mug, cup, etc.
-#     category_name = models.CharField(max_length=100)
-#     probability = models.FloatField()  # should be in the interval [0, 1]
-#     categorical_property = models.ForeignKey(CategoricalProperty, on_delete=models.CASCADE, related_name='categories')
-#
-#
-# class SizeProperty(MyBaseModel):
-#     x = models.FloatField()
-#     y = models.FloatField()
-#     z = models.FloatField()
-#     property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='size')
-#
-#
-class OtherProperty(MyBaseModel):
-    name = models.CharField(max_length=100)  # size, model, mesh, half-shell, ply.
-    other = models.JSONField()
-    property = models.OneToOneField(Property, on_delete=models.CASCADE, related_name='other')

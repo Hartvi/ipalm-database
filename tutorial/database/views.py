@@ -42,34 +42,9 @@ class SetupElementViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SetupElementSerializer
 
 
-class PropertyViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Property.objects.all()
-    serializer_class = PropertySerializer
-
-
-class ContinuousPropertyViewSet(viewsets.ReadOnlyModelViewSet):
+class PropertyElementViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PropertyElement.objects.all()
-    serializer_class = ContinuousPropertySerializer
-
-
-# class CategoricalPropertyViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = CategoricalProperty.objects.all()
-#     serializer_class = CategoricalPropertySerializer
-#
-#
-# class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = Category.objects.all()
-#     serializer_class = CategorySerializer
-#
-#
-# class SizePropertyViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = SizeProperty.objects.all()
-#     serializer_class = SizePropertySerializer
-#
-#
-class OtherPropertyViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = OtherProperty.objects.all()
-    serializer_class = OtherPropertySerializer
+    serializer_class = PropertyElementSerializer
 
 
 class EntryViewSet(viewsets.ModelViewSet):
@@ -85,13 +60,6 @@ class MeasurementViewSet(viewsets.ModelViewSet):
     queryset = Measurement.objects.all()
     serializer_class = MeasurementSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
-
-    # def put(self, request, *args, **kwargs):
-    #     print('LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL')
-    #     print(request.data)
-    #     file_obj = request.FILES['image']
-    #     # do some stuff with uploaded file
-    #     return Response(status=204)
 
     def perform_create(self, serializer):  # TODO: save functions
         print('performing create!!!')
@@ -176,77 +144,29 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 print("setup element name:", setup_element_name, " exists:", Setup.objects.filter(setup_elements__name=setup_element_name).exists())
 
             # ENTRIES
-            entries: list = data_dict["entries"]
-            entry_objects = list()
-            for entry in entries:
-                # {"type": "continuous", "name": "youngs_modulus", "value": 85000, "std": 5000, "units": "Pa", "algorithm": "http://www.github.com/"}
-                if "algorithm" in entry:
-                    entry["repository"] = entry["algorithm"]
-                if "repository" not in entry and "algorithm" not in entry:
-                    raise ParseError('Request has no `repository`/`algorithm` url field')
-                if "type" not in entry:
-                    raise ParseError('Request has no `type`<-["continuous", "categorical", "size", "other"] field')
-                entry_object = None
-                if entry["type"] == "continuous":
-                    if not ("name" in entry and "value" in entry and "std" in entry and "units" in entry):
-                        raise ParseError('Request is missing'+" name: "+str("name" in entry)+ " value: "+str("value" in entry) +" std: " +str("std" in entry) +" units: "+str("units" in entry))
-                    entry_object = Entry.objects.create(
-                        owner=self.request.user,
-                        repository=entry["repository"]
-                    )
-
-                    property_object = Property.objects.create(
-                        type=entry["type"],
-                        entry=entry_object
-                    )
-                    continuous_property_object = PropertyElement.objects.create(
-                        value=entry["value"],
-                        std=entry["std"],
-                        quantity=entry["name"],
-                        units=entry["units"],
-                        other=(entry["other"] if "other" in entry else "[]"),
-                        property=property_object,
-                    )
-                    entry_objects.append(entry_object)
-                    # TODO: ADD THE `Measurement` TO THE `Entry` BELOW
-                if entry["type"] == "categorical":
-                    if "category" not in entry:
-                        raise ParseError('Request is missing' + " \"category\": \"something\" field")
-                    if "values" not in entry:
-                        raise ParseError('Request is missing `values` key with the value as a categories dict!')
-                    values_dict = entry["values"]
-                    values_values = values_dict.values()
-                    # sum of probabilities of all categories has to be roughly zero (+-1 %)
-                    values_values_sum = sum(values_values)
-                    if not 0.99 < values_values_sum < 1.01:
-                        raise ParseError(
-                            'Request `values` sum of category probabilities is not equal to 1+-0.01: '+values_values_sum
-                        )
-
-                    entry_object = Entry.objects.create(
-                        owner=self.request.user,
-                        repository=entry["repository"]
-                    )
-                    property_object = Property.objects.create(
-                        type=entry["type"],
-                        entry=entry_object
-                    )
-                    # categorical_property_object = CategoricalProperty.objects.create(
-                    #     type=entry["category"],
-                    #     property=property_object,
-                    # )
-                    # cat_objects = list()
-                    # for cat in values_dict:
-                    #     cat_object = Category.objects.create(
-                    #         category_name=cat,
-                    #         probability=values_dict[cat]/values_values_sum,
-                    #         property=categorical_property_object,
-                    #     )
-                    #     # print("cat:", cat_object.__dict__)
-                    #     cat_objects.append(cat_object)
-                    # entry_objects.append(entry_object)
-                    # TODO: `Size` AND `Other`
-                    # TODO: ADD THE `Measurement` TO THE `Entry` BELOW
+            entry = data_dict["entry"]
+            if "repository" not in entry:
+                raise ParseError('Request has no `repository` url field')
+            if "type" not in entry:
+                raise ParseError('Request has no `type`<-["continuous", "categorical", "size", "other"] field')
+            # TODO: add the Measurement to this object below
+            entry_object = Entry.objects.create(
+                owner=self.request.user,
+                repository=entry["repository"],
+                type=entry["type"]
+            )
+            for val in entry["values"]:
+                property_element_object = PropertyElement.objects.create(
+                    other=val.get("other", "[]"),
+                    quantity=val.get("name"),
+                    std=val.get("std"),
+                    units=val.get("units"),
+                    value=val.get("value")
+                )
+                if "other_file" in val:
+                    # TODO: idk how to do this
+                    property_element_object.other_file = val.get("other_file")
+                # TODO: ADD THE `Measurement` TO THE `Entry` BELOW
 
             # GRASP
             grasp = data_dict["grasp"]
@@ -263,21 +183,21 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             if type(grasp["grasped"]) != bool:
                 raise ParseError("type(grasp[\"grasped\"]) != bool")
             translation = grasp["translation"]
-            translation_object = Vector3D.objects.create(
-                x=translation[0],
-                y=translation[1],
-                z=translation[2]
-            )
+            # translation_object = Vector3D.objects.create(
+            #     x=translation[0],
+            #     y=translation[1],
+            #     z=translation[2]
+            # )
             rotation = grasp["rotation"]
-            rotation_object = Vector3D.objects.create(
-                x=rotation[0],
-                y=rotation[1],
-                z=rotation[2]
-            )
+            # rotation_object = Vector3D.objects.create(
+            #     x=rotation[0],
+            #     y=rotation[1],
+            #     z=rotation[2]
+            # )
             # TODO: add the `Measurement` below
             grasp_object = Grasp.objects.create(
-                translation=translation_object,
-                rotation=rotation_object,
+                # translation=translation_object,
+                # rotation=rotation_object,
                 grasped=grasp["grasped"],
             )
             exit(1)

@@ -27,83 +27,31 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ('url', 'id', 'entries', 'measurements')  # which fields to display on the site
+        fields = '__all__'  # which fields to display on the site
 
 
-class Vector3DSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Vector3D
-        fields = '__all__'
-
-
+# class Vector3DSerializer(serializers.HyperlinkedModelSerializer):
+#
+#     class Meta:
+#         model = Vector3D
+#         fields = '__all__'
+#
+#
 class GraspSerializer(serializers.HyperlinkedModelSerializer):
 
     measurement = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True)
 
     class Meta:
         model = Grasp
-        fields = ('url', 'grasped', 'translation', 'rotation', 'measurement', )
-
-
-class ContinuousPropertySerializer(serializers.HyperlinkedModelSerializer):
-
-    property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
-
-    class Meta:
-        model = PropertyElement
         fields = '__all__'
 
 
-# class CategorySerializer(serializers.HyperlinkedModelSerializer):
-#
-#     categoricalproperty = serializers.HyperlinkedRelatedField(many=False, view_name='categoricalproperty-detail',
-#                                                               read_only=True)
-#
-#     class Meta:
-#         model = Category
-#         fields = '__all__'
-#
-#
-# class CategoricalPropertySerializer(serializers.HyperlinkedModelSerializer):
-#
-#     property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
-#
-#     categories = CategorySerializer(many=True, read_only=True)
-#
-#     class Meta:
-#         model = CategoricalProperty
-#         fields = '__all__'
-#
-#
-# class SizePropertySerializer(serializers.HyperlinkedModelSerializer):
-#
-#     property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
-#
-#     class Meta:
-#         model = SizeProperty
-#         fields = '__all__'
-#
-#
-# class OtherPropertySerializer(serializers.HyperlinkedModelSerializer):
-#
-#     property = serializers.HyperlinkedRelatedField(many=False, view_name='property-detail', read_only=True)
-#
-#     class Meta:
-#         model = SizeProperty
-#         fields = '__all__'
-#
-#
-class PropertySerializer(serializers.HyperlinkedModelSerializer):
+class PropertyElementSerializer(serializers.HyperlinkedModelSerializer):
 
     entry = serializers.HyperlinkedRelatedField(many=False, view_name='entry-detail', read_only=True)
-    continuous = ContinuousPropertySerializer(many=False, read_only=True)
-    # categorical = CategoricalPropertySerializer(many=False, read_only=True)
-    # size = SizePropertySerializer(many=False, read_only=True)
-    # other = OtherPropertySerializer(many=False, read_only=True)
 
     class Meta:
-        model = Property
+        model = PropertyElement
         fields = '__all__'
 
 
@@ -111,7 +59,7 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
     # TODO: reverse foreignkey to property and so on
 
     # `source` CAN BE EMPTY IF THE VARIABLE NAME IS THE SAME, e.g. source="property"
-    property = PropertySerializer(many=False, read_only=True)
+    property_element = PropertyElementSerializer(many=False, read_only=True)
 
     measurement = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True)
     owner = serializers.HyperlinkedRelatedField(
@@ -238,6 +186,6 @@ class ObjectInstanceSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = ObjectInstance
-        fields = ('url', 'instance_id', 'dataset', )
+        fields = '__all__'
 
 

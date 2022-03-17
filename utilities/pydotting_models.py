@@ -8,6 +8,6 @@
 # for some reason.
 import pydot
 # TODO: BEWARE OF PRINTS FROM REGULAR PYTHON THAT ARE RUN ON STARTUP OF MANAGE.PY
-(graph, ) = pydot.graph_from_dot_file('proj6.dot')
+(graph, ) = pydot.graph_from_dot_file('proj8.dot')
 
-graph.write_png('proj6.png')
+graph.write_png('proj8.png')

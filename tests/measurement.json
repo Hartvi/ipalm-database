@@ -15,16 +15,31 @@
     "rotation": [0.5, 1.57, 0.1],
     "grasped":  true
   },
-  "entries": [
-    {
-      "type": "continuous",
-      "name": "youngs_modulus",
-      "value": 85000,
-      "std": 5000,
-      "units": "Pa",
-      "algorithm": "http://www.github.com/"
-    }
-  ]
+  "entry": {
+    "type": "size",
+    "repository": "http://www.github.com/",
+    "values":
+    [
+      {
+        "name": "x",
+        "value": 85000,
+        "std": 5000,
+        "units": "m"
+      },
+      {
+        "name": "y",
+        "value": 85000,
+        "std": 5000,
+        "units": "m"
+      },
+      {
+        "name": "z",
+        "value": 85,
+        "std": 5000,
+        "units": "m"
+      }
+    ]
+  }
 }
 
 
