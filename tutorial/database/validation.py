@@ -4,6 +4,27 @@ data_fs = [('setup', '{"arm": "kinova gen3", "gripper": "robotiq 2f85", "camera"
 
 validation_dict = {"measurement": {"setup", "grasp", "entries", "sensor_outputs", "object_instance"}}
 
+measurement_keys = {"setup", "sensor_outputs", "grasp", "object_instance"}
+entry_keys = {"type", "repository", "values"}
+entry_value_keys = {"name", "value", "units"}
+request_keys = {"measurement": measurement_keys, "entry": entry_keys}
+object_instance_keys = {"instance_id", "dataset"}
+
+entry_types = {"continuous", "size", "categorical", "other"}
+
+
+def check_measurement_request(request_dict):
+    for i in request_keys:
+        if i not in request_dict:
+            return i
+        for j in request_keys[i]:
+            if j not in request_dict[i]:
+                return j+" in "+i
+    for k, i in enumerate(request_dict["entry"]["values"]):
+        for j in entry_value_keys:
+            if j not in i:
+                return j + " in " + "entry.values["+str(k)+"]"
+
 
 def get_first_items(data_fields):
     return set(map(lambda x: x[0], data_fields))

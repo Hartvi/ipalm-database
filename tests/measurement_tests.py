@@ -22,7 +22,7 @@ def send_request(method="GET", path="/", data=None, img_path=None):
     return req.text
 
 
-with open('measurement2.json', 'r') as fp:
+with open('measurement.json', 'r') as fp:
     measurement_dict: dict = json.load(fp)
     measurement_json = json.dumps(measurement_dict)
     measurement_data = {"measurement": measurement_json}

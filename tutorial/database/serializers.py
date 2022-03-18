@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth import get_user_model
+from rest_framework.exceptions import ParseError
 from rest_framework import serializers
 
 from .models import *
@@ -30,13 +31,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'  # which fields to display on the site
 
 
-# class Vector3DSerializer(serializers.HyperlinkedModelSerializer):
-#
-#     class Meta:
-#         model = Vector3D
-#         fields = '__all__'
-#
-#
 class GraspSerializer(serializers.HyperlinkedModelSerializer):
 
     measurement = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True)
@@ -59,7 +53,7 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
     # TODO: reverse foreignkey to property and so on
 
     # `source` CAN BE EMPTY IF THE VARIABLE NAME IS THE SAME, e.g. source="property"
-    property_element = PropertyElementSerializer(many=False, read_only=True)
+    property_element = PropertyElementSerializer(many=True, read_only=True)
 
     measurement = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True)
     owner = serializers.HyperlinkedRelatedField(
@@ -76,11 +70,6 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
 
 class SensorOutputSerializer(serializers.HyperlinkedModelSerializer):
 
-    """
-    sensor_output = models.JSONField()
-    sensor = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='sensor_outputs', )
-    measurement = models.OneToOneField(Measurement, on_delete=models.CASCADE, related_name='sensor_outputs', )
-    """
     sensor = serializers.HyperlinkedRelatedField(view_name='setupelement-detail', read_only=True)
     measurement = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True)
 
@@ -112,25 +101,68 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
     def validate(self, data):
-        # print("data:", data)
-        # print("data dict:", data.__dict__)
-        # print('validating!!!')
         content = data.get("content", None)
         request = self.context['request']
-        # print('context:', self.context)
-        # print(list(request.data.items()))
         data_items = list(request.data.items())
-        print("data_items:", data_items)
         json_data_list = list(filter(lambda x: "measurement" == x[0], data_items))[0]
         if len(json_data_list) == 0:
             raise serializers.ValidationError("measurement key not present in request data")
         im = list(filter(lambda x: "png" == x[0], data_items))[0]
         if len(im) == 0:
             raise serializers.ValidationError("png not present in request files")
-        data_dict = json.loads(json_data_list[1])
-        (keys_valid, missing_keys) = validation.validate_data_fields(data_dict, 'measurement')
-        if not keys_valid:
-            raise serializers.ValidationError("measurement doesn't contain fields: "+str(missing_keys))
+        data_dict: dict = json.loads(json_data_list[1])
+        print(data_dict)
+
+        data_dict_check_result = validation.check_measurement_request(data_dict)
+        if data_dict_check_result:
+            raise serializers.ValidationError("Request is missing "+data_dict_check_result)
+        measurement = data_dict["measurement"]
+        grasp = measurement["grasp"]
+        try:
+            if len(grasp["translation"]) != 3:
+                raise ParseError("len(grasp[\"translation\"]) != 3")
+            if len(grasp["rotation"]) != 3:
+                raise ParseError("len(grasp[\"rotation\"]) != 3")
+            if type(grasp["grasped"]) != bool:
+                raise ParseError("type(grasp[\"grasped\"]) != bool")
+        except serializers.ValidationError("translation/rotation/grasped not provided in grasp") as e:
+            raise e
+        # if not
+        if not request.FILES and not content:
+            raise serializers.ValidationError("Content or an Image must be provided")
+
+        entry = data_dict.get("entry", None)
+        if not entry:
+            return data
+
+        if entry["type"] not in validation.entry_types:
+            serializers.ValidationError("Entry type is not in "+str(validation.entry_types))
+        if entry["type"] != "categorical":
+            for k, i in enumerate(entry["values"]):
+                if "std" not in i:
+                    raise serializers.ValidationError("std not in non-categorical entry "+str(k))
+
+        object_instance = measurement["object_instance"]
+        for k in validation.object_instance_keys:
+            if k not in object_instance:
+                raise serializers.ValidationError("`"+k+"` not in measurement[\"object_instance\"]")
+        instance_id = object_instance["instance_id"]
+        oi_query = ObjectInstance.objects.filter(
+            local_instance_id=instance_id,
+            owner=request.user
+        )
+        dataset = object_instance["dataset"]
+        if oi_query.exists() and not oi_query.filter(dataset=dataset).exists():
+            raise serializers.ValidationError(
+                "object instances' `datasets` don't match. instance_id: "+
+                str(instance_id)+"; dataset on server: "+
+                str(oi_query.first().dataset)+" vs "+dataset
+            )
+            # nokidoki
+        # (keys_valid, missing_keys) = validation.validate_data_fields(data_dict, 'measurement')
+        # if not keys_valid:
+        #     raise serializers.ValidationError("measurement doesn't contain fields: "+str(missing_keys))
+
         # if not data_dict["png"] == im[1]:
         #     raise serializers.ValidationError("uploaded image name doesnt match")
         # print("im name equals im name:", im[1])
@@ -142,8 +174,6 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         # you dont need to set content explicitly to None
         # print('data:',data)
         # raise serializers.ValidationError("testing lol")
-        if not request.FILES and not content:
-            raise serializers.ValidationError("Content or an Image must be provided")
         return data
 
     # def create(self, validated_data):
@@ -153,9 +183,9 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
 
 class SetupElementSerializer(serializers.HyperlinkedModelSerializer):
 
-    # setup = serializers.HyperlinkedRelatedField(view_name='setup-detail', read_only=True, many=False)
+    sensor_outputs = serializers.HyperlinkedRelatedField(view_name='sensoroutput-detail', read_only=True, many=True)
 
-    sensor_outputs = SensorOutputSerializer(many=True, read_only=True)
+    # sensor_outputs = SensorOutputSerializer(many=True, read_only=True)
 
     class Meta:
         model = SetupElement
@@ -165,8 +195,10 @@ class SetupElementSerializer(serializers.HyperlinkedModelSerializer):
 class SetupSerializer(serializers.HyperlinkedModelSerializer):
 
     # TODO:
-    setup_elements = SetupElementSerializer(many=True, read_only=True)
-    measurements = MeasurementSerializer(many=True, read_only=True)
+    # setup_elements = SetupElementSerializer(many=True, read_only=True)
+    # measurements = MeasurementSerializer(many=True, read_only=True)
+    setup_elements = serializers.HyperlinkedRelatedField(view_name='setupelement-detail', read_only=True, many=True)
+    measurements = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True, many=True)
 
     class Meta:
         model = Setup
@@ -175,14 +207,9 @@ class SetupSerializer(serializers.HyperlinkedModelSerializer):
 
 class ObjectInstanceSerializer(serializers.HyperlinkedModelSerializer):
 
-    """
-    class ObjectInstance(models.Model):
-        is_instance = models.BooleanField(default=True)
-        instance_id = models.IntegerField()
-        dataset = models.CharField(max_length=100, null=True)
-    """
     # TODO:
-    measurements = MeasurementSerializer(many=True, read_only=True, source="measurements")
+    # measurements = MeasurementSerializer(many=True, read_only=True)
+    measurements = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True, many=True)
 
     class Meta:
         model = ObjectInstance

@@ -2,9 +2,6 @@ from django.db import models
 from rest_framework import serializers
 
 
-# class ObjectClass(models.Model):
-#     name = models.CharField(max_length=100)
-
 class MyBaseModel(models.Model):
     objects = models.manager.Manager()
 
@@ -14,8 +11,14 @@ class MyBaseModel(models.Model):
 
 class ObjectInstance(MyBaseModel):
     is_instance = models.BooleanField(default=True)
-    instance_id = models.IntegerField()
+    local_instance_id = models.IntegerField()
+    global_instance_id = models.IntegerField(null=True, unique=True)
     dataset = models.CharField(max_length=100, null=True)
+    owner = models.ForeignKey('accounts.CustomUser',
+                              on_delete=models.CASCADE,
+                              related_name='object_instances',
+                              null=True
+                              )
 
 
 class Setup(MyBaseModel):
@@ -57,19 +60,11 @@ class Measurement(MyBaseModel):
 
 
 class SensorOutput(MyBaseModel):
-    # {"time": [0.01, 0.02, ...], "position": [1, 0.99, ...], "current" : [0.05, 0.06, ...],
-    #  "other_format": "png", "other": "byte_string"}
     sensor_output = models.JSONField()
     sensor = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='sensor_outputs', )
     measurements = models.ForeignKey(Measurement, related_name='sensor_outputs', on_delete=models.CASCADE, null=True)
 
 
-# class Vector3D(MyBaseModel):
-#     x = models.FloatField()
-#     y = models.FloatField()
-#     z = models.FloatField()
-#
-#
 class Grasp(MyBaseModel):
     rx = models.FloatField(default=0)
     ry = models.FloatField(default=0)
@@ -90,7 +85,7 @@ class Entry(MyBaseModel):
                                     on_delete=models.CASCADE, null=True)
     repository = models.URLField(null=True, default='http://www.github.com')  # link to repository
     owner = models.ForeignKey('accounts.CustomUser', related_name='entries', related_query_name='entry',
-                              on_delete=models.PROTECT)
+                              on_delete=models.PROTECT, null=True)
     type = models.CharField(max_length=100, null=True)  # categorical => ignore std's, continuous, others
 
     class Meta:

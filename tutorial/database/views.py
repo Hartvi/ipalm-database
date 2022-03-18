@@ -62,7 +62,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
 
     def perform_create(self, serializer):  # TODO: save functions
-        print('performing create!!!')
+        # print('performing create!!!')
         try:
             file = self.request.data['png']
             # sensor outputs:
@@ -72,22 +72,22 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             im = list(filter(lambda x: "png" == x[0], data_items))[0]
             data_dict = json.loads(json_data_list[1])
 
-            sensor_outputs: dict = data_dict["sensor_outputs"]
+            measurement = data_dict["measurement"]
+            sensor_outputs: dict = measurement["sensor_outputs"]
 
             # TODO: ObjectInstance ForeignKey
             # measurement = Measurement.objects.create(owner=self.request.user)
 
             # SETUP & SETUP ELEMENT & SENSOR OUTPUT
-            sensor_output_object = None
+            sensor_output_objects = list()
             active_sensor_names = sensor_outputs.keys()
             sensor_modalities = {sn: list(sensor_outputs[sn].keys()) for sn in active_sensor_names}
 
-            setup_element_dict = data_dict["setup"]
+            setup_element_dict = measurement["setup"]
             setup_element_types = list(setup_element_dict.keys())  # gripper, arm, camera, microphone, etc
             setup_element_names = list(setup_element_dict.values())
             setup_query = Setup.objects.all()
-            # print(type(Category.objects))
-            # print(type(Setup.objects))
+            # print(Setup.objects.__dict__)
             """
             dot notation in queries is done as follows:
             print('first setup', setup_query.filter(setup_elements__name='robotiq 2f85')[0].__dict__)
@@ -111,12 +111,10 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                             )
                         )
                         sensor_output_values = sensor_outputs[setup_element_name]
-                        # print(sensor_output_values)
-                        # print(json.dumps(sensor_output_values))
                         sensor_output_object = SensorOutput.objects.create(
                             sensor_output=json.dumps(sensor_output_values), sensor=setup_element[0]
                         )
-                        # print("sensor_output_object:", sensor_output_object)
+                        sensor_output_objects.append(sensor_output_object)
                         # ADD the measurement foreign key later
 
                     # assuming that a setup with these elements exists
@@ -138,17 +136,15 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                     new_element.save()
                     new_element.setup.add(new_setup)
                     new_element.save()
-            if setup_exists:
-                print("first query:", setup_query.first())
-            for setup_element_name in setup_element_names:
-                print("setup element name:", setup_element_name, " exists:", Setup.objects.filter(setup_elements__name=setup_element_name).exists())
+            setup_object = setup_query.first()
+            # if setup_exists:
+            #     print("first query:", setup_query.first())
+            # for setup_element_name in setup_element_names:
+            #     print("setup element name:", setup_element_name, " exists:",
+            #           Setup.objects.filter(setup_elements__name=setup_element_name).exists())
 
-            # ENTRIES
+            # ENTRY
             entry = data_dict["entry"]
-            if "repository" not in entry:
-                raise ParseError('Request has no `repository` url field')
-            if "type" not in entry:
-                raise ParseError('Request has no `type`<-["continuous", "categorical", "size", "other"] field')
             # TODO: add the Measurement to this object below
             entry_object = Entry.objects.create(
                 owner=self.request.user,
@@ -158,61 +154,62 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             for val in entry["values"]:
                 property_element_object = PropertyElement.objects.create(
                     other=val.get("other", "[]"),
-                    quantity=val.get("name"),
+                    name=val.get("name"),
                     std=val.get("std"),
                     units=val.get("units"),
-                    value=val.get("value")
+                    value=val.get("value"),
+                    other_file=val.get("other_file"),  # seems to work with `None`
+                    entry=entry_object
                 )
-                if "other_file" in val:
-                    # TODO: idk how to do this
-                    property_element_object.other_file = val.get("other_file")
-                # TODO: ADD THE `Measurement` TO THE `Entry` BELOW
 
+            # MEASUREMENT
             # GRASP
-            grasp = data_dict["grasp"]
-            if "grasped" not in grasp:
-                raise ParseError('Grasp has no `grasped: bool` field')
-            if "translation" not in grasp:
-                raise ParseError("`translation` not in grasp")
-            if "rotation" not in grasp:
-                raise ParseError("`rotation` not in grasp")
-            if len(grasp["translation"]) != 3:
-                raise ParseError("len(grasp[\"translation\"]) != 3")
-            if len(grasp["rotation"]) != 3:
-                raise ParseError("len(grasp[\"rotation\"]) != 3")
-            if type(grasp["grasped"]) != bool:
-                raise ParseError("type(grasp[\"grasped\"]) != bool")
+            grasp = measurement["grasp"]
             translation = grasp["translation"]
-            # translation_object = Vector3D.objects.create(
-            #     x=translation[0],
-            #     y=translation[1],
-            #     z=translation[2]
-            # )
             rotation = grasp["rotation"]
-            # rotation_object = Vector3D.objects.create(
-            #     x=rotation[0],
-            #     y=rotation[1],
-            #     z=rotation[2]
-            # )
             # TODO: add the `Measurement` below
             grasp_object = Grasp.objects.create(
-                # translation=translation_object,
-                # rotation=rotation_object,
+                rx=rotation[0],
+                ry=rotation[1],
+                rz=rotation[2],
+                tx=translation[0],
+                ty=translation[1],
+                tz=translation[2],
                 grasped=grasp["grasped"],
             )
-            exit(1)
-
-            # print(self.request.FILES)
-            # print(self.request.__dict__)
-            # print(file.__dict__)
-            # with open(file.name, 'wb') as fp:
-            #     fp.write(file.file.read())
         except KeyError:
             raise ParseError('Request has no resource file attached')
-        # TODO either overwrite the model's create method or somehow hack this `save()`;
-        #  the save can then be replaced, I think, simply by setting the serializer.instance as the measurement object
-        #  and then returning the measurement object
-        measurement = serializer.save(owner=self.request.user, png=file)
+        object_instance = measurement["object_instance"]
+        object_instance_query = ObjectInstance.objects.filter(
+            owner=self.request.user,
+            local_instance_id=object_instance["instance_id"],
+            dataset=object_instance["dataset"]
+        )
+        object_instance_object = None
+        if object_instance_query.exists():
+            object_instance_object = object_instance_query.filter().first()
+        else:
+            object_instance_object = ObjectInstance.objects.create(
+                local_instance_id=object_instance["instance_id"],
+                dataset=object_instance["dataset"],
+                owner=self.request.user
+            )
+        measurement_object = serializer.save(
+            owner=self.request.user,
+            png=file,
+            setup=setup_object,
+            grasp=grasp_object,
+            object_instance=object_instance_object
+        )
+        for soo in sensor_output_objects:
+            soo.measurements = measurement_object
+            soo.save()
+        entry_object.measurement = measurement_object
+        entry_object.save()
+        grasp_object.measurement = measurement_object
+        grasp_object.save()
+        # print(measurement)
+        # print(measurement.__dict__)
 
 
 

@@ -17,6 +17,13 @@
   - measurement
   - entries
 
+## 03/18
+- first full measurement entry test done
+- done most validation in serizalizers.py
+  - TODO: full test of validation
+- TODO: entry uploading
+- TOODO: THESIS - WRITE STUFF
+
 ## 03/17
 - simplified models & structure
 
