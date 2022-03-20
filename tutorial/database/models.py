@@ -1,8 +1,19 @@
 from django.db import models
+from django.db.models import QuerySet
+# from django.db.backends import base.Query
 from rest_framework import serializers
 
 
+class MyManager(models.manager.Manager):
+    def filter(self, *args, **kwargs) -> QuerySet:
+        pass
+
+    def all(self, *args, **kwargs) -> QuerySet:
+        pass
+
+
 class MyBaseModel(models.Model):
+    # objects = MyManager()
     objects = models.manager.Manager()
 
     class Meta:

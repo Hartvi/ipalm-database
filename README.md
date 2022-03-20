@@ -17,6 +17,10 @@
   - measurement
   - entries
 
+## 03/20
+- some validation in the `EntrySerializer`
+- thesis: willy wonka television is basically what's needed, except that it clones the chocolate bar every time
+
 ## 03/18
 - first full measurement entry test done
 - done most validation in serizalizers.py

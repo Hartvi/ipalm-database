@@ -1,0 +1,29 @@
+{
+  "entry": {
+    "type": "size",
+    "measurement_id": 1,
+    "repository": "http://www.github.com/",
+    "values": [
+      {
+        "name": "x",
+        "value": 85,
+        "std": 50,
+        "units": "mm"
+      },
+      {
+        "name": "y",
+        "value": 85,
+        "std": 50,
+        "units": "mm"
+      },
+      {
+        "name": "z",
+        "value": 85,
+        "std": 50,
+        "units": "mm"
+      }
+    ]
+  }
+}
+
+

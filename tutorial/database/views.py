@@ -53,7 +53,29 @@ class EntryViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
 
     def perform_create(self, serializer):  # TODO: save functions
-        serializer.save(owner=self.request.user)
+        data_items = list(self.request.data.items())
+        json_data_list = list(filter(lambda x: "entry" == x[0], data_items))[0]
+        data_dict = json.loads(json_data_list[1])["entry"]
+        print(data_dict)
+        measurement_query = Measurement.objects.filter(id=data_dict["measurement_id"])
+        print(measurement_query, measurement_query.exists())
+        # TODO: values, measurement object
+        entry_object = serializer.save(
+            owner=self.request.user,
+            repository=data_dict["repository"],
+            type=data_dict["type"],
+            measurement=measurement_query.first()
+        )
+        for value in data_dict["values"]:
+            PropertyElement.objects.create(
+                name=value["name"],
+                value=value["value"],
+                std=value["std"],
+                units=value["units"],
+                other=value.get("other", None),
+                other_file=value.get("other_file", None),
+                entry=entry_object
+            )
 
 
 class MeasurementViewSet(viewsets.ModelViewSet):
@@ -185,6 +207,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             local_instance_id=object_instance["instance_id"],
             dataset=object_instance["dataset"]
         )
+        print("query type:", type(object_instance_query))
         object_instance_object = None
         if object_instance_query.exists():
             object_instance_object = object_instance_query.filter().first()

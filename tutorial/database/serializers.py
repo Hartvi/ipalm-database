@@ -1,4 +1,5 @@
 import json
+import django
 
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ParseError
@@ -66,6 +67,37 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
         model = Entry
         # this is basically all fields except the created date
         fields = '__all__'
+
+    def validate(self, data):
+        request = self.context['request']
+        data_items = list(request.data.items())
+        json_data_list = list(filter(lambda x: "entry" == x[0], data_items))[0]
+        if len(json_data_list) == 0:
+            raise serializers.ValidationError("`entry` key not present in request data")
+        data_dict: dict = json.loads(json_data_list[1])["entry"]
+        print(data_dict)
+        ## type: str, must be in [size, continuous, categorical, other]
+        # measurement_id: must exist in dudes,
+        # repository must be a valid url
+        # values: must be non-empty and have valid fields: name, valuem std, units
+
+        data_dict_check_result = validation.check_entry_request(data_dict)
+        if data_dict_check_result:
+            raise serializers.ValidationError("Request is missing "+data_dict_check_result)
+        if data_dict["type"] not in validation.entry_types:
+            raise serializers.ValidationError("entry type not in "+str(validation.entry_types))
+        measurement_id = data_dict["measurement_id"]
+        if not Measurement.objects.filter(id=measurement_id).exists():
+            raise serializers.ValidationError("measurement with id "+str(measurement_id)+" doesn't exist!! check `/measurements` for all measurements")
+        values = data_dict["values"]
+        for k, value in enumerate(values):
+            for i in validation.entry_value_types:
+                if i in value and type(value[i]) not in validation.entry_value_types[i]:
+                    raise serializers.ValidationError("values["+str(k)+"]["+i+"]: "+value[i]+" isn't of type "+str(validation.entry_value_types[i]))
+        print(data_dict)
+        raise serializers.ValidationError("testing lol")
+
+        return data
 
 
 class SensorOutputSerializer(serializers.HyperlinkedModelSerializer):
