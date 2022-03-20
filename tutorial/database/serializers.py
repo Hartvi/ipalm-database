@@ -94,9 +94,9 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
             for i in validation.entry_value_types:
                 if i in value and type(value[i]) not in validation.entry_value_types[i]:
                     raise serializers.ValidationError("values["+str(k)+"]["+i+"]: "+value[i]+" isn't of type "+str(validation.entry_value_types[i]))
-        print(data_dict)
-        raise serializers.ValidationError("testing lol")
-
+        # print(data_dict)
+        # raise serializers.ValidationError("testing lol")
+    
         return data
 
 
