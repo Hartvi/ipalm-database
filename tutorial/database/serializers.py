@@ -83,7 +83,7 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
 
         data_dict_check_result = validation.check_entry_request(data_dict)
         if data_dict_check_result:
-            raise serializers.ValidationError("Request is missing "+data_dict_check_result)
+            raise serializers.ValidationError("Entry request is missing "+data_dict_check_result)
         if data_dict["type"] not in validation.entry_types:
             raise serializers.ValidationError("entry type not in "+str(validation.entry_types))
         measurement_id = data_dict["measurement_id"]
@@ -96,7 +96,7 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
                     raise serializers.ValidationError("values["+str(k)+"]["+i+"]: "+value[i]+" isn't of type "+str(validation.entry_value_types[i]))
         # print(data_dict)
         # raise serializers.ValidationError("testing lol")
-    
+
         return data
 
 
@@ -147,18 +147,9 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
 
         data_dict_check_result = validation.check_measurement_request(data_dict)
         if data_dict_check_result:
-            raise serializers.ValidationError("Request is missing "+data_dict_check_result)
+            raise serializers.ValidationError("Measurement request is missing "+data_dict_check_result)
         measurement = data_dict["measurement"]
         grasp = measurement["grasp"]
-        try:
-            if len(grasp["translation"]) != 3:
-                raise ParseError("len(grasp[\"translation\"]) != 3")
-            if len(grasp["rotation"]) != 3:
-                raise ParseError("len(grasp[\"rotation\"]) != 3")
-            if type(grasp["grasped"]) != bool:
-                raise ParseError("type(grasp[\"grasped\"]) != bool")
-        except serializers.ValidationError("translation/rotation/grasped not provided in grasp") as e:
-            raise e
         # if not
         if not request.FILES and not content:
             raise serializers.ValidationError("Content or an Image must be provided")
@@ -167,30 +158,51 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         if not entry:
             return data
 
-        if entry["type"] not in validation.entry_types:
-            serializers.ValidationError("Entry type is not in "+str(validation.entry_types))
+        if not validation.check_key_existences(entry, validation.measurement_entry_keys):
+            raise serializers.ValidationError("req[\"entry\"] keys do not match: "+str(validation.measurement_entry_keys)+" vs "+str(entry.keys()))
+
+        values = entry["values"]
+        for value in values:
+            if not validation.check_key_existences(value, validation.entry_value_key_groups):
+                raise serializers.ValidationError("req[\"entry\"][\"values\"] keys do not match: "+str(entry["values"]) + " vs " + str(validation.entry_value_key_groups))
+
         if entry["type"] != "categorical":
             for k, i in enumerate(entry["values"]):
                 if "std" not in i:
                     raise serializers.ValidationError("std not in non-categorical entry "+str(k))
 
+        print("grasp: ", grasp)
+        if grasp is None:
+            assert entry["name"] not in {"stiffness", "elasticity"}, "A grasp has to be provided for stiffness and elasticity measurements"
+        else:
+            if len(grasp.get("translation", [])) != 3:
+                raise ParseError("len(grasp[\"translation\"]) != 3")
+            if len(grasp.get("rotation", [])) != 3:
+                raise ParseError("len(grasp[\"rotation\"]) != 3")
+            if type(grasp.get("grasped", [])) != bool:
+                raise ParseError("type(grasp[\"grasped\"]) != bool")
         object_instance = measurement["object_instance"]
-        for k in validation.object_instance_keys:
-            if k not in object_instance:
-                raise serializers.ValidationError("`"+k+"` not in measurement[\"object_instance\"]")
-        instance_id = object_instance["instance_id"]
-        oi_query = ObjectInstance.objects.filter(
-            local_instance_id=instance_id,
-            owner=request.user
-        )
-        dataset = object_instance["dataset"]
-        if oi_query.exists() and not oi_query.filter(dataset=dataset).exists():
-            raise serializers.ValidationError(
-                "object instances' `datasets` don't match. instance_id: "+
-                str(instance_id)+"; dataset on server: "+
-                str(oi_query.first().dataset)+" vs "+dataset
-            )
-            # nokidoki
+        object_instance_keys = set(object_instance.keys())
+        if not validation.check_set_conditions(object_instance_keys, validation.object_instance_conditions):
+            raise serializers.ValidationError("measurement[\"object_instance\"] does not fulfill condition "+str(validation.object_instance_conditions))
+
+        # print(mydict, check_key_existences(mydict, entry_value_key_groups))
+        # for k in validation.object_instance_keys:
+        #     if k not in object_instance:
+        #         raise serializers.ValidationError("`"+k+"` not in measurement[\"object_instance\"]")
+        # instance_id = object_instance["instance_id"]
+        # oi_query = ObjectInstance.objects.filter(
+        #     local_instance_id=instance_id,
+        #     owner=request.user
+        # )
+        # dataset = object_instance["dataset"]
+        # if oi_query.exists() and not oi_query.filter(dataset=dataset).exists():
+        #     raise serializers.ValidationError(
+        #         "object instances' `datasets` don't match. instance_id: "+
+        #         str(instance_id)+"; dataset on server: "+
+        #         str(oi_query.first().dataset)+" vs "+dataset
+        #     )
+        # nokidoki
         # (keys_valid, missing_keys) = validation.validate_data_fields(data_dict, 'measurement')
         # if not keys_valid:
         #     raise serializers.ValidationError("measurement doesn't contain fields: "+str(missing_keys))
@@ -227,9 +239,9 @@ class SetupElementSerializer(serializers.HyperlinkedModelSerializer):
 class SetupSerializer(serializers.HyperlinkedModelSerializer):
 
     # TODO:
-    # setup_elements = SetupElementSerializer(many=True, read_only=True)
+    setup_elements = SetupElementSerializer(many=True, read_only=True)
     # measurements = MeasurementSerializer(many=True, read_only=True)
-    setup_elements = serializers.HyperlinkedRelatedField(view_name='setupelement-detail', read_only=True, many=True)
+    # setup_elements = serializers.HyperlinkedRelatedField(view_name='setupelement-detail', read_only=True, many=True)
     measurements = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True, many=True)
 
     class Meta:

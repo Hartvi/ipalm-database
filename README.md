@@ -17,6 +17,11 @@
   - measurement
   - entries
 
+## 04/10
+- updated the database structure to reflect the newer structure according to the thesis
+- added some better validation
+  - it seems that the "Python schema validation library" doesn't have the proper (or at least I couldn't find them) functions to check nested conditional types and keys
+
 ## 03/20
 - some validation in the `EntrySerializer`
 - thesis: willy wonka television is basically what's needed, except that it clones the chocolate bar every time

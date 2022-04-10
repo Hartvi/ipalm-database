@@ -95,6 +95,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             data_dict = json.loads(json_data_list[1])
 
             measurement = data_dict["measurement"]
+            entry = data_dict["entry"]
             sensor_outputs: dict = measurement["sensor_outputs"]
 
             # TODO: ObjectInstance ForeignKey
@@ -166,20 +167,26 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             #           Setup.objects.filter(setup_elements__name=setup_element_name).exists())
 
             # ENTRY
-            entry = data_dict["entry"]
             # TODO: add the Measurement to this object below
             entry_object = Entry.objects.create(
                 owner=self.request.user,
                 repository=entry["repository"],
-                type=entry["type"]
+                type=entry["type"],
+                name = entry["name"]
             )
             for val in entry["values"]:
+                v = val.get("probability")
+                if v is None:
+                    v = val["value"]
+                    u = val["units"]
+                else:
+                    u = val["name"]
                 property_element_object = PropertyElement.objects.create(
                     other=val.get("other", "[]"),
-                    name=val.get("name"),
+                    name=val["name"],
                     std=val.get("std"),
-                    units=val.get("units"),
-                    value=val.get("value"),
+                    units=u,
+                    value=v,
                     other_file=val.get("other_file"),  # seems to work with `None`
                     entry=entry_object
                 )
@@ -187,35 +194,45 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             # MEASUREMENT
             # GRASP
             grasp = measurement["grasp"]
-            translation = grasp["translation"]
-            rotation = grasp["rotation"]
-            # TODO: add the `Measurement` below
-            grasp_object = Grasp.objects.create(
-                rx=rotation[0],
-                ry=rotation[1],
-                rz=rotation[2],
-                tx=translation[0],
-                ty=translation[1],
-                tz=translation[2],
-                grasped=grasp["grasped"],
-            )
+            if grasp:
+                translation = grasp["translation"]
+                rotation = grasp["rotation"]
+                # TODO: add the `Measurement` below
+                grasp_object = Grasp.objects.create(
+                    rx=rotation[0],
+                    ry=rotation[1],
+                    rz=rotation[2],
+                    tx=translation[0],
+                    ty=translation[1],
+                    tz=translation[2],
+                    grasped=grasp["grasped"],
+                )
+            else:
+                grasp_object = None
+                print("no grasp: ", grasp)
         except KeyError:
             raise ParseError('Request has no resource file attached')
         object_instance = measurement["object_instance"]
         object_instance_query = ObjectInstance.objects.filter(
             owner=self.request.user,
-            local_instance_id=object_instance["instance_id"],
-            dataset=object_instance["dataset"]
+            dataset=object_instance.get("dataset"),
+            dataset_id=object_instance.get("dataset_id"),
+            maker=object_instance.get("maker"),
+            common_name=object_instance.get("common_name"),
+            other=object_instance.get("other"),
         )
-        print("query type:", type(object_instance_query))
+        # print("query type:", type(object_instance_query))
         object_instance_object = None
         if object_instance_query.exists():
             object_instance_object = object_instance_query.filter().first()
         else:
             object_instance_object = ObjectInstance.objects.create(
-                local_instance_id=object_instance["instance_id"],
-                dataset=object_instance["dataset"],
-                owner=self.request.user
+                owner=self.request.user,
+                dataset=object_instance.get("dataset"),
+                dataset_id=object_instance.get("dataset_id"),
+                maker=object_instance.get("maker"),
+                common_name=object_instance.get("common_name"),
+                other=object_instance.get("other"),
             )
         measurement_object = serializer.save(
             owner=self.request.user,
@@ -229,8 +246,9 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             soo.save()
         entry_object.measurement = measurement_object
         entry_object.save()
-        grasp_object.measurement = measurement_object
-        grasp_object.save()
+        if grasp_object is not None:
+            grasp_object.measurement = measurement_object
+            grasp_object.save()
         # print(measurement)
         # print(measurement.__dict__)
 

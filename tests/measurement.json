@@ -1,7 +1,6 @@
 {
   "measurement": {
     "object_instance": {
-      "instance_id": 0,
       "dataset": "ycb"
     },
     "setup": {
@@ -49,7 +48,8 @@
     }
   },
   "entry": {
-    "type": "size",
+    "type": "continuous",
+    "name": "size",
     "repository": "http://www.github.com/",
     "values": [
       {

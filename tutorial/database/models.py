@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from rest_framework import serializers
 
 
-class MyManager(models.manager.Manager):
+class MyManager:
     def filter(self, *args, **kwargs) -> QuerySet:
         pass
 
@@ -13,8 +13,8 @@ class MyManager(models.manager.Manager):
 
 
 class MyBaseModel(models.Model):
-    # objects = MyManager()
-    objects = models.manager.Manager()
+    objects = MyManager()
+    # objects = models.manager.Manager()
 
     class Meta:
         abstract = True
@@ -22,9 +22,14 @@ class MyBaseModel(models.Model):
 
 class ObjectInstance(MyBaseModel):
     is_instance = models.BooleanField(default=True)
-    local_instance_id = models.IntegerField()
-    global_instance_id = models.IntegerField(null=True, unique=True)
+    local_instance_id = models.IntegerField(null=True)
+    # global_instance_id = models.IntegerField(null=True, unique=True)  # this can be replaced by a probabilistic blockchain
     dataset = models.CharField(max_length=100, null=True)
+    dataset_id = models.IntegerField(null=True)
+    maker = models.CharField(max_length=100, null=True)
+    common_name = models.CharField(max_length=100, null=True)
+    other = models.JSONField(null=True)
+
     owner = models.ForeignKey('accounts.CustomUser',
                               on_delete=models.CASCADE,
                               related_name='object_instances',
@@ -98,6 +103,7 @@ class Entry(MyBaseModel):
     owner = models.ForeignKey('accounts.CustomUser', related_name='entries', related_query_name='entry',
                               on_delete=models.PROTECT, null=True)
     type = models.CharField(max_length=100, null=True)  # categorical => ignore std's, continuous, others
+    name = models.CharField(max_length=100, null=True)  # e.g. {"type": "continuous", "name": "size"}
 
     class Meta:
         ordering = ['created']
@@ -110,8 +116,8 @@ class Entry(MyBaseModel):
 
 class PropertyElement(MyBaseModel):  # this should, I think, be possible to bind only in a OneToOneField
     name = models.CharField(max_length=100)
-    value = models.FloatField()
-    std = models.FloatField()
+    value = models.FloatField(null=True)
+    std = models.FloatField(null=True)
     units = models.CharField(max_length=100)
     other = models.JSONField(null=True)  # for friction, etc.
     other_file = models.FileField(null=True)
