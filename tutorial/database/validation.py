@@ -3,6 +3,7 @@ data_fs = [('setup', '{"arm": "kinova gen3", "gripper": "robotiq 2f85", "camera"
            ('image', 'image_data yooo')]
 
 validation_dict = {"measurement": {"setup", "grasp", "entries", "sensor_outputs", "object_instance"}}
+validation_dict_types = {str: set}
 
 measurement_keys = {"setup", "sensor_outputs", "grasp", "object_instance"}
 measurement_entry_keys = {"type", "repository", "values", "name"}
@@ -39,6 +40,39 @@ def check_set_conditions(the_set: set, prereq: dict):
         if prereq_key in the_set:
             prereq_value = prereq[prereq_key]
             if len(prereq_value & the_set) != len(prereq_value):
+                return False
+    return True
+
+
+def check_data_types(the_dict, template_dict):
+    assert type(the_dict) == dict, "the_dict variable must be of type dict"
+    assert type(template_dict) == dict, "template_dict variable must be of type dict"
+    for k in template_dict:
+        if k not in the_dict:
+            continue
+        if type(the_dict[k]) == template_dict[k]:
+            continue
+        if type(template_dict[k]) != dict:
+            if type(the_dict[k]) in template_dict[k]:
+                continue
+            else:
+                return False
+        else:
+            if not check_data_types(the_dict[k], template_dict[k]):
+                return False
+    return True
+
+
+def check_data_types_misc(the_dict, type_dict):
+    assert type(the_dict) == dict, "the_dict variable must be of type dict"
+    assert type(type_dict) == dict, "template_dict variable must be of type dict"
+    for k in the_dict:
+        if type(k) not in type_dict:
+            return False
+        if type(the_dict[k]) != type_dict[type(k)]:
+            return False
+        if type(the_dict[k]) == dict:
+            if not check_data_types_misc(the_dict[k], type_dict[type(k)]):
                 return False
     return True
 
@@ -110,3 +144,10 @@ if __name__ == "__main__":
     preqdict2 = {"dataset_id": 2, "dataset": 2}
     print(set(preqdict1.keys()), check_set_conditions(set(preqdict1.keys()), object_instance_conditions))
     print(set(preqdict2.keys()), check_set_conditions(set(preqdict2.keys()), object_instance_conditions))
+
+    entry_val = {"name": "this is a string", "probability": 0.5, "value": 0.5, "units": "another string"}
+    entry_val_wrong = {"name": 0.5, "probability": 0.5, "value": 0.5, "units": "another string"}
+    print(entry_val, entry_value_types, check_data_types(entry_val, entry_value_types))
+    print(entry_val_wrong, entry_value_types, check_data_types(entry_val_wrong, entry_value_types))
+
+    print(validation_dict, validation_dict_types, check_data_types_misc(validation_dict, validation_dict_types))
