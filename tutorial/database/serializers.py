@@ -150,6 +150,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
             raise serializers.ValidationError("Measurement request is missing "+data_dict_check_result)
         measurement = data_dict["measurement"]
         grasp = measurement["grasp"]
+        object_pose = measurement.get("grasp")
         # if not
         if not request.FILES and not content:
             raise serializers.ValidationError("Content or an Image must be provided")
@@ -181,31 +182,21 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
                 raise ParseError("len(grasp[\"rotation\"]) != 3")
             if type(grasp.get("grasped", [])) != bool:
                 raise ParseError("type(grasp[\"grasped\"]) != bool")
+            if not validation.check_data_types_uniform(grasp, validation.pose_types):
+                raise ParseError("grasp does not satisfy type conditions: "+str(validation.pose_types))
+
+        if object_pose is not None:
+            if len(object_pose.get("translation", [])) != 3:
+                raise ParseError("len(object_pose[\"translation\"]) != 3")
+            if len(object_pose.get("rotation", [])) != 3:
+                raise ParseError("len(object_pose[\"rotation\"]) != 3")
+            if not validation.check_data_types_uniform(object_pose, validation.pose_types):
+                raise ParseError("object_pose does not satisfy type conditions: "+str(validation.pose_types))
+
         object_instance = measurement["object_instance"]
         object_instance_keys = set(object_instance.keys())
         if not validation.check_set_conditions(object_instance_keys, validation.object_instance_conditions):
             raise serializers.ValidationError("measurement[\"object_instance\"] does not fulfill condition "+str(validation.object_instance_conditions))
-
-        # print(mydict, check_key_existences(mydict, entry_value_key_groups))
-        # for k in validation.object_instance_keys:
-        #     if k not in object_instance:
-        #         raise serializers.ValidationError("`"+k+"` not in measurement[\"object_instance\"]")
-        # instance_id = object_instance["instance_id"]
-        # oi_query = ObjectInstance.objects.filter(
-        #     local_instance_id=instance_id,
-        #     owner=request.user
-        # )
-        # dataset = object_instance["dataset"]
-        # if oi_query.exists() and not oi_query.filter(dataset=dataset).exists():
-        #     raise serializers.ValidationError(
-        #         "object instances' `datasets` don't match. instance_id: "+
-        #         str(instance_id)+"; dataset on server: "+
-        #         str(oi_query.first().dataset)+" vs "+dataset
-        #     )
-        # nokidoki
-        # (keys_valid, missing_keys) = validation.validate_data_fields(data_dict, 'measurement')
-        # if not keys_valid:
-        #     raise serializers.ValidationError("measurement doesn't contain fields: "+str(missing_keys))
 
         # if not data_dict["png"] == im[1]:
         #     raise serializers.ValidationError("uploaded image name doesnt match")
@@ -219,10 +210,6 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         # print('data:',data)
         # raise serializers.ValidationError("testing lol")
         return data
-
-    # def create(self, validated_data):
-    #     print(validated_data)
-    #     return super().create(validated_data)
 
 
 class SetupElementSerializer(serializers.HyperlinkedModelSerializer):

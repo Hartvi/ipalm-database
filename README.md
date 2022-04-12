@@ -17,6 +17,12 @@
   - measurement
   - entries
 
+## 04/12
+- fixed the setup adding/updating in the measurement uploading section
+- TODO: 
+  - extra files uploading
+  - norach - functions to upload: measurements, entries
+
 ## 04/10
 - updated the database structure to reflect the newer structure according to the thesis
 - added some better validation

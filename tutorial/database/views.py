@@ -86,11 +86,12 @@ class MeasurementViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):  # TODO: save functions
         # print('performing create!!!')
         try:
-            file = self.request.data['png']
+            meas_img = self.request.data['png']
             # sensor outputs:
             # print(self.request.data)
             data_items = list(self.request.data.items())
             json_data_list = list(filter(lambda x: "measurement" == x[0], data_items))[0]
+
             im = list(filter(lambda x: "png" == x[0], data_items))[0]
             data_dict = json.loads(json_data_list[1])
 
@@ -115,18 +116,38 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             dot notation in queries is done as follows:
             print('first setup', setup_query.filter(setup_elements__name='robotiq 2f85')[0].__dict__)
             """
-            setup_exists = True
-            new_setup = None
 
+            setup_query_all = setup_query
+            setup_candidates = []
+            for setup_ in setup_query_all:
+                if len(setup_.setup_elements.all()) == len(setup_element_names):
+                    setup_candidates.append(setup_)
+            the_setup = None
+            the_setup_didnt_exist = True
+            for setup_ in setup_candidates:
+                count = 0
+                setup_els = setup_.setup_elements.all()
+                check_count = len(setup_els)
+                for setup_el in setup_els:
+                    # if the elements of an existing setup match those of the one just received
+                    if setup_el.name in setup_element_names:
+                        count += 1
+                if count == check_count:
+                    the_setup = setup_
+                    the_setup_didnt_exist = False
+                    break
+
+            if the_setup is None:
+                the_setup = Setup.objects.create()
             # iterate through all setup elements present in this entry and add any new output quantities, setup elements
             for setup_element_name in setup_element_names:  # setup element names are unique
                 setup_element = SetupElement.objects.filter(name=setup_element_name)
                 if setup_element.exists():
-
                     # update the sensor quantities & bind the SensorOutput to the SetupElement
+                    the_actual_element = setup_element[0]
                     if setup_element_name in active_sensor_names:
                         # add new output quantities if there are any new ones:
-                        oq = setup_element[0].output_quantities
+                        oq = the_actual_element.output_quantities
                         setup_element.update(
                             output_quantities=json.dumps(
                                 list(set(sensor_modalities[setup_element_name])
@@ -139,16 +160,11 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                         )
                         sensor_output_objects.append(sensor_output_object)
                         # ADD the measurement foreign key later
-
-                    # assuming that a setup with these elements exists
-                    # if so, narrow down the search, so we find that one specific setup if it exists
-                    # otherwise create a new setup in the else section
-                    if setup_exists:
-                        setup_query = setup_query.filter(setup_elements__name=setup_element_name)
+                    # if the setup didnt exist, add the elements to it
+                    if the_setup_didnt_exist:
+                        the_actual_element.setup.add(the_setup)
+                        the_actual_element.save()
                 else:
-                    if setup_exists:
-                        new_setup = Setup.objects.create()
-                        setup_exists = False
                     new_element = SetupElement.objects.create(
                         type=setup_element_types[setup_element_names.index(setup_element_name)],
                         name=setup_element_name,
@@ -157,14 +173,8 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                         new_element.output_quantities = json.dumps(sensor_modalities[setup_element_name])
 
                     new_element.save()
-                    new_element.setup.add(new_setup)
+                    new_element.setup.add(the_setup)
                     new_element.save()
-            setup_object = setup_query.first()
-            # if setup_exists:
-            #     print("first query:", setup_query.first())
-            # for setup_element_name in setup_element_names:
-            #     print("setup element name:", setup_element_name, " exists:",
-            #           Setup.objects.filter(setup_elements__name=setup_element_name).exists())
 
             # ENTRY
             # TODO: add the Measurement to this object below
@@ -193,7 +203,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
 
             # MEASUREMENT
             # GRASP
-            grasp = measurement["grasp"]
+            grasp = measurement.get("grasp")
             if grasp:
                 translation = grasp["translation"]
                 rotation = grasp["rotation"]
@@ -210,6 +220,23 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             else:
                 grasp_object = None
                 print("no grasp: ", grasp)
+            # OBJECTPOSE with relation to (wrt) robot base
+            object_pose = measurement.get("object_pose")
+            if object_pose:
+                translation = object_pose["translation"]
+                rotation = object_pose["rotation"]
+                # TODO: add the `Measurement` below
+                object_pose_object = ObjectPose.objects.create(
+                    rx=rotation[0],
+                    ry=rotation[1],
+                    rz=rotation[2],
+                    tx=translation[0],
+                    ty=translation[1],
+                    tz=translation[2],
+                )
+            else:
+                object_pose_object = None
+                print("no object_pose: ", object_pose)
         except KeyError:
             raise ParseError('Request has no resource file attached')
         object_instance = measurement["object_instance"]
@@ -221,7 +248,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             common_name=object_instance.get("common_name"),
             other=object_instance.get("other"),
         )
-        # print("query type:", type(object_instance_query))
+
         object_instance_object = None
         if object_instance_query.exists():
             object_instance_object = object_instance_query.filter().first()
@@ -236,9 +263,10 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             )
         measurement_object = serializer.save(
             owner=self.request.user,
-            png=file,
-            setup=setup_object,
+            png=meas_img,
+            setup=the_setup,
             grasp=grasp_object,
+            object_pose=object_pose_object,
             object_instance=object_instance_object
         )
         for soo in sensor_output_objects:
@@ -249,8 +277,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         if grasp_object is not None:
             grasp_object.measurement = measurement_object
             grasp_object.save()
-        # print(measurement)
-        # print(measurement.__dict__)
-
-
+        if object_pose_object is not None:
+            object_pose_object.measurement = measurement_object
+            object_pose_object.save()
 

@@ -29,6 +29,7 @@ class ObjectInstance(MyBaseModel):
     maker = models.CharField(max_length=100, null=True)
     common_name = models.CharField(max_length=100, null=True)
     other = models.JSONField(null=True)
+    other_file = models.FileField(null=True)
 
     owner = models.ForeignKey('accounts.CustomUser',
                               on_delete=models.CASCADE,
@@ -81,17 +82,27 @@ class SensorOutput(MyBaseModel):
     measurements = models.ForeignKey(Measurement, related_name='sensor_outputs', on_delete=models.CASCADE, null=True)
 
 
-class Grasp(MyBaseModel):
+class Pose(MyBaseModel):
     rx = models.FloatField(default=0)
     ry = models.FloatField(default=0)
     rz = models.FloatField(default=0)
     tx = models.FloatField(default=0)
     ty = models.FloatField(default=0)
     tz = models.FloatField(default=0)
-    # translation = models.OneToOneField(Vector3D, on_delete=models.PROTECT, related_name='translation')
-    # rotation = models.OneToOneField(Vector3D, on_delete=models.PROTECT, related_name='rotation')
-    grasped = models.BooleanField()
+
+    class Meta:
+        abstract = True
+
+
+class Grasp(Pose):
+
+    grasped = models.BooleanField(null=True)
     measurement = models.OneToOneField(Measurement, related_name='grasp', on_delete=models.CASCADE, null=True)
+
+
+class ObjectPose(Pose):
+
+    measurement = models.OneToOneField(Measurement, related_name='object_pose', on_delete=models.CASCADE, null=True)
 
 
 class Entry(MyBaseModel):

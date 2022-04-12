@@ -3,7 +3,10 @@ data_fs = [('setup', '{"arm": "kinova gen3", "gripper": "robotiq 2f85", "camera"
            ('image', 'image_data yooo')]
 
 validation_dict = {"measurement": {"setup", "grasp", "entries", "sensor_outputs", "object_instance"}}
-validation_dict_types = {str: set}
+validation_dict_types = {str: {set: str}}
+
+pose_types = {str: {list: {float, int}}}
+test_pose = {"rotation": [1.0, 1.0, 1.0], "position": [1.0, 1.0, 1.0]}
 
 measurement_keys = {"setup", "sensor_outputs", "grasp", "object_instance"}
 measurement_entry_keys = {"type", "repository", "values", "name"}
@@ -63,17 +66,46 @@ def check_data_types(the_dict, template_dict):
     return True
 
 
-def check_data_types_misc(the_dict, type_dict):
-    assert type(the_dict) == dict, "the_dict variable must be of type dict"
+def check_data_types_uniform(the_object, type_dict):
+    # assert type(the_dict) == dict, "the_dict variable must be of type dict"
     assert type(type_dict) == dict, "template_dict variable must be of type dict"
-    for k in the_dict:
-        if type(k) not in type_dict:
-            return False
-        if type(the_dict[k]) != type_dict[type(k)]:
-            return False
-        if type(the_dict[k]) == dict:
-            if not check_data_types_misc(the_dict[k], type_dict[type(k)]):
+    if type(the_object) == set:
+        the_new_object = list(the_object)
+    else:
+        the_new_object = the_object
+    the_new_object_type = type(the_new_object)
+    the_object_type = type(the_object)
+    if the_new_object_type == dict:
+        for k in the_new_object:
+            k_type = type(k)
+            if k_type not in type_dict:
+                # print("if k_type not in type_dict:")
                 return False
+            elif type(type_dict[k_type]) == dict:
+                if not check_data_types_uniform(the_new_object[k], type_dict[k_type]):
+                    return False
+            elif type(type_dict[k_type]) == set:
+                if type(the_new_object[k]) not in type_dict[k_type]:
+                    return False
+            else:
+                if type(the_new_object[k]) != type_dict[k_type]:
+                    # print("type(the_dict[k]) != type_dict[k_type]:", type(the_new_object[k]), type_dict[k_type])
+                    return False
+                elif type(the_new_object[k]) in {dict, list, tuple, set} and type(type_dict[k_type]) == dict:
+                    if not check_data_types_uniform(the_new_object[k], type_dict[k_type]):
+                        return False
+    else:
+        for i in range(len(the_new_object)):
+            if type(type_dict[the_object_type]) == set:
+                if type(the_new_object[i]) not in type_dict[the_new_object_type]:
+                    # print("type(the_dict[i]) not in type_dict[type(the_dict)]", type(the_new_object[i]), type_dict[the_new_object_type])
+                    return False
+            else:
+                if type(the_new_object[i]) != type_dict[the_object_type]:
+                    return False
+                if type(the_new_object[i]) in {dict, list, tuple, set} and type(type_dict[type(the_new_object[i])]) == dict:
+                    if not check_data_types_uniform(the_new_object[i], type_dict[type(i)]):
+                        return False
     return True
 
 
@@ -150,4 +182,6 @@ if __name__ == "__main__":
     print(entry_val, entry_value_types, check_data_types(entry_val, entry_value_types))
     print(entry_val_wrong, entry_value_types, check_data_types(entry_val_wrong, entry_value_types))
 
-    print(validation_dict, validation_dict_types, check_data_types_misc(validation_dict, validation_dict_types))
+    print(validation_dict, validation_dict_types, check_data_types_uniform(validation_dict, validation_dict_types))
+
+    print(test_pose, pose_types, check_data_types_uniform(test_pose, pose_types))
