@@ -77,6 +77,7 @@ class Measurement(MyBaseModel):
 
 
 class SensorOutput(MyBaseModel):
+    sensor_output_file = models.FileField(null=True)
     sensor_output = models.JSONField()
     sensor = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='sensor_outputs', )
     measurements = models.ForeignKey(Measurement, related_name='sensor_outputs', on_delete=models.CASCADE, null=True)

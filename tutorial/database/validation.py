@@ -111,7 +111,7 @@ def check_data_types_uniform(the_object, type_dict):
 
 def check_measurement_request(request_dict):
     for i in request_keys:
-        print(i)
+        # print(i)
         if i not in request_dict:
             return i
         for j in request_keys[i]:
@@ -132,7 +132,7 @@ def check_measurement_request(request_dict):
         # for j in entry_value_keys:
         #     if j not in i:
         #         return j + " in " + "entry.values["+str(k)+"]"
-    print("measurement ok")
+    # print("measurement ok")
 
 
 def check_entry_request(request_dict):
@@ -143,7 +143,7 @@ def check_entry_request(request_dict):
         for j in entry_value_keys:
             if j not in i:
                 return j + " in " + "entry.values["+str(k)+"]"
-    print("entry ok")
+    # print("entry ok")
 
 
 def get_first_items(data_fields):

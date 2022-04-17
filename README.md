@@ -17,6 +17,9 @@
   - measurement
   - entries
 
+## 04/17
+- sensor\_output files are now processed after uploading 
+
 ## 04/12
 - fixed the setup adding/updating in the measurement uploading section
 - TODO: 

@@ -75,7 +75,7 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
         if len(json_data_list) == 0:
             raise serializers.ValidationError("`entry` key not present in request data")
         data_dict: dict = json.loads(json_data_list[1])["entry"]
-        print(data_dict)
+        # print(data_dict)
         ## type: str, must be in [size, continuous, categorical, other]
         # measurement_id: must exist in dudes,
         # repository must be a valid url
@@ -139,11 +139,13 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         json_data_list = list(filter(lambda x: "measurement" == x[0], data_items))[0]
         if len(json_data_list) == 0:
             raise serializers.ValidationError("measurement key not present in request data")
-        im = list(filter(lambda x: "png" == x[0], data_items))[0]
-        if len(im) == 0:
-            raise serializers.ValidationError("png not present in request files")
+        # print("data_items", data_items)
+        im = list(filter(lambda x: "png" == x[0], data_items))
+        # if len(im) == 0:
+        #     raise serializers.ValidationError("png not present in request files")
+        # print("json_data_list", json_data_list)
         data_dict: dict = json.loads(json_data_list[1])
-        print(data_dict)
+        # print("data_dict", data_dict)
 
         data_dict_check_result = validation.check_measurement_request(data_dict)
         if data_dict_check_result:
@@ -172,7 +174,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
                 if "std" not in i:
                     raise serializers.ValidationError("std not in non-categorical entry "+str(k))
 
-        print("grasp: ", grasp)
+        # print("grasp: ", grasp)
         if grasp is None:
             assert entry["name"] not in {"stiffness", "elasticity"}, "A grasp has to be provided for stiffness and elasticity measurements"
         else:

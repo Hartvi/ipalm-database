@@ -1,4 +1,6 @@
 import json
+import os
+import re
 
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
@@ -56,9 +58,9 @@ class EntryViewSet(viewsets.ModelViewSet):
         data_items = list(self.request.data.items())
         json_data_list = list(filter(lambda x: "entry" == x[0], data_items))[0]
         data_dict = json.loads(json_data_list[1])["entry"]
-        print(data_dict)
+        # print(data_dict)
         measurement_query = Measurement.objects.filter(id=data_dict["measurement_id"])
-        print(measurement_query, measurement_query.exists())
+        # print(measurement_query, measurement_query.exists())
         # TODO: values, measurement object
         entry_object = serializer.save(
             owner=self.request.user,
@@ -86,14 +88,24 @@ class MeasurementViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):  # TODO: save functions
         # print('performing create!!!')
         try:
-            meas_img = self.request.data['png']
-            # sensor outputs:
-            # print(self.request.data)
-            data_items = list(self.request.data.items())
-            json_data_list = list(filter(lambda x: "measurement" == x[0], data_items))[0]
-
-            im = list(filter(lambda x: "png" == x[0], data_items))[0]
-            data_dict = json.loads(json_data_list[1])
+            # print("request data: ", self.request.data)
+            # print("data_dict", self.request.data["measurement"])
+            # for k in self.request.data:
+            #     print(k, " : ", self.request.data[k])
+            # meas_img = self.request.data['png']
+            # # sensor outputs:
+            # # print(self.request.data)
+            # data_items = list(self.request.data.items())
+            # json_data_list = list(filter(lambda x: "measurement" == x[0], data_items))[0]
+            #
+            # im = list(filter(lambda x: "png" == x[0], data_items))[0]
+            # data_dict = json.loads(json_data_list[1])
+            # "object_instance .*file.*", "measurement {setup_element} {quantity}", "entry {property_element} .*file.*"
+            lvl1_key_radicals = ["object_instance", "measurement", "entry"]
+            request_data = self.request.data
+            file_keys = request_data.keys()
+            # print("file_keys:", file_keys)
+            data_dict = json.loads(request_data["measurement"])
 
             measurement = data_dict["measurement"]
             entry = data_dict["entry"]
@@ -155,6 +167,19 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                             )
                         )
                         sensor_output_values = sensor_outputs[setup_element_name]
+                        for q in sensor_output_values:
+                            if type(sensor_output_values[q]) != str:
+                                continue
+                            forward_slash_file_path = sensor_output_values[q].replace("\\", r"/")
+                            p = re.compile(r"^[a-zA-Z]:")
+                            unix_file_path = p.sub("", forward_slash_file_path)
+                            if os.path.isabs(forward_slash_file_path):
+                                new_file_name = os.path.basename(forward_slash_file_path)
+                                sensor_output_values[q] = new_file_name
+                            elif os.path.isabs(unix_file_path):
+                                new_file_name = os.path.basename(forward_slash_file_path)
+                                sensor_output_values[q] = new_file_name
+                            # print("q", q, "sensor_output_values[q]", sensor_output_values[q])
                         sensor_output_object = SensorOutput.objects.create(
                             sensor_output=json.dumps(sensor_output_values), sensor=setup_element[0]
                         )
@@ -197,7 +222,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                     std=val.get("std"),
                     units=u,
                     value=v,
-                    other_file=val.get("other_file"),  # seems to work with `None`
+                    other_file=val.get("other_file"),
                     entry=entry_object
                 )
 
@@ -219,7 +244,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 )
             else:
                 grasp_object = None
-                print("no grasp: ", grasp)
+                # print("no grasp: ", grasp)
             # OBJECTPOSE with relation to (wrt) robot base
             object_pose = measurement.get("object_pose")
             if object_pose:
@@ -236,7 +261,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 )
             else:
                 object_pose_object = None
-                print("no object_pose: ", object_pose)
+                # print("no object_pose: ", object_pose)
         except KeyError:
             raise ParseError('Request has no resource file attached')
         object_instance = measurement["object_instance"]
@@ -246,12 +271,12 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             dataset_id=object_instance.get("dataset_id"),
             maker=object_instance.get("maker"),
             common_name=object_instance.get("common_name"),
-            other=object_instance.get("other"),
+            # other=object_instance.get("other"),
         )
 
         object_instance_object = None
         if object_instance_query.exists():
-            object_instance_object = object_instance_query.filter().first()
+            object_instance_object = object_instance_query.first()
         else:
             object_instance_object = ObjectInstance.objects.create(
                 owner=self.request.user,
@@ -263,13 +288,14 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             )
         measurement_object = serializer.save(
             owner=self.request.user,
-            png=meas_img,
+            # png=meas_img,
             setup=the_setup,
             grasp=grasp_object,
             object_pose=object_pose_object,
             object_instance=object_instance_object
         )
         for soo in sensor_output_objects:
+            # print(soo.sensor.name)
             soo.measurements = measurement_object
             soo.save()
         entry_object.measurement = measurement_object
@@ -281,3 +307,18 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             object_pose_object.measurement = measurement_object
             object_pose_object.save()
 
+        fk_levels = list()
+        for fk in file_keys:  # e.g. measurement intel_d435 pointcloud_file
+            fk_split = fk.split(" ")
+            fk_split_len = len(fk_split)
+            while len(fk_levels) < fk_split_len:
+                fk_levels.append(list())
+            fk_levels[fk_split_len-1].append(fk_split)
+        sensor_output_files = list()
+        for fk_split in fk_levels[2]:
+            potential_sensor_output_objects = list(filter(lambda x: x.sensor.name == fk_split[1], sensor_output_objects))
+            if fk_split[0] == "measurement" and len(potential_sensor_output_objects) == 1:
+                # print("potential_sensor_output_objects: ", potential_sensor_output_objects[0].sensor.name)
+                sensor_output_object_with_file: SensorOutput = potential_sensor_output_objects[0]
+                sensor_output_object_with_file.sensor_output_file = request_data[" ".join(fk_split)]
+                sensor_output_object_with_file.save()
