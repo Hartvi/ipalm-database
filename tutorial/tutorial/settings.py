@@ -43,11 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'snippets',
     'accounts',
     'crispy_forms',
     'database',
     'django_extensions',
+    'ui',
 ]
 
 MIDDLEWARE = [
@@ -66,7 +66,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # the following line has to be here if I want templates to be visible across apps
-        'DIRS': ['tutorial/', 'snippets/', 'accounts/', ],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -27,11 +27,12 @@ schema_view = get_schema_view(title=API_TITLE)
 
 urlpatterns = [
     # path('rest/', include('snippets.urls')),
-    path('rest/', include('database.urls')),
+    path('', include('ui.urls')),
+    path('rest/', include('database.urls', namespace='database')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('schema/', schema_view),
     path('docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
-    path('api-auth/', include('accounts.urls')),
+    path('api-auth/', include('accounts.urls', namespace='accounts')),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

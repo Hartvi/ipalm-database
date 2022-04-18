@@ -1,0 +1,18 @@
+<style>
+  .wrapper{
+    width: 20%;
+    margin: 0 auto;
+  }
+</style>
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+<div class="wrapper">
+    <a class="button btn btn-dark btn-lg" href="{% url 'database:api-root' %}" role="button">IPALM database REST API</a>
+    <a class="button btn btn-dark btn-lg" href="{% url 'accounts:register' %}" role="button">Register</a>
+    <br>
+</div>
+{% endblock content %}

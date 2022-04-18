@@ -6,6 +6,8 @@ from django.urls import path
 from . import views
 from . import strings
 
+app_name = 'database'
+
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
 for v, u in zip(strings.viewset_classes, strings.viewset_urls):

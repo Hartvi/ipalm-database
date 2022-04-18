@@ -22,6 +22,7 @@
 - todo: 
   - "webpage" home, sphinx docs
   - last: deployment on some online server
+- done webpage home basic buttons
 
 ## 04/17
 - sensor\_output files are now processed after uploading 
