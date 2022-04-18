@@ -17,6 +17,12 @@
   - measurement
   - entries
 
+## 04/18
+- add file processing for `entry.values.property\_element`
+- todo: 
+  - "webpage" home, sphinx docs
+  - last: deployment on some online server
+
 ## 04/17
 - sensor\_output files are now processed after uploading 
 

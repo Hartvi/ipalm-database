@@ -209,6 +209,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 type=entry["type"],
                 name = entry["name"]
             )
+            property_element_objects = list()
             for val in entry["values"]:
                 v = val.get("probability")
                 if v is None:
@@ -225,6 +226,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                     other_file=val.get("other_file"),
                     entry=entry_object
                 )
+                property_element_objects.append(property_element_object)
 
             # MEASUREMENT
             # GRASP
@@ -307,18 +309,37 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             object_pose_object.measurement = measurement_object
             object_pose_object.save()
 
+        """e.g. 
+        measurement intel_d435 pointcloud_file, 
+        measurement object_instance, 
+        entry values property_element_name, 
+        measurement png
+        """
         fk_levels = list()
-        for fk in file_keys:  # e.g. measurement intel_d435 pointcloud_file
+        for fk in file_keys:
             fk_split = fk.split(" ")
             fk_split_len = len(fk_split)
             while len(fk_levels) < fk_split_len:
                 fk_levels.append(list())
             fk_levels[fk_split_len-1].append(fk_split)
-        sensor_output_files = list()
+        for fk_split in fk_levels[1]:
+            if fk_split[0] == "measurement":
+                if fk_split[1] == "png":
+                    measurement_object.png = request_data[" ".join(fk_split)]
+                    measurement_object.save()
+                elif fk_split[1] == "object_instance":
+                    object_instance_object.other_file = request_data[" ".join(fk_split)]
+                    object_instance_object.save()
         for fk_split in fk_levels[2]:
+            # e.g. measurement intel_d435 pointcloud_file
             potential_sensor_output_objects = list(filter(lambda x: x.sensor.name == fk_split[1], sensor_output_objects))
             if fk_split[0] == "measurement" and len(potential_sensor_output_objects) == 1:
                 # print("potential_sensor_output_objects: ", potential_sensor_output_objects[0].sensor.name)
-                sensor_output_object_with_file: SensorOutput = potential_sensor_output_objects[0]
-                sensor_output_object_with_file.sensor_output_file = request_data[" ".join(fk_split)]
-                sensor_output_object_with_file.save()
+                sensor_output_object: SensorOutput = potential_sensor_output_objects[0]
+                sensor_output_object.sensor_output_file = request_data[" ".join(fk_split)]
+                sensor_output_object.save()
+            potential_property_elements = list(filter(lambda x: x.name == fk_split[2], property_element_objects))
+            if fk_split[0] == "entry" and fk_split[1] == "values" and len(potential_property_elements) == 1:
+                property_element_object: PropertyElement = potential_property_elements[0]
+                property_element_object.other_file = request_data[" ".join(fk_split)]
+                property_element_object.save()
