@@ -11,8 +11,12 @@
 
 {% load static %}
 <div class="wrapper">
-    <a class="button btn btn-dark btn-lg" href="{% url 'database:api-root' %}" role="button">IPALM database REST API</a>
-    <a class="button btn btn-dark btn-lg" href="{% url 'accounts:register' %}" role="button">Register</a>
+    <div align="center">
+        <br>
+        <a class="button btn btn-dark btn-lg" href="{% url 'database:api-root' %}" role="button">IPALM database REST API</a>
+        <hr>
+        <a class="button btn btn-dark btn-lg" href="{% url 'accounts:register' %}" role="button">Register</a>
+    </div>
     <br>
 </div>
 {% endblock content %}

@@ -84,6 +84,7 @@ class_plural_strings = generate_plural_class_strings(class_strings)
 # viewsets
 viewset_classes = get_viewset_names()
 viewset_urls = get_viewset_urls(viewset_classes)
+viewset_singular = [_[:-1].replace('ie', 'y') for _ in viewset_urls]
 
 
 if __name__ == "__main__":
@@ -92,3 +93,4 @@ if __name__ == "__main__":
     print("class_plural_strings:", class_plural_strings)
     print("viewset_classes:", viewset_classes)
     print("viewset_urls:", viewset_urls)
+    print("viewset_singular:", viewset_singular)

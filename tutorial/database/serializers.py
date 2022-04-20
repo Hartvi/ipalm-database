@@ -23,31 +23,44 @@ User = get_user_model()
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     entries = serializers.HyperlinkedRelatedField(
-        many=True, view_name='entry-detail', read_only=True)
+        many=True, view_name='database:entry-detail', read_only=True)
     measurements = serializers.HyperlinkedRelatedField(
-        many=True, view_name='measurement-detail', read_only=True)
+        many=True, view_name='database:measurement-detail', read_only=True)
 
     class Meta:
         model = User
         fields = '__all__'  # which fields to display on the site
+        extra_kwargs = {'url': {'view_name': 'database:user-detail'}}
 
 
 class GraspSerializer(serializers.HyperlinkedModelSerializer):
 
-    measurement = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True)
+    measurement = serializers.HyperlinkedRelatedField(view_name='database:measurement-detail', read_only=True)
 
     class Meta:
         model = Grasp
         fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:grasp-detail'}}
+
+
+class ObjectPoseSerializer(serializers.HyperlinkedModelSerializer):
+
+    measurement = serializers.HyperlinkedRelatedField(view_name='database:measurement-detail', read_only=True)
+
+    class Meta:
+        model = Grasp
+        fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:object_pose-detail'}}
 
 
 class PropertyElementSerializer(serializers.HyperlinkedModelSerializer):
 
-    entry = serializers.HyperlinkedRelatedField(many=False, view_name='entry-detail', read_only=True)
+    entry = serializers.HyperlinkedRelatedField(many=False, view_name='database:entry-detail', read_only=True)
 
     class Meta:
         model = PropertyElement
         fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:property_element-detail'}}
 
 
 class EntrySerializer(serializers.HyperlinkedModelSerializer):
@@ -56,17 +69,18 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
     # `source` CAN BE EMPTY IF THE VARIABLE NAME IS THE SAME, e.g. source="property"
     property_element = PropertyElementSerializer(many=True, read_only=True)
 
-    measurement = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True)
+    measurement = serializers.HyperlinkedRelatedField(view_name='database:measurement-detail', read_only=True)
     owner = serializers.HyperlinkedRelatedField(
         many=False,
         read_only=True,
-        view_name='customuser-detail'
+        view_name='database:user-detail'
     )  # should be DataEntry.owner.username
 
     class Meta:
         model = Entry
         # this is basically all fields except the created date
         fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:entry-detail'}}
 
     def validate(self, data):
         request = self.context['request']
@@ -102,24 +116,30 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
 
 class SensorOutputSerializer(serializers.HyperlinkedModelSerializer):
 
-    sensor = serializers.HyperlinkedRelatedField(view_name='setupelement-detail', read_only=True)
-    measurement = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True)
+    sensor = serializers.HyperlinkedRelatedField(view_name='database:setup_element-detail', read_only=True)
+    measurement = serializers.HyperlinkedRelatedField(view_name='database:measurement-detail', read_only=True)
 
     class Meta:
         model = SensorOutput
         fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:sensor_output-detail'}}
 
 
 class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.HyperlinkedRelatedField(
         many=False,
         read_only=True,
-        view_name='customuser-detail'
+        view_name='database:user-detail'
     )  # should be DataEntry.owner.username
     setup = serializers.HyperlinkedRelatedField(
         many=False,
         read_only=True,
-        view_name='setup-detail'  # this is predefined in the django rest framework as "[object_name]-detail"
+        view_name='database:setup-detail'  # this is predefined in the django rest framework as "[object_name]-detail"
+    )
+    object_instance = serializers.HyperlinkedRelatedField(
+        many=False,
+        read_only=True,
+        view_name='database:object_instance-detail',  # this is predefined in the django rest framework as "[object_name]-detail"
     )
     png = serializers.ImageField(required=False)  # This has to be here in order to `post` files
 
@@ -131,6 +151,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         model = Measurement
         # this is basically all fields except the created date
         fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:measurement-detail'}}
 
     def validate(self, data):
         content = data.get("content", None)
@@ -216,13 +237,14 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
 
 class SetupElementSerializer(serializers.HyperlinkedModelSerializer):
 
-    sensor_outputs = serializers.HyperlinkedRelatedField(view_name='sensoroutput-detail', read_only=True, many=True)
+    sensor_outputs = serializers.HyperlinkedRelatedField(view_name='database:sensor_output-detail', read_only=True, many=True)
 
     # sensor_outputs = SensorOutputSerializer(many=True, read_only=True)
 
     class Meta:
         model = SetupElement
         fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:setup_element-detail'}}
 
 
 class SetupSerializer(serializers.HyperlinkedModelSerializer):
@@ -230,22 +252,29 @@ class SetupSerializer(serializers.HyperlinkedModelSerializer):
     # TODO:
     setup_elements = SetupElementSerializer(many=True, read_only=True)
     # measurements = MeasurementSerializer(many=True, read_only=True)
-    # setup_elements = serializers.HyperlinkedRelatedField(view_name='setupelement-detail', read_only=True, many=True)
-    measurements = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True, many=True)
+    # setup_elements = serializers.HyperlinkedRelatedField(view_name='setup_element-detail', read_only=True, many=True)
+    measurements = serializers.HyperlinkedRelatedField(view_name='database:measurement-detail', read_only=True, many=True)
 
     class Meta:
         model = Setup
         fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:setup-detail'}}
 
 
 class ObjectInstanceSerializer(serializers.HyperlinkedModelSerializer):
 
     # TODO:
     # measurements = MeasurementSerializer(many=True, read_only=True)
-    measurements = serializers.HyperlinkedRelatedField(view_name='measurement-detail', read_only=True, many=True)
+    measurements = serializers.HyperlinkedRelatedField(view_name='database:measurement-detail', read_only=True, many=True)
+    owner = serializers.HyperlinkedRelatedField(
+        many=False,
+        read_only=True,
+        view_name='database:user-detail'
+    )  # should be DataEntry.owner.username
 
     class Meta:
         model = ObjectInstance
         fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:object_instance-detail'}}
 
 
