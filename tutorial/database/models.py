@@ -4,6 +4,7 @@ from django.db.models import QuerySet
 from rest_framework import serializers
 
 
+"""
 class MyManager:
     def filter(self, *args, **kwargs) -> QuerySet:
         pass
@@ -18,9 +19,10 @@ class MyBaseModel(models.Model):
 
     class Meta:
         abstract = True
+"""
 
 
-class ObjectInstance(MyBaseModel):
+class ObjectInstance(models.Model):
     is_instance = models.BooleanField(default=True)
     local_instance_id = models.IntegerField(null=True)
     # global_instance_id = models.IntegerField(null=True, unique=True)  # this can be replaced by a probabilistic blockchain
@@ -38,7 +40,7 @@ class ObjectInstance(MyBaseModel):
                               )
 
 
-class Setup(MyBaseModel):
+class Setup(models.Model):
     """
     {"arm": "arm_name", "gripper": "gripper_name", "camera": "camera_model_name",
      "microphone": "microphone_model_name"}
@@ -46,7 +48,7 @@ class Setup(MyBaseModel):
     created = models.DateTimeField(auto_now_add=True)
 
 
-class SetupElement(MyBaseModel):
+class SetupElement(models.Model):
     # this could be from the choices: arm, gripper, camera, depth, camera, microphone, other
     type = models.CharField(max_length=100, )
     name = models.CharField(max_length=100, unique=True)
@@ -58,7 +60,7 @@ class SetupElement(MyBaseModel):
     #     return str(self.type) + ", " + str(self.name)
 
 
-class Measurement(MyBaseModel):
+class Measurement(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     png = models.ImageField(upload_to='uploads/measurements/')
     setup = models.ForeignKey(Setup, related_name='measurements', related_query_name='measurement',
@@ -76,14 +78,14 @@ class Measurement(MyBaseModel):
         super().save(*args, **kwargs)
 
 
-class SensorOutput(MyBaseModel):
+class SensorOutput(models.Model):
     sensor_output_file = models.FileField(null=True)
     sensor_output = models.JSONField()
     sensor = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='sensor_outputs', )
     measurements = models.ForeignKey(Measurement, related_name='sensor_outputs', on_delete=models.CASCADE, null=True)
 
 
-class Pose(MyBaseModel):
+class Pose(models.Model):
     rx = models.FloatField(default=0)
     ry = models.FloatField(default=0)
     rz = models.FloatField(default=0)
@@ -106,7 +108,7 @@ class ObjectPose(Pose):
     measurement = models.OneToOneField(Measurement, related_name='object_pose', on_delete=models.CASCADE, null=True)
 
 
-class Entry(MyBaseModel):
+class Entry(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     measurement = models.ForeignKey(Measurement, related_name='entries', related_query_name='entry',
@@ -126,7 +128,7 @@ class Entry(MyBaseModel):
         super().save(*args, **kwargs)
 
 
-class PropertyElement(MyBaseModel):  # this should, I think, be possible to bind only in a OneToOneField
+class PropertyElement(models.Model):  # this should, I think, be possible to bind only in a OneToOneField
     name = models.CharField(max_length=100)
     value = models.FloatField(null=True)
     std = models.FloatField(null=True)

@@ -93,6 +93,9 @@ the same can be done with the requests library
 - sometimes you need to add models in `admin.py`
 - migrate every time `models.py` is updated
 
+show all urls
+`py manage.py show_urls > urls_views_names.txt`
+
 create snippet model
 `python manage.py makemigrations snippets`
 `python manage.py migrate snippets`

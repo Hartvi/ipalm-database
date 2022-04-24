@@ -21,9 +21,14 @@ from rest_framework.documentation import include_docs_urls
 from django.conf.urls.static import static
 from . import settings
 
+from pathlib import Path
+# from sphinx_view import DocumentationView
+
+
 API_TITLE = 'Online physical properties REST API'
 API_DESCRIPTION = 'A Web API for realtime uploading/downloading data for physical properties.'
 schema_view = get_schema_view(title=API_TITLE)
+
 
 urlpatterns = [
     # path('rest/', include('snippets.urls')),
@@ -33,6 +38,14 @@ urlpatterns = [
     path('schema/', schema_view),
     path('docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
     path('api-auth/', include('accounts.urls', namespace='accounts')),
+    # path("butler-docs<path:path>",
+    #      DocumentationView.as_view(
+    #          json_build_dir=Path(r'C:\Users\jhart\PycharmProjects\butler\docs\build\json'),
+    #          base_template_name="base.html",
+    #      ),
+    #      name="documentation",
+    #      ),
+    path(r'butler-docs/', include('docs.urls')),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 GRAPH_MODELS = {
-  'all_applications': ['accounts', 'database'],
+  'all_applications': ['database'],  # 'accounts',
   'group_models': True,
 }
 
@@ -47,8 +47,14 @@ INSTALLED_APPS = [
     'crispy_forms',
     'database',
     'django_extensions',
-    'ui'
+    'ui',
+    'docs',
+    # "sphinx_view",
+
 ]
+
+DOCS_ROOT = os.path.join(BASE_DIR, '../docs/build/html')
+DOCS_ACCESS = 'public'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
