@@ -17,6 +17,10 @@
   - measurement
   - entries
 
+# 04/29
+- (deploy django with MySQL to apache server tutorial)[https://thecodelearners.com/deploy-django-web-application-to-apache-server-step-by-step-guide/]
+
+
 ## 04/28
 - class decorator
 
