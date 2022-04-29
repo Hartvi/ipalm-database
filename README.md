@@ -1,4 +1,15 @@
+# How to launch
+`git clone git@github.com:Hartvi/ipalm-database.git`
 
+`cd ipalm-database`
+
+`python manage.py makemigrations`
+
+`python manage.py migrate`
+
+`python manage.py runserver`
+
+Then go to [http://127.0.0.1:8000](http://127.0.0.1:8000) (note: some files may be missing)
 
 ## Deployment
 - [deploy django with MySQL to apache server tutorial](https://thecodelearners.com/deploy-django-web-application-to-apache-server-step-by-step-guide/)
