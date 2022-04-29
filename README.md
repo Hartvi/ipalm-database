@@ -1,13 +1,14 @@
 # How to launch
-`git clone git@github.com:Hartvi/ipalm-database.git`
+Assuming that you are already inside a virtual environment:
 
-`cd ipalm-database`
-
-`python manage.py makemigrations`
-
-`python manage.py migrate`
-
-`python manage.py runserver`
+```
+git clone git@github.com:Hartvi/ipalm-database.git
+cd ipalm-database
+pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
 
 Then go to [http://127.0.0.1:8000](http://127.0.0.1:8000) (note: some files may be missing)
 
