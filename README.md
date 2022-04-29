@@ -17,6 +17,9 @@
   - measurement
   - entries
 
+## 04/28
+- class decorator
+
 ## 04/18
 - add file processing for `entry.values.property\_element`
 - todo: 

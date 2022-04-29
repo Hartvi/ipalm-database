@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/django_rest.iml" filepath="$PROJECT_DIR$/.idea/django_rest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/object_database.iml" filepath="$PROJECT_DIR$/.idea/object_database.iml" />
     </modules>
   </component>
 </project>

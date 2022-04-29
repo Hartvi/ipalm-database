@@ -8,8 +8,8 @@
 # for some reason.
 import pydot
 # TODO: BEWARE OF PRINTS FROM REGULAR PYTHON THAT ARE RUN ON STARTUP OF MANAGE.PY
-abs_path = r'C:\Users\jhart\PycharmProjects\ipalm-database\tutorial\proj9.dot'
-abs_target_path = r'C:\Users\jhart\PycharmProjects\ipalm-database\tutorial\proj9.png'
+abs_path = r'/main\proj9.dot'
+abs_target_path = r'/main\proj9.png'
 with open(abs_path, mode='r', encoding='utf-8', errors='replace') as fp:
     # print(fp.readlines())
     k = 0

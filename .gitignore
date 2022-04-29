@@ -1,10 +1,10 @@
 # Custom
-.idea/
+.idea/*
 *.png
 *.jpg
 *.jpeg
 *.dot
-tutorial/database/migrations
+main/database/migrations
 
 
 # Config folder
