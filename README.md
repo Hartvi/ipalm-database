@@ -17,7 +17,7 @@ Then go to [http://127.0.0.1:8000](http://127.0.0.1:8000) (note: some files may 
 
 ### TODO
 - Differentiate between physical objects
-  - compare images from the png and this could serve as something akin to the instance id
+  - compare images from the png; this could serve as something akin to the instance id
 
 ### 04/29
 - final step?
