@@ -27,7 +27,7 @@ class ObjectInstance(models.Model):
     local_instance_id = models.IntegerField(null=True)
     # global_instance_id = models.IntegerField(null=True, unique=True)  # this can be replaced by a probabilistic blockchain
     dataset = models.CharField(max_length=100, null=True)
-    dataset_id = models.IntegerField(null=True)
+    dataset_id = models.CharField(max_length=100, null=True)
     maker = models.CharField(max_length=100, null=True)
     common_name = models.CharField(max_length=100, null=True)
     other = models.JSONField(null=True)
@@ -101,6 +101,12 @@ class Grasp(Pose):
 
     grasped = models.BooleanField(null=True)
     measurement = models.OneToOneField(Measurement, related_name='grasp', on_delete=models.CASCADE, null=True)
+
+
+class GripperPose(Pose):
+
+    grasped = models.BooleanField(null=True)
+    measurement = models.OneToOneField(Measurement, related_name='gripper_pose', on_delete=models.CASCADE, null=True)
 
 
 class ObjectPose(Pose):

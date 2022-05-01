@@ -5,7 +5,7 @@ data_fs = [('setup', '{"arm": "kinova gen3", "gripper": "robotiq 2f85", "camera"
 validation_dict = {"measurement": {"setup", "grasp", "entries", "sensor_outputs", "object_instance"}}
 validation_dict_types = {str: {set: str}}
 
-pose_types = {str: {list: {float, int}}}
+pose_types = {str: {list: {float, int, bool}}}
 test_pose = {"rotation": [1.0, 1.0, 1.0], "position": [1.0, 1.0, 1.0]}
 
 measurement_keys = {"setup", "sensor_outputs", "grasp", "object_instance"}
@@ -69,6 +69,10 @@ def check_data_types(the_dict, template_dict):
 def check_data_types_uniform(the_object, type_dict):
     # assert type(the_dict) == dict, "the_dict variable must be of type dict"
     assert type(type_dict) == dict, "template_dict variable must be of type dict"
+    try:
+        len(the_object)
+    except:
+        return True
     if type(the_object) == set:
         the_new_object = list(the_object)
     else:
