@@ -20,6 +20,10 @@ Then go to [http://127.0.0.1:8000](http://127.0.0.1:8000) (note: some files may 
 - Differentiate between physical objects
   - compare images from the png; this could serve as something akin to the instance id
 
+### 05/01
+- some bugfixes
+- TODO: automatic gripper\_pose + object\_pose => grasp generation
+
 ### 04/29
 - final step?
 
