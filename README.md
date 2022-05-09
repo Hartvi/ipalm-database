@@ -19,7 +19,7 @@ NOTE: `python manage.py runserver` is for http only, for SSL or PostgreSQL suppo
 ## Deployment
 1. [official deployment website](https://docs.djangoproject.com/en/4.0/howto/deployment/)
 2. [Deploy with Apache2](https://dev.to/ninahwang/deploying-a-django-application-using-apache2-94g)
-3. [](https://dev.to/ajithklepsydra/how-to-set-up-and-deploy-a-django-application-on-a-linux-server-2dff)
+3. [Deploy with Apache & PostgreSQL](https://dev.to/ajithklepsydra/how-to-set-up-and-deploy-a-django-application-on-a-linux-server-2dff)
 
 ### TODO
 - Differentiate between physical objects
