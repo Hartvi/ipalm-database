@@ -1,9 +1,11 @@
 # How to launch
-Assuming that you are already inside a virtual environment:
+Assuming that you are on Linux and have python 3.6-3.10:
 
 ```
-git clone git@github.com:Hartvi/ipalm-database.git
-cd ipalm-database
+git clone git@github.com:Hartvi/object_database.git
+cd object_database
+virtualenv venv
+source venv/bin/activate
 pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
@@ -12,9 +14,12 @@ python manage.py runserver
 
 Then go to [http://127.0.0.1:8000](http://127.0.0.1:8000) (note: some files may be missing)
 
+NOTE: `python manage.py runserver` is for http only, for SSL or PostgreSQL support see [Deployment](README.md#Deployment) 2. & 3. 
+
 ## Deployment
-- [official deployment website](https://docs.djangoproject.com/en/4.0/howto/deployment/)
-- [Deploy with Apache2](https://dev.to/ninahwang/deploying-a-django-application-using-apache2-94g)
+1. [official deployment website](https://docs.djangoproject.com/en/4.0/howto/deployment/)
+2. [Deploy with Apache2](https://dev.to/ninahwang/deploying-a-django-application-using-apache2-94g)
+3. [](https://dev.to/ajithklepsydra/how-to-set-up-and-deploy-a-django-application-on-a-linux-server-2dff)
 
 ### TODO
 - Differentiate between physical objects
