@@ -14,7 +14,7 @@ python manage.py runserver
 
 Then go to [http://127.0.0.1:8000](http://127.0.0.1:8000) (note: some files may be missing)
 
-NOTE: `python manage.py runserver` is for http only, for SSL or PostgreSQL support see [Deployment](#Deployment) 2. & 3. 
+NOTE: `python manage.py runserver` is for http only, for SSL or PostgreSQL support see [Deployment](#Deployment) 2. & 3. tutorials
 
 ## Deployment
 1. [official deployment website](https://docs.djangoproject.com/en/4.0/howto/deployment/)
