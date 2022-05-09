@@ -1,0 +1,6 @@
+WSGIScriptAlias / /datagrid/ipalm/object_database/main/main/wsgi.py
+WSGIDaemonProcess   object_database python-path=/datagrid/ipalm/object_database/main/:/datagrid/ipalm/object_database/main/main
+WSGIProcessGroup    object_database
+
+Alias /media/  /datagrid/ipalm/object_database/main/media/
+Alias /static/ /datagrid/ipalm/object_database/main/site_static/
