@@ -7,6 +7,7 @@ cd object_database
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
+cd main
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
