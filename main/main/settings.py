@@ -20,14 +20,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
+# DEPLOYMENT CHANGES
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qu3xc!u+6_rv3inri5vwbs9x*bxq4@t!s60ll*brf33ltw*l!u'
+with open(os.path.join(BASE_DIR, 'secret_key.txt'), 'r') as f:
+    SECRET_KEY = f.read()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []  #  TODO: change to the name of the domain
 
+if not DEBUG:
+    ALLOWED_HOSTS.append("felk.cvut.cz")
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 GRAPH_MODELS = {

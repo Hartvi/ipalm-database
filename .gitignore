@@ -5,6 +5,7 @@
 *.jpeg
 *.dot
 main/database/migrations
+main/secret_key.txt
 
 
 # Config folder
