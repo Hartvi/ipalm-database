@@ -14,7 +14,7 @@ Then go to [http://127.0.0.1:8000](http://127.0.0.1:8000) (note: some files may 
 
 ## Deployment
 - [official deployment website](https://docs.djangoproject.com/en/4.0/howto/deployment/)
-- [deploy django with MySQL to apache server tutorial](https://thecodelearners.com/deploy-django-web-application-to-apache-server-step-by-step-guide/)
+- [Deploy with Apache2](https://dev.to/ninahwang/deploying-a-django-application-using-apache2-94g)
 
 ### TODO
 - Differentiate between physical objects
