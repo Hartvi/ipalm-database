@@ -34,7 +34,7 @@ duplicate_url_prefix = "ipalm/"
 duplicate_namespace_prefix = "ipalm_"
 
 urlpatterns = [
-    path('ipalm/', include('ui.urls')),  # relative, i.e. relative '/*******' => ipalm/*******
+    path('', include('ui.urls')),  # relative, i.e. relative '/*******' => ipalm/*******
     path('rest/', include('database.urls', namespace='database')),  # absolute felk.cvut.cz/rest
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('schema/', schema_view),
