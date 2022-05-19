@@ -16,7 +16,6 @@ Deprecated==1.2.13
 dj-database-url==0.5.0
 Django==3.2.12
 django-autoslug-iplweb==1.9.5
-django-core-api==0.1.0a1
 django-crispy-forms==1.14.0
 django-docs==0.3.1
 django-extensions==3.1.5

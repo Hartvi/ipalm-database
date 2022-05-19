@@ -26,7 +26,7 @@ with open(os.path.join(BASE_DIR, 'secret_key.txt'), 'r') as f:
     SECRET_KEY = f.read()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []  #  TODO: change to the name of the domain
 

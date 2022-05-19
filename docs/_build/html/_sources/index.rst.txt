@@ -6,13 +6,13 @@
 Welcome to Butler's documentation!
 ==================================
 
-.. automodule:: logger
+.. automodule:: butler
     :members:
 
 .. automodule:: formatting
     :members:
 
-.. automodule:: uploader
+.. automodule:: uploading
     :members:
 
 .. automodule:: utils

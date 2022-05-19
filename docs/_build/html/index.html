@@ -65,36 +65,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-logger">
-<span id="welcome-to-butler-s-documentation"></span><h1>Welcome to Butler’s documentation!<a class="headerlink" href="#module-logger" title="Permalink to this headline"></a></h1>
+  <section id="module-butler">
+<span id="welcome-to-butler-s-documentation"></span><h1>Welcome to Butler’s documentation!<a class="headerlink" href="#module-butler" title="Permalink to this headline"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="logger.Butler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">logger.</span></span><span class="sig-name descname"><span class="pre">Butler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keywords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_keywords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setup_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'setup.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parent_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\Users\\jhart\\PycharmProjects\\butler\\butler\\experiments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_variable_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_colours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_new_exp_on_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#logger.Butler" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="butler.Butler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">butler.</span></span><span class="sig-name descname"><span class="pre">Butler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keywords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_keywords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setup_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'setup.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_parent_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\Users\\jhart\\PycharmProjects\\butler\\butler\\experiments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_variable_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_colours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_new_exp_on_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#butler.Butler" title="Permalink to this definition"></a></dt>
 <dd><p>Butler collects and organizes experiment data into folders while the experiment is running.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keywords</strong> (<em>str list</em><em> or </em><em>tuple</em>) – </p></li>
-<li><p><strong>printed</strong> (<em>List of keywords whose lines will be extracted when</em>) – </p></li>
+<li><p><strong>keywords</strong> (<em>str</em><em> or </em><em>list</em><em> or </em><em>tuple</em>) – List of keywords whose lines will be extracted when printed</p></li>
 <li><p><strong>keep_keywords</strong> (<em>bool</em>) – Whether to also save the keywords with the rest of the print line</p></li>
 <li><p><strong>setup_file</strong> (<em>str</em>) – Path to the json containing the setup mappings. E.g. {“gripper”: “robotiq 2f85”, …}</p></li>
 <li><p><strong>read_return</strong> (<em>bool</em>) – Whether to take the return value (or first element in return tuple) as the measurement output. When False, see <cite>outpu_bariable_name</cite> parameter.</p></li>
-<li><p><strong>session_parent_dir</strong> (<em>str</em>) – Directory where to save the experiments; default is the logger.py directory</p></li>
+<li><p><strong>session_parent_dir</strong> (<em>str</em>) – Directory where to save the experiments; default is the butler.py directory</p></li>
 <li><p><strong>output_variable_name</strong> (<em>str</em>) – The string name of the variable that contains the data that is otherwise returned by the decorated function. Has to be visible in the scope where the decorated function is called. E.g. <cite>self.data_var</cite> or <cite>just_data_var</cite>.</p></li>
 <li><p><strong>data_variables</strong> (<em>list</em><em> or </em><em>tuple</em><em> or </em><em>str</em><em> or </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>list</em><em> or </em><em>tuple</em><em> or </em><em>np.ndarray</em><em> or </em><em>str</em><em>]</em>) – Sensor output variables. Format: {“source_sensor_name”: {“quantity (e.g. postiion)”: [list, of, values], …}, …}</p></li>
 <li><p><strong>img_files</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>tuple</em><em>[</em><em>str</em><em>]</em>) – List of file paths that will be copied to <cite>experiment_i/property_j/imgs</cite> every time the function is run.</p></li>
 <li><p><strong>fig_files</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>tuple</em><em>[</em><em>str</em><em>]</em>) – List of file paths that will be copied to <cite>experiment_i/property_j/figs</cite> every time the function is run.</p></li>
 <li><p><strong>data_files</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>tuple</em><em>[</em><em>str</em><em>]</em>) – List of file paths that will be copied to <cite>experiment_i/property_j/data</cite> every time the function is run.</p></li>
-<li><p><strong>ignore_colours</strong> (<em>bool</em>) – Whether to ignore the special colour characters; in regex: “[d+(;d+)?m”</p></li>
+<li><p><strong>ignore_colours</strong> (<em>bool</em>) – Whether to ignore the special colour characters; in regex: “[d+](;d+)?m”</p></li>
 <li><p><strong>create_new_exp_on_run</strong> (<em>bool</em>) – Whether to create a new experiment_i folder on every run of the function.</p></li>
 </ul>
 </dd>
 </dl>
-<p>Butler.add_object_context(context) - adds extra info about the measurement</p>
-<p>Butler.add_tmp_files(files, destination) - adds <cite>files</cite> to be copied to <cite>destination</cite> folder</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="logger.Butler.add_measurement_png">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_measurement_png</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">png_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#logger.Butler.add_measurement_png" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="butler.Butler.add_measurement_png">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_measurement_png</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">png_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#butler.Butler.add_measurement_png" title="Permalink to this definition"></a></dt>
 <dd><p>Adds the png image to be uploaded into the measurement[“png”] slot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -104,8 +101,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="logger.Butler.add_object_context">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_object_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_recommendation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#logger.Butler.add_object_context" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="butler.Butler.add_object_context">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_object_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_recommendation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#butler.Butler.add_object_context" title="Permalink to this definition"></a></dt>
 <dd><p>Adds the object’s “maker”, “common_name”, “dataset”, “dataset_id” for one run of the function. Call <cite>Butler.add_object_context(context)</cite> inside the decorated funtion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -118,8 +115,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="logger.Butler.add_tmp_files">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_tmp_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_file_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#logger.Butler.add_tmp_files" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="butler.Butler.add_tmp_files">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_tmp_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_file_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#butler.Butler.add_tmp_files" title="Permalink to this definition"></a></dt>
 <dd><p>Adds files to be copied to the folder: property_j/[data, imgs, figs] when the function decorated by <cite>&#64;butler</cite> is called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -135,12 +132,12 @@
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="logger.CustomBytesIO">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">logger.</span></span><span class="sig-name descname"><span class="pre">CustomBytesIO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">b''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#logger.CustomBytesIO" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="butler.CustomBytesIO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">butler.</span></span><span class="sig-name descname"><span class="pre">CustomBytesIO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">b''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#butler.CustomBytesIO" title="Permalink to this definition"></a></dt>
 <dd><p>BytesIO pipe that copies all prints into itself</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="logger.CustomBytesIO.write">
-<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#logger.CustomBytesIO.write" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="butler.CustomBytesIO.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#butler.CustomBytesIO.write" title="Permalink to this definition"></a></dt>
 <dd><p>Write bytes to file.</p>
 <p>Return the number of bytes written.</p>
 </dd></dl>
@@ -148,8 +145,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="logger.cache_print">
-<span class="sig-prename descclassname"><span class="pre">logger.</span></span><span class="sig-name descname"><span class="pre">cache_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#logger.cache_print" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="butler.cache_print">
+<span class="sig-prename descclassname"><span class="pre">butler.</span></span><span class="sig-name descname"><span class="pre">cache_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#butler.cache_print" title="Permalink to this definition"></a></dt>
 <dd><p>Save the return value of function <cite>f</cite> &amp; its print outputs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -169,8 +166,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="logger.this_dir">
-<span class="sig-prename descclassname"><span class="pre">logger.</span></span><span class="sig-name descname"><span class="pre">this_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#logger.this_dir" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="butler.this_dir">
+<span class="sig-prename descclassname"><span class="pre">butler.</span></span><span class="sig-name descname"><span class="pre">this_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#butler.this_dir" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the directory of the current python file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -183,13 +180,30 @@
 </dd></dl>
 
 <span class="target" id="module-formatting"></span><dl class="py function">
+<dt class="sig sig-object py" id="formatting.convert_experiments">
+<span class="sig-prename descclassname"><span class="pre">formatting.</span></span><span class="sig-name descname"><span class="pre">convert_experiments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'__all__'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#formatting.convert_experiments" title="Permalink to this definition"></a></dt>
+<dd><p>Format the experiments in the <cite>config.experiment_directory</cite> folder to dicts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>interval</strong> (<em>str</em><em> or </em><em>list</em>) – <p>Date interval between which to convert the experiments.</p>
+<blockquote>
+<div><p>Values:</p>
+<p>”__all__”: all experiments - ok if you call this manually and you dont have thousands of properties</p>
+<p>[a or None, b or None] - from <cite>a</cite> to <cite>b</cite> or all before <cite>b</cite> or all after <cite>a</cite>. Format: YYYY_mm_dd_HH_MM_SS</p>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="formatting.experiment_to_json">
 <span class="sig-prename descclassname"><span class="pre">formatting.</span></span><span class="sig-name descname"><span class="pre">experiment_to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#formatting.experiment_to_json" title="Permalink to this definition"></a></dt>
 <dd><p>Takes a butlered experiment folder and converts it into a dictionary that is in the format that will be uploaded to the server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>experiment_directory</strong> (<em>str</em>) – The experiment{i} directory containing the directory structure as specified in logger.py</p></li>
+<li><p><strong>experiment_directory</strong> (<em>str</em>) – The experiment{i} directory containing the directory structure as specified in butler.py</p></li>
 <li><p><strong>out_file</strong> (<em>str</em><em> or </em><em>None</em>) – Absolute path to the output file. “<a href="#id5"><span class="problematic" id="id6">*</span></a>.json” to write to the output file, None to not write to a file.</p></li>
 </ul>
 </dd>
@@ -202,13 +216,13 @@
 </dl>
 </dd></dl>
 
-<span class="target" id="module-uploader"></span><dl class="py function">
-<dt class="sig sig-object py" id="uploader.get_file_names">
-<span class="sig-prename descclassname"><span class="pre">uploader.</span></span><span class="sig-name descname"><span class="pre">get_file_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stewarded_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uploader.get_file_names" title="Permalink to this definition"></a></dt>
-<dd><p>Collects the file names to be uploaded to the server from the “stewarded” dictionary.</p>
+<span class="target" id="module-uploading"></span><dl class="py function">
+<dt class="sig sig-object py" id="uploading.get_file_names">
+<span class="sig-prename descclassname"><span class="pre">uploading.</span></span><span class="sig-name descname"><span class="pre">get_file_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formatted_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uploading.get_file_names" title="Permalink to this definition"></a></dt>
+<dd><p>Collects the file names to be uploaded to the server from the formatted dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>stewarded_dict</strong> (<em>dict</em>) – The dictionary as is output by <cite>~steward.experiment_to_json</cite></p>
+<dd class="field-odd"><p><strong>formatted_dict</strong> (<em>dict</em>) – The dictionary as it is output by <cite>formatting.experiment_to_json</cite></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl>
@@ -225,15 +239,34 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="uploader.post_measurement">
-<span class="sig-prename descclassname"><span class="pre">uploader.</span></span><span class="sig-name descname"><span class="pre">post_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://127.0.0.1:8000/rest/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uploader.post_measurement" title="Permalink to this definition"></a></dt>
-<dd><p>This posts a measurement to <a class="reference external" href="http://localhost:8000/rest/measurements/">http://localhost:8000/rest/measurements/</a></p>
+<dt class="sig sig-object py" id="uploading.post_measurement">
+<span class="sig-prename descclassname"><span class="pre">uploading.</span></span><span class="sig-name descname"><span class="pre">post_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://127.0.0.1:8000/rest/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uploading.post_measurement" title="Permalink to this definition"></a></dt>
+<dd><p>This posts a measurement to <a class="reference external" href="http://endpoint/measurements/">http://endpoint/measurements/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auth_tuple</strong> (<em>tuple</em><em>[</em><em>str</em><em>] or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – The (user, pass) authentication tuple.</p></li>
+<li><p><strong>uploaded_dicts_statuses</strong> (<em>str</em>) – Upload statuses of the dictionaries: true/false.</p></li>
+<li><p><strong>endpoint</strong> (<em>str</em>) – Basically the website name. Default is the localhost.</p></li>
+<li><p><strong>dict_path</strong> (<em>str</em>) – Path to the formatted dictionary.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uploading.post_measurements">
+<span class="sig-prename descclassname"><span class="pre">uploading.</span></span><span class="sig-name descname"><span class="pre">post_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upload_statuses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\Users\\jhart\\PycharmProjects\\butler\\butler\\uploaded_dicts.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upload_duplicates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uploading.post_measurements" title="Permalink to this definition"></a></dt>
+<dd><p>Posts posts measurements located in <cite>dict_paths</cite> and updates the <cite>config.uploaded_dicts_json</cite> file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>auth_tuple</strong> (<em>tuple</em><em>[</em><em>str</em><em>] or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – The (user, pass) authentication tuple.</p></li>
 <li><p><strong>endpoint</strong> (<em>str</em>) – Basically the website name. Default is the localhost.</p></li>
-<li><p><strong>dict_path</strong> (<em>str</em>) – The dict in the format <cite>str: json_str</cite> {“measurement”: “{“measurement”: …, “entry”: …}”}</p></li>
+<li><p><strong>dict_paths</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – Paths to the formatted dictionaries.</p></li>
+<li><p><strong>upload_duplicates</strong> (<em>bool</em>) – Whether to upload a name that has been flagged as <cite>true</cite> in <cite>config.uploaded_dicts_json</cite></p></li>
+<li><p><strong>upload_statuses</strong> (<em>str</em>) – Path to the dictionary with the upload statuses of the paths <cite>dict_paths</cite>.
+E.g. “/home/meas_2022_02_02_property.json”: true =&gt; already uploaded, don’t upload</p></li>
 </ul>
 </dd>
 </dl>
@@ -251,8 +284,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="utils.get_all_experiment_dirs">
-<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_all_experiment_dirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\Users\\jhart\\PycharmProjects\\butler\\butler\\experiments'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.get_all_experiment_dirs" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="utils.get_experiment_dirs">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_experiment_dirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\Users\\jhart\\PycharmProjects\\butler\\butler\\experiments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.get_experiment_dirs" title="Permalink to this definition"></a></dt>
 <dd><p>Returns all directories in <cite>directory</cite> that correspond to the format <cite>experiment(_.*)x6</cite>. E.g. experiment_2022_03_31_21_49_21.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -310,7 +343,54 @@
 </dl>
 </dd></dl>
 
-<span class="target" id="module-config"></span><div class="toctree-wrapper compound">
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.replace_json">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">replace_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.replace_json" title="Permalink to this definition"></a></dt>
+<dd><p>Dump the dictionary <cite>update_dict</cite> into the file <cite>p</cite> replacing it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>str</em>) – The path to the file to be replaced.</p></li>
+<li><p><strong>update_dict</strong> (<em>dict</em>) – The dictionary to be dumped into <cite>p</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.update_json">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">update_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.update_json" title="Permalink to this definition"></a></dt>
+<dd><p>Update the JSON dictionary on the path <cite>p</cite> with the dictionary <cite>update_dict</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>str</em>) – The path to the file to be updated.</p></li>
+<li><p><strong>update_dict</strong> (<em>dict</em>) – The dictionary to be dumped into <cite>p</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-config"></span><dl class="py data">
+<dt class="sig sig-object py" id="config.experiment_directory">
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">experiment_directory</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\jhart\\PycharmProjects\\butler\\butler\\experiments'</span></em><a class="headerlink" href="#config.experiment_directory" title="Permalink to this definition"></a></dt>
+<dd><p>The path to the directory containing the experiments.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="config.upload_dicts_directory">
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">upload_dicts_directory</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\jhart\\PycharmProjects\\butler\\butler\\upload_dicts'</span></em><a class="headerlink" href="#config.upload_dicts_directory" title="Permalink to this definition"></a></dt>
+<dd><p>The path to the directory containing the formatted experiment JSONs.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="config.uploaded_dicts_json">
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">uploaded_dicts_json</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\jhart\\PycharmProjects\\butler\\butler\\uploaded_dicts.json'</span></em><a class="headerlink" href="#config.uploaded_dicts_json" title="Permalink to this definition"></a></dt>
+<dd><p>The JSON dictionary tracking the upload statuses of experiments in the experiments folder.
+Warning: Deleting this causes duplicate uploads.</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
 </div>
 </section>
 <section id="indices-and-tables">
