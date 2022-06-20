@@ -13,6 +13,15 @@ from .permissions import IsOwnerOrReadOnly
 from .serializers import *
 from .models import *
 
+from django.shortcuts import render
+
+
+def api_root(request):
+    template_name = 'database/api-root.html'
+    # print("request", request)
+    # print("template_name", template_name)
+    return render(request=request, template_name=template_name, context={})
+
 
 class SetupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Setup.objects.all()

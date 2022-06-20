@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>REST root
+    </title>
+</head>
+<body>
+[
+<br>
+{
+<br>
+    "sensor_outputs": <a href="{% url 'database:sensor_output-list' %}">{{ request.get_host }}{{ request.get_full_path }}sensor_outputs/</a>
+<br>
+    "users": <a href="{% url 'database:user-list' %}">{{ request.get_host }}{{ request.get_full_path }}users/</a>
+<br>
+    "object_poses": <a href="{% url 'database:object_pose-list' %}">{{ request.get_host }}{{ request.get_full_path }}object_poses/</a>
+<br>
+    "gripper_poses": <a href="{% url 'database:gripper_pose-list' %}">{{ request.get_host }}{{ request.get_full_path }}gripper_poses/</a>
+<br>
+    "grasps": <a href="{% url 'database:grasp-list' %}">{{ request.get_host }}{{ request.get_full_path }}grasps/</a>
+<br>
+    "object_instances": <a href="{% url 'database:object_instance-list' %}">{{ request.get_host }}{{ request.get_full_path }}object_instances/</a>
+<br>
+    "setups": <a href="{% url 'database:setup-list' %}">{{ request.get_host }}{{ request.get_full_path }}setups/</a>
+<br>
+    "setup_elements": <a href="{% url 'database:setup_element-list' %}">{{ request.get_host }}{{ request.get_full_path }}setup_elements/</a>
+<br>
+    "property_elements": <a href="{% url 'database:property_element-list' %}">{{ request.get_host }}{{ request.get_full_path }}property_elements/</a>
+<br>
+    "entries": <a href="{% url 'database:entry-list' %}">{{ request.get_host }}{{ request.get_full_path }}entries/</a>
+<br>
+"measurements": <a href="{% url 'database:measurement-list' %}">{{ request.get_host }}{{ request.get_full_path }}measurements/</a>
+<br>
+},
+
+<br>
+
+{
+    <br>
+    "sensor_outputs": <a href="sensor_outputs/">{% url 'database:sensor_output-list' %}</a>
+    <br>
+    "users": <a href="users/">{% url 'database:user-list' %}</a>
+    <br>
+    "object_poses": <a href="object_poses/">{% url 'database:object_pose-list' %}</a>
+    <br>
+    "gripper_poses": <a href="gripper_poses/">{% url 'database:gripper_pose-list' %}</a>
+    <br>
+    "grasps": <a href="grasps/">{% url 'database:grasp-list' %}</a>
+    <br>
+    "object_instances": <a href="object_instances/">{% url 'database:object_instance-list' %}</a>
+    <br>
+    "setups": <a href="setups/">{% url 'database:setup-list' %}</a>
+    <br>
+    "setup_elements": <a href="setup_elements/">{% url 'database:setup_element-list' %}</a>
+    <br>
+    "property_elements": <a href="property_elements/">{% url 'database:property_element-list' %}</a>
+    <br>
+    "entries": <a href="entries/">{% url 'database:entry-list' %}</a>
+    <br>
+    "measurements": <a href="measurements/">{% url 'database:measurement-list' %}</a>
+    <br>
+}
+<br>
+]
+</body>
+</html>

@@ -27,6 +27,12 @@ with open(os.path.join(BASE_DIR, 'secret_key.txt'), 'r') as f:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+# USE_X_FORWARDED_HOST = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+)
 
 ALLOWED_HOSTS = []  #  TODO: change to the name of the domain
 
@@ -144,7 +150,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 1000,
+    'PAGE_SIZE': 50,
     'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_VERSIONING_CLASS':'rest_framework.versioning.NamespaceVersioning',
 }
