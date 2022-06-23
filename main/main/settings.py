@@ -37,11 +37,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 # ALLOWED_HOSTS = []  #  TODO: change to the name of the domain
-ALLOWED_HOSTS = ['ptak.felk.cvut.cz','bayes.felk.cvut.cz']  # , "127.0.0.1"
+ALLOWED_HOSTS = []  # add "127.0.0.1" for local debugging
 
 
-if not DEBUG:
-    ALLOWED_HOSTS.append(".felk.cvut.cz")
+ALLOWED_HOSTS.append(".felk.cvut.cz")
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
