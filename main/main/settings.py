@@ -27,15 +27,18 @@ with open(os.path.join(BASE_DIR, 'secret_key.txt'), 'r') as f:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# USE_X_FORWARDED_HOST = True
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 FORCE_SCRIPT_NAME = "/ipalm/"
+
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
 )
 
-ALLOWED_HOSTS = []  #  TODO: change to the name of the domain
+# ALLOWED_HOSTS = []  #  TODO: change to the name of the domain
+ALLOWED_HOSTS = ['ptak.felk.cvut.cz','bayes.felk.cvut.cz']  # , "127.0.0.1"
+
 
 if not DEBUG:
     ALLOWED_HOSTS.append(".felk.cvut.cz")
