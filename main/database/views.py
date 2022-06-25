@@ -71,7 +71,8 @@ class PropertyElementViewSet(viewsets.ReadOnlyModelViewSet):
 class EntryViewSet(viewsets.ModelViewSet):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
+    permission_classes = (permissions.AllowAny, )
 
     def perform_create(self, serializer):  # TODO: save functions
         data_items = list(self.request.data.items())
@@ -102,7 +103,8 @@ class EntryViewSet(viewsets.ModelViewSet):
 class MeasurementViewSet(viewsets.ModelViewSet):
     queryset = Measurement.objects.all()
     serializer_class = MeasurementSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
+    permission_classes = (permissions.AllowAny, )
 
     def perform_create(self, serializer):  # TODO: save functions
         # print('performing create!!!')
