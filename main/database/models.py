@@ -68,7 +68,7 @@ class Measurement(models.Model):
     object_instance = models.ForeignKey(ObjectInstance,
                                         on_delete=models.CASCADE, related_name='measurements', null=True)
     owner = models.ForeignKey('accounts.CustomUser', related_name='measurements', related_query_name='measurement',
-                              on_delete=models.PROTECT)
+                              on_delete=models.PROTECT, null=True)
 
     class Meta:
         ordering = ['created']

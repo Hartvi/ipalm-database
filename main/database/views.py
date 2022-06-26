@@ -83,7 +83,7 @@ class EntryViewSet(viewsets.ModelViewSet):
         # print(measurement_query, measurement_query.exists())
         # TODO: values, measurement object
         entry_object = serializer.save(
-            owner=self.request.user,
+            # owner=self.request.user,
             repository=data_dict["repository"],
             type=data_dict["type"],
             measurement=measurement_query.first()
@@ -226,10 +226,10 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         # ENTRY
         # TODO: add the Measurement to this object below
         entry_object = Entry.objects.create(
-            owner=self.request.user,
+            # owner=self.request.user,
             repository=entry["repository"],
             type=entry["type"],
-            name = entry["name"]
+            name=entry["name"]
         )
         property_element_objects = list()
         for val in entry["values"]:
@@ -307,7 +307,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         #     raise ParseError('Request has no resource file attached')
         object_instance = measurement["object_instance"]
         object_instance_query = ObjectInstance.objects.filter(
-            owner=self.request.user,
+            # owner=self.request.user,
             dataset=object_instance.get("dataset"),
             dataset_id=str(object_instance.get("dataset_id")),
             maker=object_instance.get("maker"),
@@ -320,7 +320,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             object_instance_object = object_instance_query.first()
         else:
             object_instance_object = ObjectInstance.objects.create(
-                owner=self.request.user,
+                # owner=self.request.user,
                 dataset=object_instance.get("dataset"),
                 dataset_id=object_instance.get("dataset_id"),
                 maker=object_instance.get("maker"),
@@ -328,7 +328,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 other=object_instance.get("other"),
             )
         measurement_object = serializer.save(
-            owner=self.request.user,
+            # owner=self.request.user,
             # png=meas_img,
             setup=the_setup,
             grasp=grasp_object,

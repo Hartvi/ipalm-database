@@ -38,6 +38,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # ALLOWED_HOSTS = []  #  TODO: change to the name of the domain
 ALLOWED_HOSTS = []  # add "127.0.0.1" for local debugging
+ALLOWED_HOSTS = ["127.0.0.1"]  # add "127.0.0.1" for local debugging
 
 
 ALLOWED_HOSTS.append(".felk.cvut.cz")
@@ -157,9 +158,9 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_VERSIONING_CLASS':'rest_framework.versioning.NamespaceVersioning',
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication', # needs name:password => if header is stripped in wsgi then this doesnt work
+        # 'rest_framework.authentication.SessionAuthentication',  # needs csrf => if header is stripped in wsgi then this doesnt work
+        # 'rest_framework.authentication.BasicAuthentication',
     ),
    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
