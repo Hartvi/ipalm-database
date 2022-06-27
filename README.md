@@ -15,7 +15,7 @@ python manage.py runserver
 
 Then go to [http://127.0.0.1:8000](http://127.0.0.1:8000) (note: some files may be missing)
 
-NOTE: `python manage.py runserver` is for http only, for SSL or PostgreSQL support see [Deployment](#Deployment) 2. & 3. tutorials
+NOTE: `python manage.py runserver` is by default only for http, for SSL or PostgreSQL support see [Deployment](#Deployment) 2. & 3. tutorials
 
 ## Deployment
 1. [official deployment website](https://docs.djangoproject.com/en/4.0/howto/deployment/)
@@ -23,6 +23,11 @@ NOTE: `python manage.py runserver` is for http only, for SSL or PostgreSQL suppo
 3. [Deploy with Apache & PostgreSQL](https://dev.to/ajithklepsydra/how-to-set-up-and-deploy-a-django-application-on-a-linux-server-2dff)
 
 ### TODO
+- data visualization
+  - how many objects measured, properties - find out how to do frontend image embedding
+- links to examples, documentation, repositories
+
+Advanced things:
 - Differentiate between physical objects
   - compare images from the png; this could serve as something akin to the instance id
 
