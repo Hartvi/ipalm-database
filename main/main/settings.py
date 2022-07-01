@@ -38,7 +38,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # ALLOWED_HOSTS = []  #  TODO: change to the name of the domain
 ALLOWED_HOSTS = []  # add "127.0.0.1" for local debugging
-# ALLOWED_HOSTS = ["127.0.0.1"]  # add "127.0.0.1" for local debugging
+ALLOWED_HOSTS = ["127.0.0.1"]  # add "127.0.0.1" for local debugging
 
 
 ALLOWED_HOSTS.append(".felk.cvut.cz")
@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'ui',
     'docs',
-    # "sphinx_view",
+    'tutorial',
 
 ]
 
@@ -179,5 +179,5 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "site_static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
+MEDIA_URL = "ipalm/media/"  # changed this to fit the reverse proxy on https://ptak.felk.cvut.cz/ipalm/media
 

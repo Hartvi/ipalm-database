@@ -116,9 +116,12 @@
         .inline {
             display:inline
         }
+        .padded{
+            padding: 10px;
+        }
     </style>
 
-    <title>IPALM Database</title>
+    <title>Object Database</title>
 </head>
 
 
@@ -144,6 +147,14 @@
         {% endfor %}
     </div>
     {% endif %} -->
+    <div class="padded" align="left">
+        <a class="button btn btn-dark btn-lg" href="ipalm/" role="button">Home</a>
+        <a class="button btn btn-dark btn-lg" href="ipalm/butler-docs/index.html" role="button">Data collector docs</a>
+        <a class="button btn btn-dark btn-lg" href="ipalm/tutorial/" role="button">Tutorials</a>
+
+    </div>
+    <hr>
+
     {% block title %}{% endblock title %}
     {% block content %}{% endblock content %}
 

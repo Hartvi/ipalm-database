@@ -45,6 +45,7 @@ urlpatterns = [
     path('docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
     path('api-auth/', include('accounts.urls', namespace='accounts')),
     path('butler-docs/', include('docs.urls')),
+    path('tutorial/', include('tutorial.urls', namespace='tutorial')),
     # path(duplicate_url_prefix, include('ui.urls')),  # relative, i.e. relative '/*******' => ipalm/*******
     # path(duplicate_url_prefix + 'api-auth/', include('rest_framework.urls', namespace=duplicate_namespace_prefix + 'rest_framework')),
     # path(duplicate_url_prefix + 'schema/', schema_view),
