@@ -1,17 +1,53 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<script src="prism.js"></script>
+<!--<script src="prism.js"></script>-->
 {% load static %}
 
-<div class="padded"><h1>How to use the butler module example:</h1></div>
-<div class="padded">
-<!--    {% autoescape off %}-->
-<!--    {{butler_example}}-->
-<!--{% endautoescape %}-->
+<div align="center"><div class="padded threequarters">
+    <!-- titles belong in a padded class-->
+    <div class="padded"><h1>How to use the Butler module</h1></div>
+    <div align="left"> <!-- text belongs in a left align -->
+        The crux of the data collector module is the Butler decorator class.
+        Butler enables users to record 'experiments' and organize them into a directory structure, see <a href="#butler_directories">Figure 1</a>, which can then be processed and uploaded to the server.<br>
+        <br>
+        <div align="center"><div id="butler_directories"><img src="/static/butler_directories.png" width="30%"><br>Figure 1. The directory structure that Butler generates upon being run once on a data function.</div></div>
+        <br>
+        The simplest arguments with which the decorator can be called with are <tt>setup_file</tt> and <tt>data_variables</tt>.<br>
+        <br>
+        <div id="base_args"><script src="https://gist.github.com/Hartvi/df8654167f5d3a8dfbf60dd40edf2ee3.js"></script></div>
+        <br>
+        A basic usage of Butler is shown in the next <a href="#base_usage">example</a>.
+        There is a <tt>data_variable</tt> plugged into the <tt>data_variables</tt> argument.
+        This <tt>data_variable</tt> variable has to be visible <b>outside</b> of the scope of the <tt>my_data_function</tt>.
+        In our case it has to be a global variable.
+        Butler, like all decorators, only has access to the arguments and return value of the decorated function.
+        <br><br>
+        The <tt>"sensor_outputs"</tt> field in the data function's return value (<tt>ret</tt>) has the same function as Butler's <tt>data_variables=("data_variable", )</tt> argument in this case.<br>
+        <br>
+        <div id="base_usage"><script src="https://gist.github.com/Hartvi/2a19b69d97594cc2dcf1a79b045db472.js"></script></div>
+        <br>
+        The next <a href="#normal_usage">example</a> contains code very similar to how I used Butler in my <a href="https://dspace.cvut.cz/handle/10467/101381">thesis</a>.
+        In this case we are decorating a <tt>divide</tt> function that is inside a <tt>TestClass</tt>.
+        Note the <tt>self.data_variables</tt> is visible from Butler's perspective - Butler sees the <tt>divide</tt> function's input arguments, therefore the <tt>self</tt> is visible.
+        <br>
+        <br>
+        What is new here compared to the previous example is:<br>
+        <div class="padded">
+            1. On line 8: The <tt>keywords="[INFO]"</tt> argument, whose function you can read up on in the code.<br>
+            2. On line 27: The <tt>add_object_context</tt> function, which, you, as a human, can fill out. The 'context' then acts as ground truth.<br>
+            3. On line 38: <tt>Butler.add_tmp_files(r"../unused/tests/setup_cropped.png", "data", "pointcloud.png")</tt> - this copies the file <tt>"...setup_cropped.png"</tt> to the <tt>"data"</tt> directory (can be "figs", "imgs") and renames the source file to <tt>"pointcloud.png"</tt>.<br>
+            4. On line 40: <tt>Butler.add_measurement_png(r"../unused/tests/setup_cropped.png")</tt> adds the image just for context.<br>
+            5. On line 43 & 46: We just add the <tt>gripper_pose</tt> & <tt>object_pose</tt> to get the grasp used in this measurement.<br>
+        </div>
 
-<!--    <iframe src="ipalm/tutorial/butler_example.html" height="200" width="300" title="Iframe Example"></iframe>-->
-<script src="https://gist.github.com/Hartvi/90d7d8d3318dcdd28e4823721b1f4acd.js"></script>
-</div>
-<div class="padded">
+        <br>
+        <div id="normal_usage"><script src="https://gist.github.com/Hartvi/90d7d8d3318dcdd28e4823721b1f4acd.js"></script></div>
+        <br>
+        If you need the decorated data function to still return its original values, just add the argument <tt>output_variable_name</tt> (Line 6) to Butler.
+        <br>
+        <br>
+        <div id="nonintrusive"><script src="https://gist.github.com/Hartvi/d355e9bfbad2054104edf4c3091995ca.js"></script></div>
+    </div>
+</div></div>
 {% endblock content %}

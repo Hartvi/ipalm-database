@@ -119,6 +119,15 @@
         .padded{
             padding: 10px;
         }
+        .threequarters {
+            width: 75%
+        }
+        textarea {
+          font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+        }
+        .highlight {
+          background-color: yellow;
+        }
     </style>
 
     <title>Object Database</title>
@@ -148,9 +157,14 @@
     </div>
     {% endif %} -->
     <div class="padded" align="left">
-        <a class="button btn btn-dark btn-lg" href="ipalm/" role="button">Home</a>
-        <a class="button btn btn-dark btn-lg" href="ipalm/butler-docs/index.html" role="button">Data collector docs</a>
-        <a class="button btn btn-dark btn-lg" href="ipalm/tutorial/" role="button">Tutorials</a>
+
+<!--        <div class="padded">-->
+        <a class="button btn btn-dark btn-lg" href="/ipalm/" role="button">Home</a>
+        <a class="button btn btn-dark btn-lg" href="/ipalm/butler-docs/index.html" role="button">Butler Docs</a>
+        <a class="button btn btn-dark btn-lg" href="/ipalm/tutorial/" role="button">Tutorials</a>
+        <a class="button btn btn-dark btn-lg" href="https://github.com/Hartvi/object_database">Object Database</a>
+        <a class="button btn btn-dark btn-lg" href="https://github.com/Hartvi/butler">Butler</a>
+<!--            </div>-->
 
     </div>
     <hr>
@@ -168,6 +182,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>    
     <!-- Datatables js -->
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    <script>
+    function highlight(text) {
+      var inputText = document.getElementById("inputText");
+      var innerHTML = inputText.innerHTML;
+      var index = innerHTML.indexOf(text);
+      if (index >= 0) {
+       innerHTML = innerHTML.substring(0,index) + "<b>" + innerHTML.substring(index,index+text.length) + "</>b>" + innerHTML.substring(index + text.length);
+       inputText.innerHTML = innerHTML;
+      }
+    }
+    </script>
     {% block custom_js %}{% endblock %}
 </body>
 </html>
