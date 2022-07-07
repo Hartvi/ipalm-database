@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!--<script src="prism.js"></script>-->
+{% load static %}
+
+<div align="center"><div class="padded threequarters">
+    <!-- titles belong in a padded class-->
+    <div class="padded"><h1>How to use the Butler module - uploading</h1></div>
+    <div align="left"> <!-- text belongs in a left align -->
+        To upload a single formatted JSON dictionary, as explained <a href="/ipalm/tutorial/butler_format/">here</a> , use the <tt>post_measurement</tt> function as follows.
+        <br><br>
+        <script src="https://gist.github.com/Hartvi/11ecad92e4aa92d31e9e3077153d41ad.js"></script>
+        <br>
+        The Butler module keeps track of which dictionaries have been uploaded in the file <tt>butler/uploaded_dicts.json</tt>.
+        You can therefore use the following function to upload all not yet uploaded dictionaries.
+        Even if it is called multiple times it will not upload duplicates.
+        <br><br>
+        <script src="https://gist.github.com/Hartvi/5f195d0fc8fa57fdd9ada87684997b95.js"></script>
+        <br><br>
+        <br><br>
+    </div>
+</div></div>
+{% endblock content %}

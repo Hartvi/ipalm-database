@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!--<script src="prism.js"></script>-->
+{% load static %}
+
+<div align="center"><div class="padded threequarters">
+    <!-- titles belong in a padded class-->
+    <div class="padded"><h1>Tutorials & Examples</h1></div>
+    <div align="left"> <!-- text belongs in a left align -->
+        Here are some tutorials of how to use the Butler recording module and how to upload to the database.<br>
+        <hr>
+        <div class="left">
+            <a class="button btn btn-dark btn-lg" href="/ipalm/tutorial/butler/" role="button">Butler Recording</a>
+            <br><br>
+            <a class="button btn btn-dark btn-lg" href="/ipalm/tutorial/butler_format/" role="button">Butler Formatting</a>
+            <br><br>
+            <a class="button btn btn-dark btn-lg" href="/ipalm/tutorial/butler_upload/" role="button">Butler Uploading</a>
+        </div>
+        <div class="right">
+            <a class="button btn btn-dark btn-lg" href="/ipalm/tutorial/manual_upload/" role="button">Manual Uploading</a>
+        </div>
+    </div>
+</div></div>
+{% endblock content %}
+

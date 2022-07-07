@@ -20,8 +20,7 @@ import markdown
 #         md_templates[md_name] = markdown.markdown(f.read())
 
 
-class MyView(View):
-    initial = {'key': 'value'}
+class ButlerTutorialView(View):
     template_name = 'tutorial/butler_tutorial.html'
 
     def get(self, request, *args, **kwargs):
@@ -29,3 +28,32 @@ class MyView(View):
 
     # def post(self, request, *args, **kwargs):
     #     return render(request, self.template_name, {'form': None})
+
+
+class TutorialHomeView(View):
+    template_name = 'tutorial/tutorial_home.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, )  # {'butler_example': md_templates['butler_example']})
+
+
+class ButlerFormatView(View):
+    template_name = 'tutorial/butler_format.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, )  # {'butler_example': md_templates['butler_example']})
+
+
+class ButlerUploadView(View):
+    template_name = 'tutorial/butler_upload.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, )  # {'butler_example': md_templates['butler_example']})
+
+
+class ManualUploadView(View):
+    template_name = 'tutorial/manual_upload.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, )  # {'butler_example': md_templates['butler_example']})
+
