@@ -1,7 +1,6 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.views import View
-import markdown
 
 
 # class MyView(View):
