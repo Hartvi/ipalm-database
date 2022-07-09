@@ -179,5 +179,5 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "site_static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "ipalm/media/"  # changed this to fit the reverse proxy on https://ptak.felk.cvut.cz/ipalm/media
+MEDIA_URL = "media/"  # changed this to fit the reverse proxy on https://ptak.felk.cvut.cz/ipalm/media
 
