@@ -1,9 +1,9 @@
 from django.shortcuts import render
 import time
 from database.models import *
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('Agg')  # hide plots when using 'plot'
+# import matplotlib.pyplot as plt
+# import matplotlib
+# matplotlib.use('Agg')  # hide plots when using 'plot'
 last_time = time.time()
 
 
