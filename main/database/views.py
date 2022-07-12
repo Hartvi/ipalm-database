@@ -306,26 +306,31 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         # except KeyError:
         #     raise ParseError('Request has no resource file attached')
         object_instance = measurement["object_instance"]
+        print(object_instance)
+        print(object_instance.get("dataset"),str(object_instance.get("dataset_id")),object_instance.get("maker"),object_instance.get("common_name"),object_instance.get("other"))
         object_instance_query = ObjectInstance.objects.filter(
             # owner=self.request.user,
-            dataset=object_instance.get("dataset"),
-            dataset_id=str(object_instance.get("dataset_id")),
+            dataset=object_instance.get("dataset"),  # TODO: COMPARING NONE TO NULL IS FALSE AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+            dataset_id=object_instance.get("dataset_id"),
             maker=object_instance.get("maker"),
             common_name=object_instance.get("common_name"),
-            other=object_instance.get("other"),
+            other=object_instance.get("other", {}),
         )
+        print(len(object_instance_query.all()))
+        # print(object_instance_query.first().other == None)
 
         object_instance_object = None
         if object_instance_query.exists():
             object_instance_object = object_instance_query.first()
         else:
+            print("creating new object instance!!!")
             object_instance_object = ObjectInstance.objects.create(
                 # owner=self.request.user,
                 dataset=object_instance.get("dataset"),
                 dataset_id=object_instance.get("dataset_id"),
                 maker=object_instance.get("maker"),
                 common_name=object_instance.get("common_name"),
-                other=object_instance.get("other"),
+                other=object_instance.get("other", {}),
             )
         measurement_object = serializer.save(
             # owner=self.request.user,
