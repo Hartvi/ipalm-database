@@ -31,6 +31,9 @@ Advanced things:
 - Differentiate between physical objects
   - compare images from the png; this could serve as something akin to the instance id
 
+### 07/12
+- some tutorials & database summaries on home page
+
 ### 05/01
 - some bugfixes
 - TODO: automatic gripper\_pose + object\_pose => grasp generation
