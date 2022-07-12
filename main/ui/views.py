@@ -1,10 +1,10 @@
 from django.shortcuts import render
-import time
+# import time
 from database.models import *
 # import matplotlib.pyplot as plt
 # import matplotlib
 # matplotlib.use('Agg')  # hide plots when using 'plot'
-last_time = time.time()
+# last_time = time.time()
 
 
 def home_view(request):
