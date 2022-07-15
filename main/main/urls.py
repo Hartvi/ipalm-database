@@ -31,8 +31,8 @@ API_DESCRIPTION = 'A Web API for realtime uploading/downloading data for physica
 schema_view = get_schema_view(title=API_TITLE)
 
 # duplicate_url_prefixes = ["ipalm/", ]
-# duplicate_url_prefix = "ipalm/"
-# duplicate_namespace_prefix = "ipalm_"
+duplicate_url_prefix = "ipalm/"
+duplicate_namespace_prefix = "ipalm_"
 
 urlpatterns = [
     path('', include('ui.urls')),  # relative, i.e. relative '/*******' => ipalm/*******
@@ -46,12 +46,13 @@ urlpatterns = [
     path('api-auth/', include('accounts.urls', namespace='accounts')),
     path('butler-docs/', include('docs.urls')),
     path('tutorial/', include('tutorial.urls', namespace='tutorial')),
-    # path(duplicate_url_prefix, include('ui.urls')),  # relative, i.e. relative '/*******' => ipalm/*******
-    # path(duplicate_url_prefix + 'api-auth/', include('rest_framework.urls', namespace=duplicate_namespace_prefix + 'rest_framework')),
-    # path(duplicate_url_prefix + 'schema/', schema_view),
-    # path(duplicate_url_prefix + 'docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
-    # path(duplicate_url_prefix + 'api-auth/', include('accounts.urls', namespace=duplicate_namespace_prefix+'accounts')),
-    # path(duplicate_url_prefix + 'butler-docs/', include('docs.urls')),
+    path(duplicate_url_prefix, include('ui.urls')),  # relative, i.e. relative '/*******' => ipalm/*******
+    path(duplicate_url_prefix + 'api-auth/', include('rest_framework.urls', namespace=duplicate_namespace_prefix + 'rest_framework')),
+    path(duplicate_url_prefix + 'schema/', schema_view),
+    path(duplicate_url_prefix + 'docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
+    path(duplicate_url_prefix + 'api-auth/', include('accounts.urls', namespace=duplicate_namespace_prefix+'accounts')),
+    path(duplicate_url_prefix + 'butler-docs/', include('docs.urls')),
+    path(duplicate_url_prefix + 'tutorial/', include('tutorial.urls', namespace=duplicate_namespace_prefix+'tutorial')),
     # in case redirects are needed
     # path(r'^.*$', RedirectView.as_view(url='<url_to_home_view>', permanent=False), name='index')
 ]

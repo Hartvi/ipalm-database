@@ -16,6 +16,7 @@ app_name = 'ui'
 
 urlpatterns = [
     path('', views.home_view, name='home'),
+    path('browser/', views.BrowserHomeView.as_view(), name='browser_home'),
     # path('rest/', include('database.urls', namespace='database')),
     # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     # path('schema/', schema_view),

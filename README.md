@@ -23,8 +23,15 @@ NOTE: `python manage.py runserver` is by default only for http, for SSL or Postg
 3. [Deploy with Apache & PostgreSQL](https://dev.to/ajithklepsydra/how-to-set-up-and-deploy-a-django-application-on-a-linux-server-2dff)
 
 ### TODO
-- data visualization
-  - how many objects measured, properties - find out how to do frontend image embedding
+- object browser - USER FRIENDLY STUFF
+  - object : pictures, how measurements
+  - search for objects
+  - data visualization
+    - how many objects measured, properties - find out how to do frontend image embedding
+- upload OSF things
+- populate
+
+#### done
 - links to examples, documentation, repositories
 
 Advanced things:

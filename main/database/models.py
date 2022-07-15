@@ -62,7 +62,7 @@ class SetupElement(models.Model):
 
 class Measurement(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    png = models.ImageField(upload_to='uploads/measurements/')
+    png = models.ImageField(upload_to='measurements/')
     setup = models.ForeignKey(Setup, related_name='measurements', related_query_name='measurement',
                               on_delete=models.CASCADE, null=True)
     object_instance = models.ForeignKey(ObjectInstance,
@@ -79,7 +79,7 @@ class Measurement(models.Model):
 
 
 class SensorOutput(models.Model):
-    sensor_output_file = models.FileField(null=True)
+    sensor_output_file = models.FileField(upload_to="outputs/", null=True)
     sensor_output = models.JSONField()
     sensor = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='sensor_outputs', )
     measurements = models.ForeignKey(Measurement, related_name='sensor_outputs', on_delete=models.CASCADE, null=True)
@@ -140,7 +140,7 @@ class PropertyElement(models.Model):  # this should, I think, be possible to bin
     std = models.FloatField(null=True)
     units = models.CharField(max_length=100)
     other = models.JSONField(null=True)  # for friction, etc.
-    other_file = models.FileField(null=True)
+    other_file = models.FileField(upload_to="properties", null=True)
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name='property_element')
 
 

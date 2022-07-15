@@ -128,6 +128,15 @@
         .highlight {
           background-color: yellow;
         }
+        .border {
+          border: 1px solid black;
+        }
+        .ext-left{
+            float:left;
+        }
+        li{
+            clear:both;
+        }
     </style>
 
     <title>Object Database</title>
@@ -162,35 +171,78 @@
         <a class="button btn btn-dark btn-lg" href="/ipalm/" role="button">Home</a>
         <a class="button btn btn-dark btn-lg" href="/ipalm/butler-docs/index.html" role="button">Butler Docs</a>
         <a class="button btn btn-dark btn-lg" href="/ipalm/tutorial/" role="button">Tutorials</a>
-        <a class="button btn btn-dark btn-lg" href="https://github.com/Hartvi/object_database">Object Database src</a>
-        <a class="button btn btn-dark btn-lg" href="https://github.com/Hartvi/butler">Butler src</a>
+        <a class="button btn btn-dark btn-lg" href="https://github.com/Hartvi/object_database" target="_blank" rel="noopener noreferrer">Object Database src</a>
+        <a class="button btn btn-dark btn-lg" href="https://github.com/Hartvi/butler" target="_blank" rel="noopener noreferrer">Butler src</a>
 <!--            </div>-->
 
     </div>
 <!--    <hr>-->
 
     {% block title %}{% endblock title %}
+    <div class="padded">
     {% block content %}{% endblock content %}
+    </div>
 
     <!-- Bootstrap JS-->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <!--Moment js-->
-    <script src="{% static 'create_survey/js/moment.min.js' %}" ></script>    
+    <script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js"></script>
     <!--Chart.js js-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>    
     <!-- Datatables js -->
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    <script>lazyload();</script>
+    <script>
+    function browserSearch(event) {
+        if (event.key == "Enter") {
+            var mySearch = document.getElementById("mySearch").value;
+            var url =  'https://cmp.felk.cvut.cz/ipalm/browser/?q=' + mySearch;
+            window.open(url, '_blank');
+        }
+    }
+    </script>
     <script>
     function highlight(text) {
-      var inputText = document.getElementById("inputText");
-      var innerHTML = inputText.innerHTML;
-      var index = innerHTML.indexOf(text);
-      if (index >= 0) {
-       innerHTML = innerHTML.substring(0,index) + "<b>" + innerHTML.substring(index,index+text.length) + "</>b>" + innerHTML.substring(index + text.length);
-       inputText.innerHTML = innerHTML;
-      }
+        var inputText = document.getElementById("inputText");
+        var innerHTML = inputText.innerHTML;
+        var index = innerHTML.indexOf(text);
+        if (index >= 0) {
+            innerHTML = innerHTML.substring(0,index) + "<b>" + innerHTML.substring(index,index+text.length) + "</>b>" + innerHTML.substring(index + text.length);
+            inputText.innerHTML = innerHTML;
+        }
+    }
+    </script>
+    <script>
+    function simpleSearch() {
+        // Declare variables
+        var input, filter, ul, li, a, i, ul2, li2;
+        input = document.getElementById("mySearch");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("myMenu");
+        ul2 = document.getElementById("myMenu2");
+        li = ul.getElementsByTagName("li");
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName("a")[0];
+            if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+        li2 = ul2.getElementsByTagName("li");
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < li2.length; i++) {
+            a = li2[i].getElementsByTagName("a")[0];
+            if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                li2[i].style.display = "";
+            } else {
+                li2[i].style.display = "none";
+            }
+        }
     }
     </script>
     {% block custom_js %}{% endblock %}

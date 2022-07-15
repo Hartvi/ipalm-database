@@ -8,15 +8,16 @@
     <!-- titles belong in a padded class-->
     <div class="padded"><h1>How to upload manually</h1></div>
     <div align="left"> <!-- text belongs in a left align -->
-        Use the following JSON files as reference if you want to upload data without the Butler module: <a href="https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries" target="_blank" rel="noopener noreferrer">https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries</a><br>
+        Use the following JSON files as reference if you want to upload data that you have already generated:<br><a href="https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries" target="_blank" rel="noopener noreferrer">https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries</a><br>
         <br>
-        When uploading, the following steps are recommended to be taken:
-        <div class="padded">
-            1. In the JSON you want to upload, find any absolute references to files, e.g. <tt>/abs/path/to/file.png</tt><br>
-            2. Replace absolute paths with the base file names. E.g. <tt>"/abs/path/to/file.png" => "file.png"</tt><br>
-            3. The file bytes are loaded from the absolute file paths and added to the request's <tt>request.files</tt> attribute with the base name as the key, i.e. <tt>{"file.png": open("abs/path/to/file.png")}</tt><br>
-            4. The uploading happens. See <a href="/ipalm/tutorial/butler_upload/">here</a> for the tutorial on how the uploading module works.<br>
-        </div>
+        To upload your formatted JSON files, see the <a href="/ipalm/tutorial/butler_upload/">uploading tutorial</a>.
+<!--        When uploading, the following steps are recommended to be taken:-->
+<!--        <div class="padded">-->
+<!--            1. In the JSON you want to upload, find any absolute references to files, e.g. <tt>/abs/path/to/file.png</tt><br>-->
+<!--            2. Replace absolute paths with the base file names. E.g. <tt>"/abs/path/to/file.png" => "file.png"</tt><br>-->
+<!--            3. The file bytes are loaded from the absolute file paths and added to the request's <tt>request.files</tt> attribute with the base name as the key, i.e. <tt>{"file.png": open("abs/path/to/file.png")}</tt><br>-->
+<!--            4. The uploading happens. See <a href="/ipalm/tutorial/butler_upload/">here</a> for the tutorial on how the uploading module works.<br>-->
+<!--        </div>-->
         <br><br>
         <br><br>
     </div>
