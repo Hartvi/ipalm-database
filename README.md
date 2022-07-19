@@ -23,13 +23,13 @@ NOTE: `python manage.py runserver` is by default only for http, for SSL or Postg
 3. [Deploy with Apache & PostgreSQL](https://dev.to/ajithklepsydra/how-to-set-up-and-deploy-a-django-application-on-a-linux-server-2dff)
 
 ### TODO
-- object browser - USER FRIENDLY STUFF
-  - object : pictures, how measurements
-  - search for objects
-  - data visualization
-    - how many objects measured, properties - find out how to do frontend image embedding
+- Todo: data visualization
 - upload OSF things
 - populate
+- Done: object browser - USER FRIENDLY STUFF
+  - Done: object : pictures, how measurements
+  - Done: search for objects
+    - Done: how many objects measured, properties - find out how to do frontend image embedding
 
 #### done
 - links to examples, documentation, repositories
@@ -37,6 +37,9 @@ NOTE: `python manage.py runserver` is by default only for http, for SSL or Postg
 Advanced things:
 - Differentiate between physical objects
   - compare images from the png; this could serve as something akin to the instance id
+
+### 07/19
+- Done object browser
 
 ### 07/12
 - some tutorials & database summaries on home page
