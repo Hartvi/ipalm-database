@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!--<script src="prism.js"></script>-->
+{% load static %}
+{% load browser_extras %}
+<div class="padded">
+    {% if prev_url %}
+    <a class="button btn btn-dark btn-lg" href="{{prev_url}}" role="button">&#60; Back</a>
+    {% endif %}
+    <div align="center">
+        <h2>Object instance</h2>
+        <div class="center">
+            <div align="left">
+                <p style="font-size:200%">
+                Dataset: {{object_instance.dataset}}<br>
+                ID in dataset: {{object_instance.dataset_id}}<br>
+                Maker: {{object_instance.maker}}<br>
+                Common name: {{object_instance.common_name}}<br>
+                Other: {{object_instance.other}}<br>
+                </p>
+            </div>
+        </div>
+        {% for im in imgs %}{% if forloop.counter0|divisibleby:4 %}<br><br>{% else %}&emsp;{% endif %}<img src="{{im}}" alt="Image" width="20%">{% endfor %}
+        <br><br>
+        <br><br>
+    </div>
+</div>
+
+{% endblock content %}
+

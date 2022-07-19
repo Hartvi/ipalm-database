@@ -11,6 +11,13 @@
         Use the following JSON files as reference if you want to upload data that you have already generated:<br><a href="https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries" target="_blank" rel="noopener noreferrer">https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries</a><br>
         <br>
         To upload your formatted JSON files, see the <a href="/ipalm/tutorial/butler_upload/">uploading tutorial</a>.
+        <br><br>
+
+        The dictionaries are processed in Butler's <a href="https://github.com/Hartvi/butler/blob/7bba0db8ddcdae15f43fd45f3de5ac0af30a028e/butler/uploading.py#L79-L132" target="_blank" rel="noopener noreferrer"><tt>post_measurement()</tt></a> function.
+        On line 17 in the following example, the absolute path to the <a href="https://github.com/Hartvi/butler/blob/main/example_upload_dictionaries/upload_dict_2022_04_29_16_51_04_cat-vision_0.json#L17" target="_blank" rel="noopener noreferrer"><tt>img_cam1.png</tt></a> file acts as a proxy for the actual file.
+        When this dictionary is plugged into Butler's <tt>post_measurement()</tt> function, the absolute path will be replaced with just <tt>img_cam1.png</tt> and the file located on the original absolute path will be opened and its bytes uploaded.
+        <br><br>
+        <script src="https://gist.github.com/Hartvi/7357dd4db4cdefb7056f2b7489673fbd.js"></script>
 <!--        When uploading, the following steps are recommended to be taken:-->
 <!--        <div class="padded">-->
 <!--            1. In the JSON you want to upload, find any absolute references to files, e.g. <tt>/abs/path/to/file.png</tt><br>-->

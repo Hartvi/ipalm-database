@@ -13,6 +13,7 @@
     <!-- Datatables css -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
 
+    <link rel="icon" href="/static/object_database.png" type="image/x-icon">  <!--TITLE IMAGE-->
     <style>
 
         .header2 {
@@ -197,8 +198,10 @@
     function browserSearch(event) {
         if (event.key == "Enter") {
             var mySearch = document.getElementById("mySearch").value;
-            var url =  'https://cmp.felk.cvut.cz/ipalm/browser/?q=' + mySearch;
-            window.open(url, '_blank');
+            var url =  '/ipalm/browser/?q=' + mySearch;
+            //window.open(url);  // , '_blank'
+            location.href = url;
+
         }
     }
     </script>
