@@ -166,7 +166,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {'url': {'view_name': 'database:measurement-detail'}}
 
     def validate(self, data):
-        content = data.get("content", None)
+        # content = data.get("content", None)
         request = self.context['request']
         data_items = list(request.data.items())
         json_data_list = list(filter(lambda x: "measurement" == x[0], data_items))[0]
@@ -188,8 +188,8 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         object_pose = measurement.get("object_pose")
         gripper_pose = measurement.get("gripper_pose")
         # if not
-        if not request.FILES and not content:
-            raise serializers.ValidationError("Content or an Image must be provided")
+        # if not request.FILES:
+        #     raise serializers.ValidationError("Content or an Image must be provided")
 
         entry = data_dict.get("entry", None)
         if not entry:
@@ -211,7 +211,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         # print("grasp: ", grasp)
         if grasp is None:
             assert entry["name"] not in {"stiffness", "elasticity"}, "A grasp has to be provided for stiffness and elasticity measurements"
-        else:
+        elif grasp is not None and len(grasp.get("translation", [])) != 0 and len(grasp.get("rotation", [])) != 0:
             if len(grasp.get("translation", [])) != 3:
                 raise ParseError("len(grasp[\"translation\"]) != 3")
             if len(grasp.get("rotation", [])) != 3:
@@ -221,7 +221,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
             if not validation.check_data_types_uniform(grasp, validation.pose_types):
                 raise ParseError("grasp does not satisfy type conditions: "+str(validation.pose_types))
 
-        if object_pose is not None:
+        if object_pose is not None and len(object_pose.get("translation", [])) != 0 and len(object_pose.get("rotation", [])) != 0:
             if len(object_pose.get("translation", [])) != 3:
                 raise ParseError("len(object_pose[\"translation\"]) != 3")
             if len(object_pose.get("rotation", [])) != 3:
@@ -229,7 +229,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
             if not validation.check_data_types_uniform(object_pose, validation.pose_types):
                 raise ParseError("object_pose does not satisfy type conditions: "+str(validation.pose_types))
 
-        if gripper_pose is not None:
+        if gripper_pose is not None and len(gripper_pose.get("translation", [])) != 0 and len(gripper_pose.get("rotation", [])) != 0:
             if len(gripper_pose.get("translation", [])) != 3:
                 raise ParseError("len(gripper_pose[\"translation\"]) != 3")
             if len(gripper_pose.get("rotation", [])) != 3:

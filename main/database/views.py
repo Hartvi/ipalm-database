@@ -18,8 +18,6 @@ from django.shortcuts import render
 
 def api_root(request):
     template_name = 'database/api-root.html'
-    # print("request", request)
-    # print("template_name", template_name)
     return render(request=request, template_name=template_name, context={})
 
 
@@ -78,9 +76,7 @@ class EntryViewSet(viewsets.ModelViewSet):
         data_items = list(self.request.data.items())
         json_data_list = list(filter(lambda x: "entry" == x[0], data_items))[0]
         data_dict = json.loads(json_data_list[1])["entry"]
-        # print(data_dict)
         measurement_query = Measurement.objects.filter(id=data_dict["measurement_id"])
-        # print(measurement_query, measurement_query.exists())
         # TODO: values, measurement object
         entry_object = serializer.save(
             # owner=self.request.user,
@@ -107,10 +103,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny, )
 
     def perform_create(self, serializer):  # TODO: save functions
-        # print('performing create!!!')
         # try:
-        # print("request data: ", self.request.data)
-        # print("data_dict", self.request.data["measurement"])
         # for k in self.request.data:
         #     print(k, " : ", self.request.data[k])
         # meas_img = self.request.data['png']
@@ -237,6 +230,9 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             if v is None:
                 v = val["value"]
                 u = val["units"]
+                if u is None:
+                    # TODO: convert SI to the actual units based on the name of the quantity, e.g. kg m^-3 for density
+                    u = "SI"
             else:
                 u = val["name"]
             property_element_object = PropertyElement.objects.create(
@@ -275,7 +271,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         if object_pose:
             translation = object_pose.get("translation")  # type: list
             rotation = object_pose.get("rotation")  # type: list
-            if translation is not None and rotation is not None:
+            if translation and rotation:
                 # TODO: add the `Measurement` below
                 object_pose_object = ObjectPose.objects.create(
                     rx=rotation[0],
@@ -291,7 +287,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             translation = gripper_pose.get("translation")  # type: list
             rotation = gripper_pose.get("rotation")  # type: list
             grasped = gripper_pose.get("grasped")
-            print(translation, rotation, grasped)
+            # print(translation, rotation, grasped)
             if translation is not None and rotation is not None and grasped is not None:
                 # TODO: add the `Measurement` below
                 gripper_pose_object = GripperPose.objects.create(
@@ -306,8 +302,8 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         # except KeyError:
         #     raise ParseError('Request has no resource file attached')
         object_instance = measurement["object_instance"]
-        print(object_instance)
-        print(object_instance.get("dataset"),str(object_instance.get("dataset_id")),object_instance.get("maker"),object_instance.get("common_name"),object_instance.get("other"))
+        # print(object_instance)
+        # print(object_instance.get("dataset"),str(object_instance.get("dataset_id")),object_instance.get("maker"),object_instance.get("common_name"),object_instance.get("other"))
         object_instance_query = ObjectInstance.objects.filter(
             # owner=self.request.user,
             dataset=object_instance.get("dataset"),  # TODO: COMPARING NONE TO NULL IS FALSE AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -316,14 +312,13 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             common_name=object_instance.get("common_name"),
             other=object_instance.get("other", {}),
         )
-        print(len(object_instance_query.all()))
+        # print(len(object_instance_query.all()))
         # print(object_instance_query.first().other == None)
 
         object_instance_object = None
         if object_instance_query.exists():
             object_instance_object = object_instance_query.first()
         else:
-            print("creating new object instance!!!")
             object_instance_object = ObjectInstance.objects.create(
                 # owner=self.request.user,
                 dataset=object_instance.get("dataset"),
@@ -364,30 +359,34 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         measurement png
         """
         fk_levels = list()
+        # print("file_keys:", file_keys)
         for fk in file_keys:
             fk_split = fk.split(" ")
             fk_split_len = len(fk_split)
             while len(fk_levels) < fk_split_len:
                 fk_levels.append(list())
             fk_levels[fk_split_len-1].append(fk_split)
-        for fk_split in fk_levels[1]:
-            if fk_split[0] == "measurement":
-                if fk_split[1] == "png":
-                    measurement_object.png = request_data[" ".join(fk_split)]
-                    measurement_object.save()
-                elif fk_split[1] == "object_instance":
-                    object_instance_object.other_file = request_data[" ".join(fk_split)]
-                    object_instance_object.save()
-        for fk_split in fk_levels[2]:
-            # e.g. measurement intel_d435 pointcloud_file
-            potential_sensor_output_objects = list(filter(lambda x: x.sensor.name == fk_split[1], sensor_output_objects))
-            if fk_split[0] == "measurement" and len(potential_sensor_output_objects) == 1:
-                # print("potential_sensor_output_objects: ", potential_sensor_output_objects[0].sensor.name)
-                sensor_output_object: SensorOutput = potential_sensor_output_objects[0]
-                sensor_output_object.sensor_output_file = request_data[" ".join(fk_split)]
-                sensor_output_object.save()
-            potential_property_elements = list(filter(lambda x: x.name == fk_split[2], property_element_objects))
-            if fk_split[0] == "entry" and fk_split[1] == "values" and len(potential_property_elements) == 1:
-                property_element_object: PropertyElement = potential_property_elements[0]
-                property_element_object.other_file = request_data[" ".join(fk_split)]
-                property_element_object.save()
+        # print("fk_levels", fk_levels)
+        if len(fk_levels) >= 2:
+            for fk_split in fk_levels[1]:
+                if fk_split[0] == "measurement":
+                    if fk_split[1] == "png":
+                        measurement_object.png = request_data[" ".join(fk_split)]
+                        measurement_object.save()
+                    elif fk_split[1] == "object_instance":
+                        object_instance_object.other_file = request_data[" ".join(fk_split)]
+                        object_instance_object.save()
+            if len(fk_levels) >= 3:
+                for fk_split in fk_levels[2]:
+                    # e.g. measurement intel_d435 pointcloud_file
+                    potential_sensor_output_objects = list(filter(lambda x: x.sensor.name == fk_split[1], sensor_output_objects))
+                    if fk_split[0] == "measurement" and len(potential_sensor_output_objects) == 1:
+                        sensor_output_object: SensorOutput = potential_sensor_output_objects[0]
+                        sensor_output_object.sensor_output_file = request_data[" ".join(fk_split)]
+                        sensor_output_object.save()
+                    potential_property_elements = list(filter(lambda x: x.name == fk_split[2], property_element_objects))
+                    if fk_split[0] == "entry" and fk_split[1] == "values" and len(potential_property_elements) == 1:
+                        property_element_object: PropertyElement = potential_property_elements[0]
+                        property_element_object.other_file = request_data[" ".join(fk_split)]
+                        property_element_object.save()
+
