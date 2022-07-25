@@ -177,8 +177,8 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "site_static")]
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "site_static/")]
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = "media/"  # changed this to fit the reverse proxy on https://ptak.felk.cvut.cz/ipalm/media
 

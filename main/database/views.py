@@ -228,7 +228,8 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         for val in entry["values"]:
             v = val.get("probability")
             if v is None:
-                v = val["value"]
+                # print("val:", val)
+                v = val.get("value", val.get("mean"))  # TODO: this is sometimes not present
                 u = val["units"]
                 if u is None:
                     # TODO: convert SI to the actual units based on the name of the quantity, e.g. kg m^-3 for density

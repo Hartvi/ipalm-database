@@ -210,7 +210,8 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
 
         # print("grasp: ", grasp)
         if grasp is None:
-            assert entry["name"] not in {"stiffness", "elasticity"}, "A grasp has to be provided for stiffness and elasticity measurements"
+            print("entry[\"name\"]", entry["name"])
+            # assert entry["name"] not in {"stiffness", "elasticity"}, "A grasp has to be provided for stiffness and elasticity measurements"
         elif grasp is not None and len(grasp.get("translation", [])) != 0 and len(grasp.get("rotation", [])) != 0:
             if len(grasp.get("translation", [])) != 3:
                 raise ParseError("len(grasp[\"translation\"]) != 3")
