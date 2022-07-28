@@ -5,25 +5,161 @@
 {% load static %}
 {% load browser_extras %}
 <div class="padded">
-    {% if prev_url %}
-    <a class="button btn btn-dark btn-lg" href="{{prev_url}}" role="button">&#60; Back</a>
-    {% endif %}
-    <div align="center">
-        <h2>Object instance</h2>
-        <div class="center">
-            <div align="left">
-                <p style="font-size:200%">
-                Dataset: {{object_instance.dataset}}<br>
-                ID in dataset: {{object_instance.dataset_id}}<br>
-                Maker: {{object_instance.maker}}<br>
-                Common name: {{object_instance.common_name}}<br>
-                Other: {{object_instance.other}}<br>
-                </p>
+<!--    <div class="col-sm-1">-->
+        {% if prev_url %}
+        <a class="button btn btn-dark btn-lg" href="{{prev_url}}" role="button">&#60; Back</a>
+        {% endif %}
+<!--    </div>-->
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div align="center">
+                    <h2>Object instance</h2>
+                </div>
+                <div class="container">
+<!--                    <p style="font-size:200%">-->
+                    <div class="row">
+                        <div class="col">
+                        <p style="font-size:150%">
+                            Dataset:
+                        </p>
+                        </div>
+                        <div class="col">
+                            <p style="font-size:150%">
+                                {% if object_instance.dataset is None %}
+                                NULL
+                                {% else %}
+                                {{object_instance.dataset}}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p style="font-size:150%">
+                            ID in dataset:
+                            </p>
+                        </div>
+                        <div class="col">
+                            <p style="font-size:150%">
+                                {% if object_instance.dataset_id is None %}
+                                NULL
+                                {% else %}
+                                {{object_instance.dataset_id}}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p style="font-size:150%">
+                            Maker:
+                            </p>
+                        </div>
+                        <div class="col">
+                            <p style="font-size:150%">
+                                {% if object_instance.maker is None %}
+                                NULL
+                                {% else %}
+                                {{object_instance.maker}}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p style="font-size:150%">
+                            Common name:
+                            </p>
+                        </div>
+                        <div class="col">
+                            <p style="font-size:150%">
+                                {% if object_instance.common_name is None %}
+                                NULL
+                                {% else %}
+                                {{object_instance.common_name}}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p style="font-size:150%">
+                            Other:
+                            </p>
+                        </div>
+                        <div class="col">
+                            <p style="font-size:150%;">
+                                {% if object_instance.other is None %}
+                                NULL
+                                {% else %}
+                                {{object_instance.other}}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <p style="font-size:125%;"> Number of measurements performed on this object: {{measurements}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div align="left">
+<!--                    <div class="center">-->
+                        <h3 class="header1">Correction</h3>
+                        {% load crispy_forms_tags %}
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+                            {% if form.errors %}
+                            {{ form.errors|pluralize }}
+                            {% endif %}
+                            {% for field in form %}
+                            {{ field.error }}
+                            {{ field.field.error }}
+                            {% endfor %}
+                                <div class="container" style="width:90%;">
+                                {% for field in form %}
+<!--                                    <div class="border">-->
+                                    <div class="row">
+                                        <div class="col">
+                                            <div align="left">
+                                                <p style="font-size:125%;">{{ field.name }}:</p>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+<!--                                            <div class="form_element">-->
+                                            {{ field }}
+<!--                                            </div>-->
+                                        </div>
+                                    </div>
+<!--                                    </div>-->
+                                {% endfor %}
+    <!--                                <div class="row">-->
+    <!--                                    <div class="col">lol</div>-->
+    <!--                                    <div class="col">-->
+    <!--                                <div align="right">-->
+    <!--                                    </div>-->
+    <!--                                    </div>-->
+    <!--                                </div>-->
+                                </div>
+                            <div class="submit">
+                                <button type="submit" class="btn btn-block btn-dark">Send Correction</button>
+                            </div>
+                        </form>
+<!--                    </div>-->
+                </div>
             </div>
         </div>
-        {% for im in imgs %}{% if forloop.counter0|divisibleby:4 %}<br><br>{% else %}&emsp;{% endif %}<img src="{{im}}" alt="Image" width="20%">{% endfor %}
-        <br><br>
-        <br><br>
+    </div>
+    <hr>
+
+    <div class="row">
+        <div align="center">
+            {% for im in imgs %}{% if forloop.counter0|divisibleby:4 %}<br><br>{% else %}&emsp;{% endif %}<img src="{{im}}" alt="Image" width="20%">{% endfor %}
+            <br><br>
+            <br><br>
+        </div>
     </div>
 </div>
 

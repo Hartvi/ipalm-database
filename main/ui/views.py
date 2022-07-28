@@ -1,11 +1,18 @@
 import requests
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.views import View
 from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect
+
+from django import forms
 
 # import time
 from database.models import *
+from . import forms
+
+import re
+import json
 
 
 # import matplotlib.pyplot as plt
@@ -25,6 +32,10 @@ else:
     ipalm_prefix = ""
 
 placeholder_img = "placeholder.png"
+
+
+def dict_get_empty_to_none(d, arg):
+    return d[arg] if len(re.findall(r"^\s*$", d[arg])) == 0 else None
 
 
 def home_view(request):
@@ -93,13 +104,22 @@ class BrowserHomeView(View):
 
 
 class BrowserInstanceView(View):
+    form_class = forms.ObjectInstanceUpdateForm
     template_name = 'ui/browser_item.html'
+    object_instance = None
 
     def get(self, request, instance_id, *args, **kwargs):
+        form = self.form_class()  # initial=self.initial)
         # print(instance_id)
         # print(args, kwargs)
         object_instance = ObjectInstance.objects.filter(id=instance_id).first()
         # print(object_instance.__dict__, type(object_instance))
+
+        form.fields[forms.common_name_str].initial = object_instance.common_name
+        form.fields[forms.maker_str].initial = object_instance.maker
+        form.fields[forms.dataset_str].initial = object_instance.dataset
+        form.fields[forms.dataset_id_str].initial = object_instance.dataset_id
+        form.fields[forms.other_str].initial = object_instance.other
 
         measurement_for_this_instance = Measurement.objects.filter(object_instance=object_instance)
         number_of_pictures = 0
@@ -119,7 +139,7 @@ class BrowserInstanceView(View):
                     else:
                         break
         imgs = imgs if len(imgs) > 0 else [static_prefix+placeholder_img]
-        context = {"object_instance": object_instance, "imgs": imgs}
+        context = {"object_instance": object_instance, "imgs": imgs, "form": form, "measurements": len(Measurement.objects.filter(object_instance=object_instance))}
 
         previous_page = request.session.get("arguments")
         if previous_page is not None:
@@ -131,7 +151,62 @@ class BrowserInstanceView(View):
         else:
             prev_url = ipalm_prefix+"/browser/"
             context["prev_url"] = prev_url
+        # request.session["object_instance"] = object_instance
+        # self.object_instance = object_instance
+        # print("self.object_instance: ", self.object_instance)
+        request.session["id"] = object_instance.id
         return render(request, self.template_name, context=context)  # {'butler_example': md_templates['butler_example']})
+
+    def post(self, request, *args, **kwargs):
+        # print("POST self.object_instance: ", self.object_instance)
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            clean_data = form.cleaned_data
+            dataset = dict_get_empty_to_none(clean_data, "dataset")
+            dataset_id = dict_get_empty_to_none(clean_data, "dataset_id")
+            maker = dict_get_empty_to_none(clean_data, "maker")
+            common_name = dict_get_empty_to_none(clean_data, "common_name")
+            other = dict()
+            dataset_query = Q(dataset=dataset)
+            dataset_id_query = Q(dataset_id=dataset_id)
+            maker_query = Q(maker=maker)
+            # print("clean_data[\"maker\"]", str(dict_get_empty_to_none(clean_data, "maker")))
+            common_name_query = Q(common_name=common_name)
+            try:
+                other = json.loads(dict_get_empty_to_none(clean_data, "other"))
+                other_query = Q(other=other)
+            except json.decoder.JSONDecodeError as e:
+                raise forms.ValidationError("Entered JSON is invalid: "+str(e))
+
+            instances = ObjectInstance.objects.filter(
+                dataset_query & dataset_id_query & maker_query & common_name_query & other_query
+            )
+            update_measurements = True
+            # print("request.session.get(\"id\"):", request.session.get("id"), type(request.session.get("id")))
+            if len(instances) != 0:
+                new_instance = instances.first()  # type: ObjectInstance
+                if new_instance.id == request.session.get("id"):
+                    update_measurements = False
+                    # print("NOT UPDATING SINCE AN OBJECT INSTANCE ALREADY EXISTS")
+                # print("found_instance: ", found_instance, "request.session.get(\"object_instance\"): ", request.session.get("object_instance"))
+            else:
+                new_instance = ObjectInstance.objects.create(
+                    dataset=dataset, dataset_id=dataset_id, maker=maker, common_name=common_name, other=other
+                )
+            if update_measurements:
+                # print("new_instance", new_instance)
+                current_instance = ObjectInstance.objects.filter(id=request.session.get("id")).first()
+                existing_measurements = Measurement.objects.filter(
+                    object_instance=current_instance
+                )  # type: QuerySet
+                # print("number of existing measurements: ", len(existing_measurements.all()))
+                for existing_measurement in existing_measurements.all():  # type: # Measurement
+                    # print("new_instance.id: ", new_instance.id)
+                    existing_measurement.object_instance = new_instance
+                    existing_measurement.save()
+
+            return HttpResponseRedirect("/ipalm/browser/object_instance/" + str(new_instance.id) + "/")
+        return self.get(request, request.session["id"], args, kwargs)
 
 
 
