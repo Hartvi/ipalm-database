@@ -179,12 +179,12 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         # print("json_data_list", json_data_list)
         data_dict: dict = json.loads(json_data_list[1])
         # print("data_dict", data_dict)
-
+        # print(data_dict)
         data_dict_check_result = validation.check_measurement_request(data_dict)
         if data_dict_check_result:
             raise serializers.ValidationError("Measurement request is missing "+data_dict_check_result)
         measurement = data_dict["measurement"]
-        grasp = measurement["grasp"]
+        grasp = measurement.get("grasp")
         object_pose = measurement.get("object_pose")
         gripper_pose = measurement.get("gripper_pose")
         # if not
@@ -192,27 +192,25 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         #     raise serializers.ValidationError("Content or an Image must be provided")
 
         entry = data_dict.get("entry", None)
-        if not entry:
-            return data
+        if entry:
+            if not validation.check_key_existences(entry, validation.measurement_entry_keys):
+                raise serializers.ValidationError("req[\"entry\"] keys do not match: "+str(validation.measurement_entry_keys)+" vs "+str(entry.keys()))
 
-        if not validation.check_key_existences(entry, validation.measurement_entry_keys):
-            raise serializers.ValidationError("req[\"entry\"] keys do not match: "+str(validation.measurement_entry_keys)+" vs "+str(entry.keys()))
+            values = entry["values"]
+            for value in values:
+                if not validation.check_key_existences(value, validation.entry_value_key_groups):
+                    raise serializers.ValidationError("req[\"entry\"][\"values\"] keys do not match: "+str(entry["values"]) + " vs " + str(validation.entry_value_key_groups))
 
-        values = entry["values"]
-        for value in values:
-            if not validation.check_key_existences(value, validation.entry_value_key_groups):
-                raise serializers.ValidationError("req[\"entry\"][\"values\"] keys do not match: "+str(entry["values"]) + " vs " + str(validation.entry_value_key_groups))
-
-        if entry["type"] != "categorical":
-            for k, i in enumerate(entry["values"]):
-                if "std" not in i:
-                    raise serializers.ValidationError("std not in non-categorical entry "+str(k))
+            if entry["type"] != "categorical":
+                for k, i in enumerate(entry["values"]):
+                    if "std" not in i:
+                        raise serializers.ValidationError("std not in non-categorical entry "+str(k))
 
         # print("grasp: ", grasp)
-        if grasp is None:
-            print("entry[\"name\"]", entry["name"])
+        # if grasp is None:
+            # print("entry[\"name\"]", entry["name"])
             # assert entry["name"] not in {"stiffness", "elasticity"}, "A grasp has to be provided for stiffness and elasticity measurements"
-        elif grasp is not None and len(grasp.get("translation", [])) != 0 and len(grasp.get("rotation", [])) != 0:
+        if grasp is not None and len(grasp.get("translation", [])) != 0 and len(grasp.get("rotation", [])) != 0:
             if len(grasp.get("translation", [])) != 3:
                 raise ParseError("len(grasp[\"translation\"]) != 3")
             if len(grasp.get("rotation", [])) != 3:

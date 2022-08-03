@@ -24,8 +24,10 @@ NOTE: `python manage.py runserver` is by default only for http, for SSL or Postg
 
 ### TODO
 - Todo: data visualization
-- upload OSF things
-- populate
+- upload OSF things - formatting is done
+  - a new need has arisen
+  - TODO: always use files to save sensor outputs. even raw JSON can be 15 MB which is extremely slow to load even from my own disc, let alone over the internet as a gazillion lines of text
+  - add PNGs to the black foam and white foam measurements when uploading to the database
 - Done: object browser - USER FRIENDLY STUFF
   - Done: object : pictures, how measurements
   - Done: search for objects
@@ -37,6 +39,9 @@ NOTE: `python manage.py runserver` is by default only for http, for SSL or Postg
 Advanced things:
 - Differentiate between physical objects
   - compare images from the png; this could serve as something akin to the instance id
+
+### 07/28
+- done object instance updating/unifying (CANNOT SPLIT FUSED OBJECTS) in the item view
 
 ### 07/19
 - Done object browser

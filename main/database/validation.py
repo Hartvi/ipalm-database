@@ -8,7 +8,7 @@ validation_dict_types = {str: {set: str}}
 pose_types = {str: {list: {float, int, bool}}}
 test_pose = {"rotation": [1.0, 1.0, 1.0], "position": [1.0, 1.0, 1.0]}
 
-measurement_keys = {"setup", "sensor_outputs", "grasp", "object_instance"}
+measurement_keys = {"setup", "sensor_outputs", "object_instance"}
 measurement_entry_keys = {"type", "repository", "values", "name"}
 entry_value_keys = {"name": {str, }, "probability": {float, int}, "value": {float, int}, "units": {str, }}
 entry_value_key_groups = ({"name", "probability"}, {"name", "value", "std", "units"}, {"name", "mean", "std", "units"}, )
@@ -116,26 +116,28 @@ def check_data_types_uniform(the_object, type_dict):
 def check_measurement_request(request_dict):
     for i in request_keys:
         # print(i)
-        if i not in request_dict:
+        # measurement is mandatory but entry is not
+        if i not in request_dict and i == "measurement":
             return i
         for j in request_keys[i]:
-            if j not in request_dict[i]:
+            if j not in request_dict.get(i, request_keys["entry"]):  # makes the "entry" optional
                 return j+" in "+i
-    for k, i in enumerate(request_dict["entry"]["values"]):
-        is_ok = False
-        missing_stuff = None
-        for g in entry_value_key_groups:
-            ks = set(i.keys())
+    if "entry" in request_dict:
+        for k, i in enumerate(request_dict["entry"]["values"]):
+            is_ok = False
+            missing_stuff = None
+            for g in entry_value_key_groups:
+                ks = set(i.keys())
+                if not is_ok:
+                    if len(g & ks) != len(g):
+                        missing_stuff = str(g - ks)
+                    else:
+                        is_ok = True
             if not is_ok:
-                if len(g & ks) != len(g):
-                    missing_stuff = str(g - ks)
-                else:
-                    is_ok = True
-        if not is_ok:
-            return missing_stuff
-        # for j in entry_value_keys:
-        #     if j not in i:
-        #         return j + " in " + "entry.values["+str(k)+"]"
+                return missing_stuff
+            # for j in entry_value_keys:
+            #     if j not in i:
+            #         return j + " in " + "entry.values["+str(k)+"]"
     # print("measurement ok")
 
 

@@ -16,6 +16,8 @@ from .models import *
 from django.shortcuts import render
 
 
+param_regex = re.compile(r"param[a-z]*")
+
 def api_root(request):
     template_name = 'database/api-root.html'
     return render(request=request, template_name=template_name, context={})
@@ -121,19 +123,32 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         # print("file_keys:", file_keys)
         data_dict = json.loads(request_data["measurement"])
 
-        measurement = data_dict["measurement"]
-        entry = data_dict["entry"]
-        sensor_outputs: dict = measurement["sensor_outputs"]
-
-        # TODO: ObjectInstance ForeignKey
-        # measurement = Measurement.objects.create(owner=self.request.user)
+        measurement_dict = data_dict["measurement"]
+        entry_dict = data_dict.get("entry")
+        sensor_output_dict: dict = measurement_dict["sensor_outputs"]
 
         # SETUP & SETUP ELEMENT & SENSOR OUTPUT
         sensor_output_objects = list()
-        active_sensor_names = sensor_outputs.keys()
-        sensor_modalities = {sn: list(sensor_outputs[sn].keys()) for sn in active_sensor_names}
+        active_sensor_names = sensor_output_dict.keys()
+        sensor_modalities = dict()
+        sensor_output_parameters = dict()
+        for sn in active_sensor_names:
+            # this shouldnt exist:
+            single_sensor_output = sensor_output_dict[sn]
+            sensor_quantities = list(single_sensor_output.keys())
+            param_key_str = None
+            for sensor_quantity in sensor_quantities:
+                param_key_match = param_regex.search(sensor_quantity)
+                if param_key_match is not None:
+                    # sensor_output_parameters[sn] = dict()
+                    # the quantity should be param[a-z]*
+                    sensor_output_parameters[sn] = single_sensor_output[sensor_quantity]
+                    # print("found param key: ", param_key_match)
+                    param_key_str = param_key_match.group()
+            sensor_modalities[sn] = list(filter(lambda x: x != param_key_str, sensor_quantities))
+            # print("incoming sensor modalities: ", sensor_modalities[sn])
 
-        setup_element_dict = measurement["setup"]
+        setup_element_dict = measurement_dict["setup"]
         setup_element_types = list(setup_element_dict.keys())  # gripper, arm, camera, microphone, etc
         setup_element_names = list(setup_element_dict.values())
         setup_query = Setup.objects.all()
@@ -170,22 +185,26 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             setup_element = SetupElement.objects.filter(name=setup_element_name)
             if setup_element.exists():
                 # update the sensor quantities & bind the SensorOutput to the SetupElement
-                the_actual_element = setup_element[0]
+                the_actual_element = setup_element[0]  # type: SetupElement
                 if setup_element_name in active_sensor_names:
                     # add new output quantities if there are any new ones:
-                    oq = the_actual_element.output_quantities
+                    # NOTE: the_actual_element.name is the same as setup_element_name
+                    original_quantities = the_actual_element.output_quantities
                     setup_element.update(
                         output_quantities=json.dumps(
                             list(set(sensor_modalities[setup_element_name])
-                                 .union(set(json.loads("[]" if oq is None else oq))))
+                                 .union(set(json.loads("[]" if original_quantities is None else original_quantities))))
                         )
                     )
-                    sensor_output_values = sensor_outputs[setup_element_name]
+                    # print("all quantities for sensor", setup_element_name, ": ", list(set(sensor_modalities[setup_element_name])
+                    #      .union(set(json.loads("[]" if original_quantities is None else original_quantities)))))
+                    # print("new quantities for sensor", setup_element_name, ": ", sensor_modalities[setup_element_name])
+                    sensor_output_values = sensor_output_dict[setup_element_name]
+                    p = re.compile(r"^[a-zA-Z]:")
                     for q in sensor_output_values:
                         if type(sensor_output_values[q]) != str:
                             continue
                         forward_slash_file_path = sensor_output_values[q].replace("\\", r"/")
-                        p = re.compile(r"^[a-zA-Z]:")
                         unix_file_path = p.sub("", forward_slash_file_path)
                         if os.path.isabs(forward_slash_file_path):
                             new_file_name = os.path.basename(forward_slash_file_path)
@@ -196,7 +215,9 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                         # print("q", q, "sensor_output_values[q]", sensor_output_values[q])
                     # print(json.dumps(sensor_output_values))
                     sensor_output_object = SensorOutput.objects.create(
-                        sensor_output=json.dumps(sensor_output_values), sensor=setup_element[0]
+                        sensor_output=json.dumps(sensor_output_values),
+                        sensor=setup_element[0],
+                        parameters=json.dumps(sensor_output_parameters.get(setup_element_name, {}))
                     )
                     sensor_output_objects.append(sensor_output_object)
                     # ADD the measurement foreign key later
@@ -218,38 +239,39 @@ class MeasurementViewSet(viewsets.ModelViewSet):
 
         # ENTRY
         # TODO: add the Measurement to this object below
-        entry_object = Entry.objects.create(
-            # owner=self.request.user,
-            repository=entry["repository"],
-            type=entry["type"],
-            name=entry["name"]
-        )
-        property_element_objects = list()
-        for val in entry["values"]:
-            v = val.get("probability")
-            if v is None:
-                # print("val:", val)
-                v = val.get("value", val.get("mean"))  # TODO: this is sometimes not present
-                u = val["units"]
-                if u is None:
-                    # TODO: convert SI to the actual units based on the name of the quantity, e.g. kg m^-3 for density
-                    u = "SI"
-            else:
-                u = val["name"]
-            property_element_object = PropertyElement.objects.create(
-                other=val.get("other", "[]"),
-                name=val["name"],
-                std=val.get("std"),
-                units=u,
-                value=v,
-                other_file=val.get("other_file"),
-                entry=entry_object
+        if entry_dict is not None:
+            entry_object = Entry.objects.create(
+                owner=self.request.user,
+                repository=entry_dict["repository"],
+                type=entry_dict["type"],
+                name=entry_dict["name"]
             )
-            property_element_objects.append(property_element_object)
+            property_element_objects = list()
+            for val in entry_dict["values"]:
+                v = val.get("probability")
+                if v is None:
+                    # print("val:", val)
+                    v = val.get("value", val.get("mean"))  # TODO: this is sometimes not present
+                    u = val["units"]
+                    if u is None:
+                        # TODO: convert SI to the actual units based on the name of the quantity, e.g. kg m^-3 for density
+                        u = "SI"
+                else:
+                    u = val["name"]
+                property_element_object = PropertyElement.objects.create(
+                    other=val.get("other", "[]"),
+                    name=val["name"],
+                    std=val.get("std"),
+                    units=u,
+                    value=v,
+                    other_file=val.get("other_file"),
+                    entry=entry_object
+                )
+                property_element_objects.append(property_element_object)
 
         # MEASUREMENT
         # GRASP
-        grasp = measurement.get("grasp")
+        grasp = measurement_dict.get("grasp")
         grasp_object = None
         if grasp:
             translation = grasp.get("translation")  # type: list
@@ -267,7 +289,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                     grasped=grasp.get("grasped")
                 )
         # OBJECTPOSE with relation to (wrt) robot base
-        object_pose = measurement.get("object_pose")
+        object_pose = measurement_dict.get("object_pose")
         object_pose_object = None
         if object_pose:
             translation = object_pose.get("translation")  # type: list
@@ -282,7 +304,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                     ty=translation[1],
                     tz=translation[2],
                 )
-        gripper_pose = measurement.get("gripper_pose")
+        gripper_pose = measurement_dict.get("gripper_pose")
         gripper_pose_object = None
         if gripper_pose:
             translation = gripper_pose.get("translation")  # type: list
@@ -302,7 +324,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 )
         # except KeyError:
         #     raise ParseError('Request has no resource file attached')
-        object_instance = measurement["object_instance"]
+        object_instance = measurement_dict["object_instance"]  # type: dict
         # print(object_instance)
         # print(object_instance.get("dataset"),str(object_instance.get("dataset_id")),object_instance.get("maker"),object_instance.get("common_name"),object_instance.get("other"))
         object_instance_query = ObjectInstance.objects.filter(
@@ -311,14 +333,35 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             dataset_id=object_instance.get("dataset_id"),
             maker=object_instance.get("maker"),
             common_name=object_instance.get("common_name"),
-            other=object_instance.get("other", {}),
+            # other=object_instance.get("other", {}),
         )
         # print(len(object_instance_query.all()))
         # print(object_instance_query.first().other == None)
 
         object_instance_object = None
         if object_instance_query.exists():
-            object_instance_object = object_instance_query.first()
+            object_instance_object = object_instance_query.first()  # type: ObjectInstance
+            # merge the "other" json fields
+            existing_other_dict = object_instance_object.other
+            new_other_dict = object_instance.get("other", {})
+            # print(existing_other_dict)
+            for k in new_other_dict:
+                v = new_other_dict[k]
+                new_k = k  # type: str
+                i = 1
+                if new_k in existing_other_dict:
+                    new_k = new_k + str(i)
+                    while new_k in existing_other_dict:
+                        new_k = new_k.replace(str(i), str(i+1))  # should start duplicates with 2
+                        i += 1
+                    existing_other_dict[new_k] = v
+                    # print("if", existing_other_dict)
+                else:
+                    existing_other_dict[k] = v
+                    # print("else", existing_other_dict)
+            # print("after",existing_other_dict)
+            object_instance_object.other = existing_other_dict
+            object_instance_object.save()
         else:
             object_instance_object = ObjectInstance.objects.create(
                 # owner=self.request.user,
@@ -329,7 +372,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 other=object_instance.get("other", {}),
             )
         measurement_object = serializer.save(
-            # owner=self.request.user,
+            owner=self.request.user,
             # png=meas_img,
             setup=the_setup,
             grasp=grasp_object,
@@ -341,8 +384,9 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             # print(soo.sensor.name)
             soo.measurements = measurement_object
             soo.save()
-        entry_object.measurement = measurement_object
-        entry_object.save()
+        if entry_dict is not None:
+            entry_object.measurement = measurement_object
+            entry_object.save()
         if grasp_object is not None:
             grasp_object.measurement = measurement_object
             grasp_object.save()
