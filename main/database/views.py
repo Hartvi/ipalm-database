@@ -12,11 +12,27 @@ from rest_framework import permissions, renderers, viewsets
 from .permissions import IsOwnerOrReadOnly
 from .serializers import *
 from .models import *
+from main import settings
 
 from django.shortcuts import render
 
 
 param_regex = re.compile(r"param[a-z]*")
+
+
+print("STARTIN THE VIEWS YO")
+print(len(SensorOutput.objects.all()))
+for sensor_output_object in SensorOutput.objects.all():  # type: SensorOutput
+    # print(so.sensor_output)
+    sensor_output_values = sensor_output_object.sensor_output
+    # print(sensor_output_values)
+    sensor_file_name = "output" + str(sensor_output_object.id) + ".json"
+    with open(os.path.join(settings.MEDIA_ROOT, sensor_file_name), "w") as f:
+        json.dump(obj=sensor_output_values, fp=f)
+    sensor_output_object.sensor_output_large = sensor_file_name
+    sensor_output_object.save()
+    # exit()
+
 
 def api_root(request):
     template_name = 'database/api-root.html'
@@ -204,7 +220,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                     for q in sensor_output_values:
                         if type(sensor_output_values[q]) != str:
                             continue
-                        forward_slash_file_path = sensor_output_values[q].replace("\\", r"/")
+                        forward_slash_file_path = sensor_output_values[q].replace("\\", r"/")  # type   : str
                         unix_file_path = p.sub("", forward_slash_file_path)
                         if os.path.isabs(forward_slash_file_path):
                             new_file_name = os.path.basename(forward_slash_file_path)
@@ -213,12 +229,18 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                             new_file_name = os.path.basename(forward_slash_file_path)
                             sensor_output_values[q] = new_file_name
                         # print("q", q, "sensor_output_values[q]", sensor_output_values[q])
-                    # print(json.dumps(sensor_output_values))
+
                     sensor_output_object = SensorOutput.objects.create(
-                        sensor_output=json.dumps(sensor_output_values),
                         sensor=setup_element[0],
                         parameters=json.dumps(sensor_output_parameters.get(setup_element_name, {}))
                     )
+                    # print(len(json.dumps(sensor_output_values)))
+                    # print(sensor_output_object.id)
+                    sensor_file_name = "output"+str(sensor_output_object.id)+".json"
+                    with open(os.path.join(settings.MEDIA_ROOT, sensor_file_name), "w") as f:
+                        json.dump(obj=sensor_output_values, fp=f)
+                    sensor_output_object.sensor_output_large = sensor_file_name
+                    sensor_output_object.save()
                     sensor_output_objects.append(sensor_output_object)
                     # ADD the measurement foreign key later
                 # if the setup didnt exist, add the elements to it
@@ -397,7 +419,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             gripper_pose_object.measurement = measurement_object
             gripper_pose_object.save()
 
-        """e.g. 
+        """ e.g. 
         measurement intel_d435 pointcloud_file, 
         measurement object_instance, 
         entry values property_element_name, 
@@ -428,6 +450,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                     if fk_split[0] == "measurement" and len(potential_sensor_output_objects) == 1:
                         sensor_output_object: SensorOutput = potential_sensor_output_objects[0]
                         sensor_output_object.sensor_output_file = request_data[" ".join(fk_split)]
+                        # print("sensor_output_object.sensor_output_file: ", request_data[" ".join(fk_split)], "type: ", type(request_data[" ".join(fk_split)]))
                         sensor_output_object.save()
                     potential_property_elements = list(filter(lambda x: x.name == fk_split[2], property_element_objects))
                     if fk_split[0] == "entry" and fk_split[1] == "values" and len(potential_property_elements) == 1:

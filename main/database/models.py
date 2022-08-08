@@ -80,7 +80,8 @@ class Measurement(models.Model):
 
 class SensorOutput(models.Model):
     sensor_output_file = models.FileField(null=True)  # , upload_to="outputs/"
-    sensor_output = models.JSONField()
+    sensor_output = models.JSONField(null=True)
+    sensor_output_large = models.FileField(null=True)
     sensor = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='sensor_outputs', )
     parameters = models.JSONField(null=True)  # something like sensor input - sensor parameters during the measurement
     measurements = models.ForeignKey(Measurement, related_name='sensor_outputs', on_delete=models.CASCADE, null=True)
