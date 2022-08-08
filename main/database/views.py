@@ -20,18 +20,17 @@ from django.shortcuts import render
 param_regex = re.compile(r"param[a-z]*")
 
 
-print("STARTIN THE VIEWS YO")
-print(len(SensorOutput.objects.all()))
-for sensor_output_object in SensorOutput.objects.all():  # type: SensorOutput
-    # print(so.sensor_output)
-    sensor_output_values = sensor_output_object.sensor_output
-    # print(sensor_output_values)
-    sensor_file_name = "output" + str(sensor_output_object.id) + ".json"
-    with open(os.path.join(settings.MEDIA_ROOT, sensor_file_name), "w") as f:
-        json.dump(obj=sensor_output_values, fp=f)
-    sensor_output_object.sensor_output_large = sensor_file_name
-    sensor_output_object.save()
-    # exit()
+# print("STARTIN THE VIEWS YO")
+# print(len(SensorOutput.objects.all()))
+# for sensor_output_object in SensorOutput.objects.all():  # type: SensorOutput
+#     # print(so.sensor_output)
+#     sensor_output_values = sensor_output_object.sensor_output
+#     # print(sensor_output_values)
+#     sensor_file_name = "output" + str(sensor_output_object.id) + ".json"
+#     with open(os.path.join(settings.MEDIA_ROOT, sensor_file_name), "w") as f:
+#         json.dump(obj=sensor_output_values, fp=f)
+#     sensor_output_object.sensor_output_large = sensor_file_name
+#     sensor_output_object.save()
 
 
 def api_root(request):
@@ -121,6 +120,15 @@ class MeasurementViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny, )
 
     def perform_create(self, serializer):  # TODO: save functions
+        for sensor_output_object in SensorOutput.objects.all():  # type: SensorOutput
+            # print(so.sensor_output)
+            sensor_output_values = sensor_output_object.sensor_output
+            # print(sensor_output_values)
+            sensor_file_name = "output" + str(sensor_output_object.id) + ".json"
+            with open(os.path.join(settings.MEDIA_ROOT, sensor_file_name), "w") as f:
+                json.dump(obj=sensor_output_values, fp=f)
+            sensor_output_object.sensor_output_large = sensor_file_name
+            sensor_output_object.save()
         # try:
         # for k in self.request.data:
         #     print(k, " : ", self.request.data[k])
