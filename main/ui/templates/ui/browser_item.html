@@ -27,7 +27,7 @@
                         <div class="col">
                             <p style="font-size:150%">
                                 {% if object_instance.dataset is None %}
-                                NULL
+                                null
                                 {% else %}
                                 {{object_instance.dataset}}
                                 {% endif %}
@@ -43,7 +43,7 @@
                         <div class="col">
                             <p style="font-size:150%">
                                 {% if object_instance.dataset_id is None %}
-                                NULL
+                                null
                                 {% else %}
                                 {{object_instance.dataset_id}}
                                 {% endif %}
@@ -59,7 +59,7 @@
                         <div class="col">
                             <p style="font-size:150%">
                                 {% if object_instance.maker is None %}
-                                NULL
+                                null
                                 {% else %}
                                 {{object_instance.maker}}
                                 {% endif %}
@@ -75,7 +75,7 @@
                         <div class="col">
                             <p style="font-size:150%">
                                 {% if object_instance.common_name is None %}
-                                NULL
+                                null
                                 {% else %}
                                 {{object_instance.common_name}}
                                 {% endif %}
@@ -91,7 +91,7 @@
                         <div class="col">
                             <p style="font-size:150%;">
                                 {% if object_instance.other is None %}
-                                NULL
+                                null
                                 {% else %}
                                 {{object_instance.other}}
                                 {% endif %}
@@ -100,6 +100,10 @@
                     </div>
                     <div class="row">
                         <p style="font-size:125%;"> Number of measurements performed on this object: {{measurements}}</p>
+                    </div>
+
+                    <div class="row">
+                        <a class="btn btn-dark" href="/ipalm/rest/object_instances/{{object_instance.id}}/">Database link</a>
                     </div>
                 </div>
             </div>
@@ -143,6 +147,11 @@
     <!--                                    </div>-->
     <!--                                </div>-->
                                 </div>
+                            {% if not user_exists %}
+                            <p>User {{username}} doesn't exist!!!</p>
+                            {% elif not password_matches %}
+                            <p>Password for user {{username}} doesn't match!!!</p>
+                            {% endif %}
                             <div class="submit">
                                 <button type="submit" class="btn btn-block btn-dark">Send Correction</button>
                             </div>

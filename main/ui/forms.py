@@ -12,7 +12,9 @@ dataset_id_str = "dataset_id"
 maker_str = "maker"
 common_name_str = "common_name"
 other_str = "other"
-object_instance_fields = [dataset_str, dataset_id_str, maker_str, common_name_str, other_str]
+user_str = "user"
+password_str = "password"
+object_instance_fields = [dataset_str, dataset_id_str, maker_str, common_name_str, other_str, user_str, password_str]
 
 
 class ObjectInstanceUpdateForm(forms.ModelForm):
@@ -22,6 +24,8 @@ class ObjectInstanceUpdateForm(forms.ModelForm):
     maker = forms.CharField(label=maker_str, required=False)
     common_name = forms.CharField(label=common_name_str, required=False)
     other = forms.CharField(label=other_str, required=False)
+    user = forms.CharField(label=user_str, required=True)
+    password = forms.CharField(label=user_str, widget=forms.PasswordInput, required=True)
 
     class Meta:
         model = ObjectInstance
@@ -33,6 +37,7 @@ class ObjectInstanceUpdateForm(forms.ModelForm):
         maker = self.cleaned_data.get(maker_str)
         common_name = self.cleaned_data.get(common_name_str)
         other = self.cleaned_data.get(other_str)
+        # print("self.cleaned_data: ", self.cleaned_data)
         # TODO: handle this stuff pls, mkay?
         return super(ObjectInstanceUpdateForm, self).clean(*args, **kwargs)
 

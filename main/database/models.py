@@ -69,6 +69,8 @@ class Measurement(models.Model):
                                         on_delete=models.CASCADE, related_name='measurements', null=True)
     owner = models.ForeignKey('accounts.CustomUser', related_name='measurements', related_query_name='measurement',
                               on_delete=models.PROTECT, null=True)
+    consider_this_ground_truth = models.BooleanField(default=False, null=True)
+    method = models.CharField(max_length=100, null=True)
 
     class Meta:
         ordering = ['created']
@@ -97,6 +99,16 @@ class Pose(models.Model):
 
     class Meta:
         abstract = True
+
+
+class GraspProposal(Pose):
+    number_of_fingers = models.IntegerField(default=2)
+    gripper = models.CharField(max_length=100, null=True)
+    gripper_object = models.ForeignKey(SetupElement, on_delete=models.CASCADE, null=True)
+    source = models.CharField(max_length=100)  # how it was generated
+    parameters = models.JSONField(default=dict)
+    object_instance = models.ForeignKey(ObjectInstance, related_name='grasp_proposal', on_delete=models.CASCADE, null=False)
+    successful_measurement = models.OneToOneField(Measurement, related_name='grasp_proposal', on_delete=models.CASCADE, null=True)
 
 
 class Grasp(Pose):

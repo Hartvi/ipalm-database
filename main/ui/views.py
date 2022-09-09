@@ -5,6 +5,10 @@ from django.views import View
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 from django import forms
 
 # import time
@@ -120,6 +124,7 @@ class BrowserInstanceView(View):
         form.fields[forms.dataset_str].initial = object_instance.dataset
         form.fields[forms.dataset_id_str].initial = object_instance.dataset_id
         form.fields[forms.other_str].initial = object_instance.other
+        form.fields[forms.other_str].initial = object_instance.other
 
         measurement_for_this_instance = Measurement.objects.filter(object_instance=object_instance)
         number_of_pictures = 0
@@ -140,6 +145,14 @@ class BrowserInstanceView(View):
                         break
         imgs = imgs if len(imgs) > 0 else [static_prefix+placeholder_img]
         context = {"object_instance": object_instance, "imgs": imgs, "form": form, "measurements": len(Measurement.objects.filter(object_instance=object_instance))}
+        context["user_exists"] = True
+        context["password_matches"] = True
+        kwargs_context = kwargs.get("context")
+        # print("kwargs_context: ", kwargs_context)
+        if kwargs_context:
+            form.fields[forms.user_str].initial = kwargs_context.get("username", "")
+            for k in kwargs_context:
+                context[k] = kwargs_context[k]
 
         previous_page = request.session.get("arguments")
         if previous_page is not None:
@@ -155,6 +168,7 @@ class BrowserInstanceView(View):
         # self.object_instance = object_instance
         # print("self.object_instance: ", self.object_instance)
         request.session["id"] = object_instance.id
+        # print("context: ", context)
         return render(request, self.template_name, context=context)  # {'butler_example': md_templates['butler_example']})
 
     def post(self, request, *args, **kwargs):
@@ -162,6 +176,21 @@ class BrowserInstanceView(View):
         form = self.form_class(request.POST)
         if form.is_valid():
             clean_data = form.cleaned_data
+            user = dict_get_empty_to_none(clean_data, "user")
+            password = dict_get_empty_to_none(clean_data, "password")
+            server_user = User.objects.filter(username=user).first()
+            # print("User.objects.filter(username=user): ", User.objects.filter(username=user).first())
+            if server_user is None:
+                # print("kwargs: ", kwargs)
+                # print("username doesnt exist yo")
+                context = {"username": user, "user_exists": False}
+                return self.get(request, request.session["id"], context=context)
+            matchcheck = check_password(password, server_user.password)
+            if not matchcheck:
+                # print("username doesnt exist yo")
+                context = {"username": user, "password_matches": False, "user_exists": True}
+                return self.get(request, request.session["id"], context=context)
+            # print("matchcheck: ", matchcheck)
             dataset = dict_get_empty_to_none(clean_data, "dataset")
             dataset_id = dict_get_empty_to_none(clean_data, "dataset_id")
             maker = dict_get_empty_to_none(clean_data, "maker")

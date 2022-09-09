@@ -24,6 +24,11 @@ NOTE: `python manage.py runserver` is by default only for http, for SSL or Postg
 
 ### TODO
 - Todo: data visualization
+- done: link to REST object instance from the visual browser
+- done: add how to run post_measurement() in the tutorial
+- add measurement method field, e.g. grasp, poke, to the serializer and view create method
+- add drag & drop + its tutorial
+- benchmark
 - upload OSF things - formatting is done
   - a new need has arisen
   - TODO: always use files to save sensor outputs. even raw JSON can be 15 MB which is extremely slow to load even from my own disc, let alone over the internet as a gazillion lines of text

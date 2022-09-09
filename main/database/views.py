@@ -38,6 +38,19 @@ def api_root(request):
     return render(request=request, template_name=template_name, context={})
 
 
+class GraspProposalViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = GraspProposal.objects.all()
+    serializer_class = GraspProposalSerializer
+
+    # TODO: do the create thing
+    def perform_create(self, serializer):  # TODO: save functions
+        request_data = self.request.data
+        data_dict = json.loads(request_data["grasp_proposal"])
+
+        grap_proposal_object = serializer.save()  # type: GraspProposal
+        pass
+
+
 class SetupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Setup.objects.all()
     serializer_class = SetupSerializer
@@ -120,35 +133,14 @@ class MeasurementViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny, )
 
     def perform_create(self, serializer):  # TODO: save functions
-        for sensor_output_object in SensorOutput.objects.all():  # type: SensorOutput
-            # print(so.sensor_output)
-            sensor_output_values = sensor_output_object.sensor_output
-            # print(sensor_output_values)
-            sensor_file_name = "output" + str(sensor_output_object.id) + ".json"
-            with open(os.path.join(settings.MEDIA_ROOT, sensor_file_name), "w") as f:
-                json.dump(obj=sensor_output_values, fp=f)
-            sensor_output_object.sensor_output_large = sensor_file_name
-            sensor_output_object.save()
-        # try:
-        # for k in self.request.data:
-        #     print(k, " : ", self.request.data[k])
-        # meas_img = self.request.data['png']
-        # # sensor outputs:
-        # # print(self.request.data)
-        # data_items = list(self.request.data.items())
-        # json_data_list = list(filter(lambda x: "measurement" == x[0], data_items))[0]
-        #
-        # im = list(filter(lambda x: "png" == x[0], data_items))[0]
-        # data_dict = json.loads(json_data_list[1])
-        # "object_instance .*file.*", "measurement {setup_element} {quantity}", "entry {property_element} .*file.*"
-        lvl1_key_radicals = ["object_instance", "measurement", "entry"]
         request_data = self.request.data
         file_keys = request_data.keys()
-        # print("file_keys:", file_keys)
+
         data_dict = json.loads(request_data["measurement"])
 
         measurement_dict = data_dict["measurement"]
         entry_dict = data_dict.get("entry")
+        entries_dict = data_dict.get("entries")
         sensor_output_dict: dict = measurement_dict["sensor_outputs"]
 
         # SETUP & SETUP ELEMENT & SENSOR OUTPUT
@@ -270,6 +262,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         # ENTRY
         # TODO: add the Measurement to this object below
         if entry_dict is not None:
+            # GraspProposal.objects.create()
             entry_object = Entry.objects.create(
                 owner=self.request.user,
                 repository=entry_dict["repository"],
@@ -401,10 +394,14 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 common_name=object_instance.get("common_name"),
                 other=object_instance.get("other", {}),
             )
+        method = measurement_dict.get("method", False)
+        consider_this_ground_truth = measurement_dict.get("consider_this_ground_truth")
         measurement_object = serializer.save(
             owner=self.request.user,
             # png=meas_img,
             setup=the_setup,
+            consider_this_ground_truth=consider_this_ground_truth,
+            method=method,
             grasp=grasp_object,
             object_pose=object_pose_object,
             gripper_pose=gripper_pose_object,

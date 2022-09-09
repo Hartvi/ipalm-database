@@ -4,17 +4,59 @@
 <!--<script src="prism.js"></script>-->
 {% load static %}
 
-<div align="center"><div class="padded threequarters">
+<div class="padded">
+    <h2>Contents</h2>
+    <ol>
+        <li style="font-size:150%"><a class="text-info" href="#manual_upload">Manual Uploading</a></li>
+        <li style="font-size:150%"><a class="text-info" href="#script_upload">Script Uploading</a></li>
+        <li style="font-size:150%"><a class="text-info" href="#callnig">Calling the upload function</a></li>
+    </ol>
+</div>
+<div align="center"><div class="padded threequarters" id="manual_upload">
     <!-- titles belong in a padded class-->
-    <div class="padded"><h1>How to use the Butler module - uploading</h1></div>
+    <div class="padded"><h1>How to upload manually</h1></div>
     <div align="left"> <!-- text belongs in a left align -->
-        To upload a single formatted JSON dictionary, as explained <a href="/ipalm/tutorial/butler_format/">here</a> , use the <tt>post_measurement</tt> function as follows.
+    </div>
+</div></div>
+
+<div class="padded">
+    <h2>Contents</h2>
+    <ol>
+        <li style="font-size:150%"><a class="text-info" href="#manual_upload">Manual Uploading</a></li>
+        <li style="font-size:150%"><a class="text-info" href="#script_upload">Script Uploading</a></li>
+        <li style="font-size:150%"><a class="text-info" href="#callnig">Calling the upload function</a></li>
+    </ol>
+</div>
+<div align="center"><div class="padded threequarters" id="script_upload">
+    <!-- titles belong in a padded class-->
+    <div class="padded"><h1>Butler module - Script Uploading</h1></div>
+    <div align="left"> <!-- text belongs in a left align -->
+        Use the following JSON files as reference if you want to upload data that you have already generated:<br><a href="https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries" target="_blank" rel="noopener noreferrer">https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries</a><br>
+<!--        <br>-->
+<!--        To upload your formatted JSON files, see the <a href="/ipalm/tutorial/butler_upload/">uploading tutorial</a>.-->
+        <br>
+
+        The dictionaries are processed in Butler's <a href="https://github.com/Hartvi/butler/blob/7bba0db8ddcdae15f43fd45f3de5ac0af30a028e/butler/uploading.py#L79-L132" target="_blank" rel="noopener noreferrer"><tt>post_measurement()</tt></a> function.
+        On line 17 in the following example, the absolute path to the <a href="https://github.com/Hartvi/butler/blob/main/example_upload_dictionaries/upload_dict_2022_04_29_16_51_04_cat-vision_0.json#L17" target="_blank" rel="noopener noreferrer"><tt>img_cam1.png</tt></a> file acts as a proxy for the actual file.
+        When this dictionary is plugged into Butler's <tt>post_measurement()</tt> function, the absolute path will be replaced with just <tt>img_cam1.png</tt> and the file located on the original absolute path will be opened and its bytes uploaded.
+        <br><br>
+        <script src="https://gist.github.com/Hartvi/7357dd4db4cdefb7056f2b7489673fbd.js"></script>
+        <!--        When uploading, the following steps are recommended to be taken:-->
+        <!--        <div class="padded">-->
+        <!--            1. In the JSON you want to upload, find any absolute references to files, e.g. <tt>/abs/path/to/file.png</tt><br>-->
+        <!--            2. Replace absolute paths with the base file names. E.g. <tt>"/abs/path/to/file.png" => "file.png"</tt><br>-->
+        <!--            3. The file bytes are loaded from the absolute file paths and added to the request's <tt>request.files</tt> attribute with the base name as the key, i.e. <tt>{"file.png": open("abs/path/to/file.png")}</tt><br>-->
+        <!--            4. The uploading happens. See <a href="/ipalm/tutorial/butler_upload/">here</a> for the tutorial on how the uploading module works.<br>-->
+        <!--        </div>-->
+<!--        <br><br>-->
+        <br><br>
+        <h2 id="calling">Calling the upload function</h2>
+        To upload a single formatted JSON dictionary, as explained <a href="/ipalm/tutorial/butler_format/">here</a>, use the <tt>post_measurement</tt> function as follows.
         <br><br>
         <script src="https://gist.github.com/Hartvi/11ecad92e4aa92d31e9e3077153d41ad.js"></script>
         <br>
         The Butler module keeps track of which dictionaries have been uploaded in the file <tt>butler/uploaded_dicts.json</tt>.
         You can therefore use the following function to upload all not yet uploaded dictionaries.
-        Even if it is called multiple times it will not upload duplicates.
         <br><br>
         <script src="https://gist.github.com/Hartvi/5f195d0fc8fa57fdd9ada87684997b95.js"></script>
         <br><br>

@@ -4,31 +4,36 @@
 <!--<script src="prism.js"></script>-->
 {% load static %}
 
-<div align="center"><div class="padded threequarters">
-    <!-- titles belong in a padded class-->
-    <div class="padded"><h1>How to use the Butler module - formatting</h1></div>
-    <div align="left"> <!-- text belongs in a left align -->
-        When you have recorded some experiments in the format from the <a href="/ipalm/tutorial/butler/">recording tutorial</a>, you can then easily process those experiments using another script from the Butler module <a href="https://github.com/Hartvi/butler/blob/main/butler/pipeline.py" target="_blank" rel="noopener noreferrer">pipeline.py</a>, or as you can see in the example below.
-        <br>
-        <br>
-        <script src="https://gist.github.com/Hartvi/93e0aea5751341f0e5e08ddd9fe9a888.js"></script>
-        <br>
-        The above code snippet fill an <tt>upload_dicts</tt> folder with <i>almost</i> uploadable JSON dictionaries, see <a href="https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries" target="_blank" rel="noopener noreferrer">https://github.com/.../example_upload_dictionaries</a> for some examples.
-        In the example file <a href="https://github.com/Hartvi/butler/blob/main/example_upload_dictionaries/upload_dict_2022_04_29_16_51_04_cat-vision_0.json" target="_blank" rel="noopener noreferrer">upload_dict_2022_04_29_16_51_04_cat-vision_0.json</a>, there is shown a part which prevents the JSON files from being uploadable as is.
-        The cause of this inconvenience is the occasional need to provide files in the POST request to the database, see the below example.
-        <br>
-        <br>
-        <script src="https://gist.github.com/Hartvi/5efc19637429b46507a44bc6e8c409b3.js"></script>
-        <br>
-        In the final uploading step of Butler's pipeline the following happens:
-        <div class="padded">
-            1. JSONs are searched through for any absolute references to files, e.g. <tt>/abs/path/to/file.png</tt>.<br>
-            2. Absolute paths are replaced with the file names. E.g. <tt>"/abs/path/to/file.png" => "file.png"</tt><br>
-            3. The file bytes are loaded from the absolute file paths and added to the request's <tt>request.files</tt> attribute with the base name as the key, i.e. <tt>{"file.png": open("abs/path/to/file.png")}</tt><br>
-            4. The uploading happens. See <a href="/ipalm/tutorial/butler_upload/">here</a> for the tutorial on how the uploading module works.<br>
+<div align="center">
+    <div class="padded threequarters">
+        <!-- titles belong in a padded class-->
+        <div class="padded"><h1>How to use the Butler module - formatting</h1></div>
+        <div align="left"> <!-- text belongs in a left align -->
+            When you have recorded some experiments in the format from the <a href="/ipalm/tutorial/butler/">recording tutorial</a>, you can then easily process those experiments using another script from the Butler module <a href="https://github.com/Hartvi/butler/blob/main/butler/pipeline.py" target="_blank" rel="noopener noreferrer">pipeline.py</a>, or as you can see in the example below.
+            <br>
+            <br>
+            <script src="https://gist.github.com/Hartvi/93e0aea5751341f0e5e08ddd9fe9a888.js"></script>
+            <br>
+            The above code snippet fills the <tt>upload_dicts/</tt> folder with <i>almost</i> uploadable JSON dictionaries, see below or here: <a href="https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries" target="_blank" rel="noopener noreferrer">https://github.com/.../example_upload_dictionaries</a> for some examples.
+            <br><br>
+            <script src="https://gist.github.com/Hartvi/7357dd4db4cdefb7056f2b7489673fbd.js"></script>
+    <!--        <br>-->
+    <!--        In the example file <a href="https://github.com/Hartvi/butler/blob/main/example_upload_dictionaries/upload_dict_2022_04_29_16_51_04_cat-vision_0.json" target="_blank" rel="noopener noreferrer">upload_dict_2022_04_29_16_51_04_cat-vision_0.json</a>, there is shown a part which prevents the JSON files from being uploadable as is.-->
+    <!--        The cause of this inconvenience is the occasional need to provide files in the POST request to the database, see the below example.-->
+    <!--        <br>-->
+    <!--        <br>-->
+    <!--        <script src="https://gist.github.com/Hartvi/5efc19637429b46507a44bc6e8c409b3.js"></script>-->
+    <!--        <br>-->
+            In the final uploading step of Butler's pipeline the following happens:
+            <div class="padded">
+                1. JSONs are searched through for any absolute references to files, e.g. <tt>/abs/path/to/file.png</tt>.<br>
+                2. Absolute paths are replaced with the file names. E.g. <tt>"/abs/path/to/file.png" => "file.png"</tt><br>
+                3. The file bytes are loaded from the absolute file paths and added to the request's <tt>request.files</tt> attribute with the base name as the key, i.e. <tt>{"file.png": open("abs/path/to/file.png")}</tt><br>
+                4. The uploading happens. See <a href="/ipalm/tutorial/butler_upload/">here</a> for the tutorial on how the uploading module works.<br>
+            </div>
+            <br><br>
+            <br><br>
         </div>
-        <br><br>
-        <br><br>
     </div>
-</div></div>
+</div>
 {% endblock content %}

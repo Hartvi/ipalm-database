@@ -4,50 +4,99 @@
 <!--<script src="prism.js"></script>-->
 {% load static %}
 
-<div align="center"><div class="padded threequarters">
-    <!-- titles belong in a padded class-->
-    <div class="padded"><h1>How to use the Butler module - recording</h1></div>
-    <div align="left"> <!-- text belongs in a left align -->
-        The crux of the data collector module is the Butler decorator class.
-        Butler enables users to record 'experiments' and organize them into a directory structure, see <a href="#butler_directories">Figure 1</a>, which can then be processed and uploaded to the server.<br>
-        <br>
-        <div align="center"><div id="butler_directories"><img src="/ipalm/static/butler_directories.png" width="30%"><br>Figure 1. The directory structure that Butler generates upon being run once on a data function.</div></div>
-        <br>
-        The simplest arguments with which the decorator can be called with are <tt>setup_file</tt> and <tt>data_variables</tt>.<br>
-        <br>
-        <div id="base_args"><script src="https://gist.github.com/Hartvi/df8654167f5d3a8dfbf60dd40edf2ee3.js"></script></div>
-        <br>
-        A basic usage of Butler is shown in the next <a href="#base_usage">example</a>.
-        There is a <tt>data_variable</tt> plugged into the <tt>data_variables</tt> argument.
-        This <tt>data_variable</tt> variable has to be visible <b>outside</b> of the scope of the <tt>my_data_function</tt>.
-        In our case it has to be a global variable.
-        Butler, like all decorators, only has access to the arguments and return value of the decorated function.
-        <br><br>
-        The <tt>"sensor_outputs"</tt> field in the data function's return value (<tt>ret</tt>) has the same function as Butler's <tt>data_variables=("data_variable", )</tt> argument in this case.<br>
-        <br>
-        <div id="base_usage"><script src="https://gist.github.com/Hartvi/2a19b69d97594cc2dcf1a79b045db472.js"></script></div>
-        <br>
-        The next <a href="#normal_usage">example</a> contains a sample usage of Butler.
-        In this case we are decorating a <tt>divide</tt> function that is inside a <tt>TestClass</tt>.
-        Note the <tt>self.data_variables</tt> is visible from Butler's perspective - Butler sees the <tt>divide</tt> function's input arguments, therefore the <tt>self</tt> is visible.
-        <br>
-        <br>
-        What is new here compared to the previous example is:<br>
-        <div class="padded">
-            1. On line 8: The <tt>keywords="[INFO]"</tt> argument, whose function you can read up on in the code.<br>
-            2. On line 27: The <tt>add_object_context</tt> function, which, you, as a human, can fill out. The 'context' then acts as ground truth.<br>
-            3. On line 38: <tt>Butler.add_tmp_files(r"../unused/tests/setup_cropped.png", "data", "pointcloud.png")</tt> - this copies the file <tt>"...setup_cropped.png"</tt> to the <tt>"data"</tt> directory (can be "figs", "imgs") and renames the source file to <tt>"pointcloud.png"</tt>.<br>
-            4. On line 40: <tt>Butler.add_measurement_png(r"../unused/tests/setup_cropped.png")</tt> adds the image just for context.<br>
-            5. On line 43 & 46: We just add the <tt>gripper_pose</tt> & <tt>object_pose</tt> to get the grasp used in this measurement.<br>
-        </div>
+<div class="padded">
+    <h2>Contents</h2>
+    <ol>
+        <li style="font-size:150%"><a class="text-info" href="#recording">Recording</a></li>
+        <li style="font-size:150%"><a class="text-info" href="#formatting">Formatting</a></li>
+    </ol>
+</div>
+<div align="center" id="recording">
+    <div class="padded threequarters">
+        <!-- titles belong in a padded class-->
+        <div class="padded"><h1>Butler module - Recording</h1></div>
+        <div align="left"> <!-- text belongs in a left align -->
+            The crux of the data collector module is the Butler decorator class.
+            Butler enables users to record 'experiments' and organize them into a directory structure, see <a href="#butler_directories">Figure 1</a>, which can then be processed and uploaded to the server.<br>
+            <br>
+            <div align="center"><div id="butler_directories"><img src="/ipalm/static/butler_directories.png" width="30%"><br>Figure 1. The directory structure that Butler generates upon being run once on a data function.</div></div>
+            <br>
+            The simplest arguments with which the decorator can be called with are <tt>setup_file</tt> and <tt>data_variables</tt>.<br>
+            <br>
+            <div id="base_args"><script src="https://gist.github.com/Hartvi/df8654167f5d3a8dfbf60dd40edf2ee3.js"></script></div>
+            <br>
+            A basic usage of Butler is shown in the next <a href="#base_usage">example</a>.
+            There is a <tt>data_variable</tt> plugged into the <tt>data_variables</tt> argument.
+            This <tt>data_variable</tt> variable has to be visible <b>outside</b> of the scope of the <tt>my_data_function</tt>.
+            In our case it has to be a global variable.
+            Butler, like all decorators, only has access to the arguments and return value of the decorated function.
+            <br><br>
+            The <tt>"sensor_outputs"</tt> field in the data function's return value (<tt>ret</tt>) has the same function as Butler's <tt>data_variables=("data_variable", )</tt> argument in this case.<br>
+            <br>
+            <div id="base_usage"><script src="https://gist.github.com/Hartvi/2a19b69d97594cc2dcf1a79b045db472.js"></script></div>
+            <br>
+            The next <a href="#normal_usage">example</a> contains a sample usage of Butler.
+            In this case we are decorating a <tt>divide</tt> function that is inside a <tt>TestClass</tt>.
+            Note the <tt>self.data_variables</tt> is visible from Butler's perspective - Butler sees the <tt>divide</tt> function's input arguments, therefore the <tt>self</tt> is visible.
+            <br>
+            <br>
+            What is new here compared to the previous example is:<br>
+            <div class="padded">
+                1. On line 8: The <tt>keywords="[INFO]"</tt> argument, whose function you can read up on in the code.<br>
+                2. On line 27: The <tt>add_object_context</tt> function, which, you, as a human, can fill out. The 'context' then acts as ground truth.<br>
+                3. On line 38: <tt>Butler.add_tmp_files(r"../unused/tests/setup_cropped.png", "data", "pointcloud.png")</tt> - this copies the file <tt>"...setup_cropped.png"</tt> to the <tt>"data"</tt> directory (can be "figs", "imgs") and renames the source file to <tt>"pointcloud.png"</tt>.<br>
+                4. On line 40: <tt>Butler.add_measurement_png(r"../unused/tests/setup_cropped.png")</tt> adds the image just for context.<br>
+                5. On line 43 & 46: We just add the <tt>gripper_pose</tt> & <tt>object_pose</tt> to get the grasp used in this measurement.<br>
+            </div>
 
-        <br>
-        <div id="normal_usage"><script src="https://gist.github.com/Hartvi/90d7d8d3318dcdd28e4823721b1f4acd.js"></script></div>
-        <br>
-        If you need the decorated data function to still return its original values, just add the argument <tt>output_variable_name</tt> (Line 6) to Butler.
-        <br>
-        <br>
-        <div id="nonintrusive"><script src="https://gist.github.com/Hartvi/d355e9bfbad2054104edf4c3091995ca.js"></script></div>
+            <br>
+            <div id="normal_usage"><script src="https://gist.github.com/Hartvi/90d7d8d3318dcdd28e4823721b1f4acd.js"></script></div>
+            <br>
+            If you need the decorated data function to still return its original values, just add the argument <tt>output_variable_name</tt> (Line 6) to Butler.
+            <br>
+            <br>
+            <div id="nonintrusive"><script src="https://gist.github.com/Hartvi/d355e9bfbad2054104edf4c3091995ca.js"></script></div>
+        </div>
     </div>
-</div></div>
+</div>
+
+<div class="padded">
+    <h2>Contents</h2>
+    <ol>
+        <li style="font-size:150%"><a class="text-info" href="#recording">Recording</a></li>
+        <li style="font-size:150%"><a class="text-info" href="#formatting">Formatting</a></li>
+    </ol>
+</div>
+<div align="center" id="formatting">
+    <div class="padded threequarters">
+        <!-- titles belong in a padded class-->
+        <div class="padded"><h1>Butler module - Formatting</h1></div>
+        <div align="left"> <!-- text belongs in a left align -->
+            When you have recorded some experiments in the format from the <a href="/ipalm/tutorial/butler/">recording tutorial</a>, you can then easily process those experiments using another script from the Butler module <a href="https://github.com/Hartvi/butler/blob/main/butler/pipeline.py" target="_blank" rel="noopener noreferrer">pipeline.py</a>, or as you can see in the example below.
+            <br>
+            <br>
+            <script src="https://gist.github.com/Hartvi/93e0aea5751341f0e5e08ddd9fe9a888.js"></script>
+            <br>
+            The above code snippet fills the <tt>upload_dicts/</tt> folder with <i>almost</i> uploadable JSON dictionaries, see below or here: <a href="https://github.com/Hartvi/butler/tree/main/example_upload_dictionaries" target="_blank" rel="noopener noreferrer">https://github.com/.../example_upload_dictionaries</a> for some examples.
+            <br><br>
+            <script src="https://gist.github.com/Hartvi/7357dd4db4cdefb7056f2b7489673fbd.js"></script>
+            <!--        <br>-->
+            <!--        In the example file <a href="https://github.com/Hartvi/butler/blob/main/example_upload_dictionaries/upload_dict_2022_04_29_16_51_04_cat-vision_0.json" target="_blank" rel="noopener noreferrer">upload_dict_2022_04_29_16_51_04_cat-vision_0.json</a>, there is shown a part which prevents the JSON files from being uploadable as is.-->
+            <!--        The cause of this inconvenience is the occasional need to provide files in the POST request to the database, see the below example.-->
+            <!--        <br>-->
+            <!--        <br>-->
+            <!--        <script src="https://gist.github.com/Hartvi/5efc19637429b46507a44bc6e8c409b3.js"></script>-->
+            <!--        <br>-->
+            In the final uploading step of Butler's pipeline the following happens:
+            <div class="padded">
+                1. JSONs are searched through for any absolute references to files, e.g. <tt>/abs/path/to/file.png</tt>.<br>
+                2. Absolute paths are replaced with the file names. E.g. <tt>"/abs/path/to/file.png" => "file.png"</tt><br>
+                3. The file bytes are loaded from the absolute file paths and added to the request's <tt>request.files</tt> attribute with the base name as the key, i.e. <tt>{"file.png": open("abs/path/to/file.png")}</tt><br>
+                4. The uploading happens. See <a href="/ipalm/tutorial/butler_upload/">here</a> for the tutorial on how the uploading module works.<br>
+            </div>
+            <br><br>
+            <br><br>
+        </div>
+    </div>
+</div>
 {% endblock content %}

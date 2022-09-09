@@ -53,6 +53,21 @@ class ObjectPoseSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {'url': {'view_name': 'database:object_pose-detail'}}
 
 
+class GraspProposalSerializer(serializers.HyperlinkedModelSerializer):
+
+    gripper_object = serializers.HyperlinkedRelatedField(view_name='database:setup_element-detail', read_only=True)
+    object_instance = serializers.HyperlinkedRelatedField(
+        many=False,
+        read_only=True,
+        view_name='database:object_instance-detail',  # this is predefined in the django rest framework as "[object_name]-detail"
+    )
+
+    class Meta:
+        model = ObjectPose
+        fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:grasp_proposal-detail'}}
+
+
 class GripperPoseSerializer(serializers.HyperlinkedModelSerializer):
 
     measurement = serializers.HyperlinkedRelatedField(view_name='database:measurement-detail', read_only=True)
@@ -124,6 +139,26 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
         return data
 
 
+def validate_entry(entry):
+    if entry:
+        if not validation.check_key_existences(entry, validation.measurement_entry_keys):
+            raise serializers.ValidationError(
+                "req[\"entry\"] keys do not match: " + str(validation.measurement_entry_keys) + " vs " + str(
+                    entry.keys()))
+
+        values = entry["values"]
+        for value in values:
+            if not validation.check_key_existences(value, validation.entry_value_key_groups):
+                raise serializers.ValidationError(
+                    "req[\"entry\"][\"values\"] keys do not match: " + str(entry["values"]) + " vs " + str(
+                        validation.entry_value_key_groups))
+
+        if entry["type"] != "categorical":
+            for k, i in enumerate(entry["values"]):
+                if "std" not in i:
+                    raise serializers.ValidationError("std not in non-categorical entry " + str(k))
+
+
 class SensorOutputSerializer(serializers.HyperlinkedModelSerializer):
 
     sensor = serializers.HyperlinkedRelatedField(view_name='database:setup_element-detail', read_only=True)
@@ -192,20 +227,12 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
         #     raise serializers.ValidationError("Content or an Image must be provided")
 
         entry = data_dict.get("entry", None)
-        if entry:
-            if not validation.check_key_existences(entry, validation.measurement_entry_keys):
-                raise serializers.ValidationError("req[\"entry\"] keys do not match: "+str(validation.measurement_entry_keys)+" vs "+str(entry.keys()))
-
-            values = entry["values"]
-            for value in values:
-                if not validation.check_key_existences(value, validation.entry_value_key_groups):
-                    raise serializers.ValidationError("req[\"entry\"][\"values\"] keys do not match: "+str(entry["values"]) + " vs " + str(validation.entry_value_key_groups))
-
-            if entry["type"] != "categorical":
-                for k, i in enumerate(entry["values"]):
-                    if "std" not in i:
-                        raise serializers.ValidationError("std not in non-categorical entry "+str(k))
-
+        if entry is not None:
+            validate_entry(entry)
+        entries = data_dict.get("entries", None)
+        if entries is not None:
+            for e in entries:
+                validate_entry(e)
         # print("grasp: ", grasp)
         # if grasp is None:
             # print("entry[\"name\"]", entry["name"])
