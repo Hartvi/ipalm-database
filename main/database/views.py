@@ -140,7 +140,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
 
         measurement_dict = data_dict["measurement"]
         entry_dict = data_dict.get("entry")
-        entries_dict = data_dict.get("entries")
+        entries_dict = data_dict.get("entries", list())
         sensor_output_dict: dict = measurement_dict["sensor_outputs"]
 
         # SETUP & SETUP ELEMENT & SENSOR OUTPUT
@@ -261,16 +261,21 @@ class MeasurementViewSet(viewsets.ModelViewSet):
 
         # ENTRY
         # TODO: add the Measurement to this object below
+        entry_objects = list()
         if entry_dict is not None:
+            entries_dict.append(entry_dict)
+        for ed in entries_dict:
             # GraspProposal.objects.create()
             entry_object = Entry.objects.create(
                 owner=self.request.user,
-                repository=entry_dict["repository"],
-                type=entry_dict["type"],
-                name=entry_dict["name"]
+                repository=ed.get("repository"),
+                type=ed["type"],
+                name=ed["name"],
+                ground_truth=ed.get("ground_truth", False)
             )
+            entry_objects.append(entry_object)
             property_element_objects = list()
-            for val in entry_dict["values"]:
+            for val in ed["values"]:
                 v = val.get("probability")
                 if v is None:
                     # print("val:", val)
@@ -411,9 +416,10 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             # print(soo.sensor.name)
             soo.measurements = measurement_object
             soo.save()
-        if entry_dict is not None:
-            entry_object.measurement = measurement_object
-            entry_object.save()
+        if entry_dict is not None or entries_dict is not None:
+            for entry_object in entry_objects:
+                entry_object.measurement = measurement_object
+                entry_object.save()
         if grasp_object is not None:
             grasp_object.measurement = measurement_object
             grasp_object.save()

@@ -138,6 +138,7 @@ class Entry(models.Model):
                               on_delete=models.PROTECT, null=True)
     type = models.CharField(max_length=100, null=True)  # categorical => ignore std's, continuous, others
     name = models.CharField(max_length=100, null=True)  # e.g. {"type": "continuous", "name": "size"}
+    ground_truth = models.BooleanField(null=True, default=False)  # e.g. measured with a professional setup
 
     class Meta:
         ordering = ['created']
