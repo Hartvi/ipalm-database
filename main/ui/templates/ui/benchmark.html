@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!--<script src="prism.js"></script>-->
+{% load static %}
+{% load browser_extras %}
+<div class="padded">
+    <div align="center">
+        <h2>Explore object instances</h2>
+        Press <i>enter</i> to search all pages.
+        <div style="width:70%;">
+            <div class="padded">
+                <div class="left">
+                    <div class="border">
+                        <div class="padded">
+                            <input type="text" id="mySearch" onkeyup="simpleSearch()" placeholder="Search object instances.."
+                                   title="Type in a category" class="form-control" onkeypress="browserSearch(event)" value="{% if q is not None %}{{q}}{% endif %}">
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="pagination">
+                        <div class="border">
+                            <div class="padded">
+                                <span class="step-links">
+                                    {% if page_obj.has_previous %}
+                                        <a href="?{% if q is not None %}q={{q}}&{% endif %}page=1" class="btn btn-secondary">&laquo; first</a>
+                                        <a href="?{% if q is not None %}q={{q}}&{% endif %}page={{ page_obj.previous_page_number }}" class="btn btn-secondary">previous</a>
+                                    {% endif %}
+
+                                    <span class="current">
+                                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                    </span>
+
+                                    {% if page_obj.has_next %}
+                                        <a href="?{% if q is not None %}q={{q}}&{% endif %}page={{ page_obj.next_page_number }}" class="btn btn-secondary">next</a>
+                                        <a href="?{% if q is not None %}q={{q}}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="btn btn-secondary">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br><br><br>
+
+        <div class="padded">
+            <div class="center">
+                <ul id="myMenu" class="col-sm-12 list-unstyled">
+                    {% for o in object_instances %}
+                    <li style="">
+                        <div class="col-sm-4">
+                            <a href="/ipalm/browser/object_instance/{{o.id}}/" class="btn btn-dark">
+                                {% if o.common_name is not None %}
+                                {{o.common_name}}
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="col-sm-4">
+                        </div>
+                        <br>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+

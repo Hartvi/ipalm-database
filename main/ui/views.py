@@ -60,6 +60,34 @@ def home_view(request):
     return render(request=request, template_name=template_name, context=home_context)
 
 
+class BenchmarkView(View):
+    template_name = 'ui/benchmark.html'
+
+    def get(self, request, *args, **kwargs):
+        # source quantity, target quantity
+        # source_quantity = request.GET.get("source")
+        # target_quantity = request.GET.get("target")
+        # print(target_quantity, source_quantity)
+        # if target_quantity is None:
+        #     target_entries = Entry.objects.all()
+        # else:
+        #     all_entries = Entry.objects.filter(Q(name__contains=target_quantity))
+        # for entry in all_entries:
+
+        # Entry.object.filter(Q(name__contains=''))
+        context = {}
+        setup_elements = SetupElement.objects.all()
+        object_instances = ObjectInstance.objects.all()
+        entries = Entry.objects.all()
+        # for o in object_instances:
+        context["setup_elements"] = setup_elements
+        context["object_instances"] = object_instances
+        context["entries"] = entries
+        # if target_quantity is None:
+        #     context["target_quantity"] = False
+        return render(request, self.template_name, context=context)  # {'butler_example': md_templates['butler_example']})
+
+
 class BrowserHomeView(View):
     template_name = 'ui/browser_home.html'
 
@@ -78,25 +106,6 @@ class BrowserHomeView(View):
         page_objects = page_obj.object_list
 
         instance_imgs = dict()
-        for o in page_objects:
-            measurement_for_this_instance = Measurement.objects.filter(object_instance=o)
-            number_of_pictures = 0
-            imgs = list()
-            for m in measurement_for_this_instance.all():  # type: Measurement
-                if (".png" or ".jpg") in m.png.name and number_of_pictures < 2:
-                    imgs.append(media_prefix+m.png.name)
-                    number_of_pictures += 1
-                sensor_output_for_this_instance = SensorOutput.objects.filter(measurements=m)
-                for so in sensor_output_for_this_instance.all():  # type: SensorOutput
-                    sensor_output = so.sensor_output_file
-                    sensor_output_name = sensor_output.name if sensor_output.name is not None else ""
-                    if sensor_output_name is not None and ((".png" or ".jpg") in sensor_output_name):
-                        if len(imgs) < 3:
-                            imgs.append(media_prefix+sensor_output_name)
-                            number_of_pictures += 1
-                        else:
-                            break
-            instance_imgs[o.id] = imgs if len(imgs) > 0 else [static_prefix+placeholder_img]
         len_objects = len(page_objects)
         half_index = len_objects//2
         first_half = page_objects[:half_index]
@@ -237,5 +246,40 @@ class BrowserInstanceView(View):
             return HttpResponseRedirect("/ipalm/browser/object_instance/" + str(new_instance.id) + "/")
         return self.get(request, request.session["id"], args, kwargs)
 
+
+
+for o in ObjectInstance.objects.all():  # type: ObjectInstance
+    measurement_for_this_instance = Measurement.objects.filter(object_instance=o)
+    # number_of_pictures = 0
+    # imgs = list()
+    for m in measurement_for_this_instance.all():  # type: Measurement
+        png_name = m.png.name
+        if ".png" in png_name or ".jpg" in png_name:
+            object_image_object = ObjectImage.objects.create()  # type: ObjectImage
+            object_image_object.img.name = png_name
+            object_image_object.object_instance = o
+            object_image_object.save()
+            # imgs.append(media_prefix+m.png.name)
+            # number_of_pictures += 1
+        sensor_output_for_this_instance = SensorOutput.objects.filter(measurements=m)
+        for so in sensor_output_for_this_instance.all():  # type: SensorOutput
+            sensor_output = so.sensor_output_file
+            sensor_output_name = sensor_output.name if sensor_output.name is not None else ""
+            if sensor_output_name is not None and (".png" in sensor_output_name or ".jpg" in sensor_output_name):
+                # print("sensour+outptu name", sensor_output_name)
+                object_image_object = ObjectImage.objects.create()  # type: ObjectImage
+                object_image_object.img.name = sensor_output_name
+                object_image_object.object_instance = o
+                print(object_image_object, object_image_object.img, object_image_object.object_instance)
+                object_image_object.save()
+                # imgs.append(media_prefix + sensor_output_name)
+                # number_of_pictures += 1
+            # if sensor_output_name is not None and ((".png" or ".jpg") in sensor_output_name):
+            #     if len(imgs) < 3:
+            #         imgs.append(media_prefix+sensor_output_name)
+            #         number_of_pictures += 1
+            #     else:
+            #         break
+    # instance_imgs[o.id] = imgs if len(imgs) > 0 else [static_prefix+placeholder_img]
 
 

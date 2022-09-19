@@ -78,6 +78,19 @@ class GripperPoseSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {'url': {'view_name': 'database:gripper_pose-detail'}}
 
 
+class ObjectImageSerializer(serializers.HyperlinkedModelSerializer):
+
+    # img = models.FileField(null=True)  # set with object_image.img.name = existing_name and then object_image.save()
+    # object_instance = models.ForeignKey(ObjectInstance,
+    #                                     on_delete=models.CASCADE, related_name='object_images', null=True)
+    object_instance = serializers.HyperlinkedRelatedField(view_name='database:object_instance-detail', read_only=True)
+
+    class Meta:
+        model = ObjectImage
+        fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'database:object_image-detail'}}
+
+
 class PropertyElementSerializer(serializers.HyperlinkedModelSerializer):
 
     entry = serializers.HyperlinkedRelatedField(many=False, view_name='database:entry-detail', read_only=True)

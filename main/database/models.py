@@ -139,6 +139,10 @@ class Entry(models.Model):
     type = models.CharField(max_length=100, null=True)  # categorical => ignore std's, continuous, others
     name = models.CharField(max_length=100, null=True)  # e.g. {"type": "continuous", "name": "size"}
     ground_truth = models.BooleanField(null=True, default=False)  # e.g. measured with a professional setup
+    object_instance = models.ForeignKey(ObjectInstance,
+                                        on_delete=models.CASCADE, related_name='entries', null=True)
+
+    # output_quantity = models.ForeignKey(Quantity, )
 
     class Meta:
         ordering = ['created']
@@ -158,4 +162,18 @@ class PropertyElement(models.Model):  # this should, I think, be possible to bin
     other_file = models.FileField(null=True)  # , upload_to="properties/"
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name='property_element')
 
+
+class OutputQuantity(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class ObjectImage(models.Model):
+    img = models.FileField(null=True)  # set with object_image.img.name = existing_name and then object_image.save()
+    # source_field = models.ForeignKey(models.Model,
+    #                                     on_delete=models.CASCADE, related_name='object_images', null=True)
+    object_instance = models.ForeignKey(ObjectInstance,
+                                        on_delete=models.CASCADE, related_name='object_images', null=True)
+
+
+# class InputQuantity(models.Model):  # this is basically the setup elements
 

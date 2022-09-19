@@ -3,6 +3,7 @@ import os
 import re
 
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.http import HttpResponse
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
@@ -89,6 +90,11 @@ class ObjectInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 class SetupElementViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SetupElement.objects.all()
     serializer_class = SetupElementSerializer
+
+
+class ObjectImageViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ObjectImage.objects.all()
+    serializer_class = ObjectImageSerializer
 
 
 class PropertyElementViewSet(viewsets.ReadOnlyModelViewSet):
@@ -419,6 +425,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
         if entry_dict is not None or entries_dict is not None:
             for entry_object in entry_objects:
                 entry_object.measurement = measurement_object
+                entry_object.object_instance = object_instance_object
                 entry_object.save()
         if grasp_object is not None:
             grasp_object.measurement = measurement_object
@@ -449,8 +456,11 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             for fk_split in fk_levels[1]:
                 if fk_split[0] == "measurement":
                     if fk_split[1] == "png":
-                        measurement_object.png = request_data[" ".join(fk_split)]
+                        measurement_object.png = request_data[" ".join(fk_split)]  # type: models.ImageField
                         measurement_object.save()
+                        object_image_object = ObjectImage.objects.create()  # type: ObjectImage
+                        object_image_object.img.name = measurement_object.png.name
+                        object_image_object.save()
                     elif fk_split[1] == "object_instance":
                         object_instance_object.other_file = request_data[" ".join(fk_split)]
                         object_instance_object.save()
@@ -466,6 +476,10 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                     potential_property_elements = list(filter(lambda x: x.name == fk_split[2], property_element_objects))
                     if fk_split[0] == "entry" and fk_split[1] == "values" and len(potential_property_elements) == 1:
                         property_element_object: PropertyElement = potential_property_elements[0]
-                        property_element_object.other_file = request_data[" ".join(fk_split)]
+                        property_element_object.other_file = request_data[" ".join(fk_split)]  # type: models.FileField
                         property_element_object.save()
+                        if ".png" or ".jpg" in property_element_object.other_file.name:
+                            object_image_object = ObjectImage.objects.create()  # type: ObjectImage
+                            object_image_object.img.name = property_element_object.other_file.name
+                            object_image_object.save()
 

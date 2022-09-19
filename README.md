@@ -24,6 +24,9 @@ NOTE: `python manage.py runserver` is by default only for http, for SSL or Postg
 
 ### TODO
 - Todo: data visualization
+- cache measurements connected to object instances so the browser loads quickly
+  - doing it for images now
+- better tutorial how to upload things - maybe video?
 - done: link to REST object instance from the visual browser
 - done: add how to run post_measurement() in the tutorial
 - add measurement method field, e.g. grasp, poke, to the serializer and view create method

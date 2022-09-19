@@ -16,6 +16,7 @@ app_name = 'ui'
 
 urlpatterns = [
     path('', views.home_view, name='home'),
+    path('benchmark/', views.BenchmarkView.as_view(), name='browser_home'),
     path('browser/', views.BrowserHomeView.as_view(), name='browser_home'),
     path('browser/object_instance/<int:instance_id>/', views.BrowserInstanceView.as_view(), name='browser_item'),
     # path('rest/', include('database.urls', namespace='database')),
