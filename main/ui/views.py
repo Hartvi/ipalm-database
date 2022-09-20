@@ -10,11 +10,13 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 from django import forms
+from main import settings
 
 # import time
 from database.models import *
 from . import forms
 
+import os
 import re
 import json
 
@@ -25,15 +27,18 @@ import json
 # last_time = time.time()
 
 use_ipalm_prefix = True
+# use_ipalm_prefix = False
 ipalm_prefix = "/ipalm"
 
 static_prefix = "/static/"
 media_prefix = "/media/"
-if use_ipalm_prefix:
-    static_prefix = ipalm_prefix + static_prefix
-    media_prefix = ipalm_prefix + media_prefix
-else:
+
+if not use_ipalm_prefix:
     ipalm_prefix = ""
+
+static_prefix = ipalm_prefix + static_prefix
+media_prefix = ipalm_prefix + media_prefix
+# print("media_prefix", media_prefix)
 
 placeholder_img = "placeholder.png"
 
@@ -106,6 +111,9 @@ class BrowserHomeView(View):
         page_objects = page_obj.object_list
 
         instance_imgs = dict()
+        for o in object_instances:
+            instance_imgs[o.id] = list(map(lambda x: x.img.name, ObjectImage.objects.filter(object_instance__id=oid)[:3]))
+        # instance_imgs
         len_objects = len(page_objects)
         half_index = len_objects//2
         first_half = page_objects[:half_index]
@@ -135,23 +143,26 @@ class BrowserInstanceView(View):
         form.fields[forms.other_str].initial = object_instance.other
         form.fields[forms.other_str].initial = object_instance.other
 
-        measurement_for_this_instance = Measurement.objects.filter(object_instance=object_instance)
-        number_of_pictures = 0
-        imgs = list()
-        for m in measurement_for_this_instance.all():  # type: Measurement
-            if (".png" or ".jpg") in m.png.name and number_of_pictures < 5:
-                imgs.append(media_prefix + m.png.name)
-                number_of_pictures += 1
-            sensor_output_for_this_instance = SensorOutput.objects.filter(measurements=m)
-            for so in sensor_output_for_this_instance.all():  # type: SensorOutput
-                sensor_output = so.sensor_output_file
-                sensor_output_name = sensor_output.name if sensor_output.name is not None else ""
-                if sensor_output_name is not None and ((".png" or ".jpg") in sensor_output_name):
-                    if len(imgs) < 10:
-                        imgs.append(media_prefix + sensor_output_name)
-                        number_of_pictures += 1
-                    else:
-                        break
+        # instance_imgs = dict()
+        # for o in object_instances:
+        #     instance_imgs[o.id] = list(map(lambda x: x.img.name, ObjectImage.objects.filter(object_instance__id=oid)[:10]))
+        # measurement_for_this_instance = Measurement.objects.filter(object_instance=object_instance)
+        # number_of_pictures = 0
+        imgs = list(map(lambda x: x.img.name, ObjectImage.objects.filter(object_instance__id=oid)[:10]))
+        # for m in measurement_for_this_instance.all():  # type: Measurement
+        #     if (".png" or ".jpg") in m.png.name and number_of_pictures < 5:
+        #         imgs.append(media_prefix + m.png.name)
+        #         number_of_pictures += 1
+        #     sensor_output_for_this_instance = SensorOutput.objects.filter(measurements=m)
+        #     for so in sensor_output_for_this_instance.all():  # type: SensorOutput
+        #         sensor_output = so.sensor_output_file
+        #         sensor_output_name = sensor_output.name if sensor_output.name is not None else ""
+        #         if sensor_output_name is not None and ((".png" or ".jpg") in sensor_output_name):
+        #             if len(imgs) < 10:
+        #                 imgs.append(media_prefix + sensor_output_name)
+        #                 number_of_pictures += 1
+        #             else:
+        #                 break
         imgs = imgs if len(imgs) > 0 else [static_prefix+placeholder_img]
         context = {"object_instance": object_instance, "imgs": imgs, "form": form, "measurements": len(Measurement.objects.filter(object_instance=object_instance))}
         context["user_exists"] = True
@@ -247,9 +258,28 @@ class BrowserInstanceView(View):
         return self.get(request, request.session["id"], args, kwargs)
 
 
+try:
+    with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "r+") as fp:
+        cached_instances = json.load(fp)
+        # print("using cached instances")
+except:
+    with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "w") as fp:
+        pass
+    cached_instances = dict()
+
 
 for o in ObjectInstance.objects.all():  # type: ObjectInstance
-    measurement_for_this_instance = Measurement.objects.filter(object_instance=o)
+    oid = o.id
+    # print("object instance id:", oid, " number of images:", len(imgs))
+    imgs = ObjectImage.objects.filter(object_instance__id=oid)
+    if len(imgs) > 0:
+        o.has_image = True
+        o.save()
+    if str(oid) not in cached_instances:
+        cached_instances[oid] = True
+    else:
+        continue
+    measurement_for_this_instance = Measurement.objects.filter(object_instance__id=oid)
     # number_of_pictures = 0
     # imgs = list()
     for m in measurement_for_this_instance.all():  # type: Measurement
@@ -270,7 +300,7 @@ for o in ObjectInstance.objects.all():  # type: ObjectInstance
                 object_image_object = ObjectImage.objects.create()  # type: ObjectImage
                 object_image_object.img.name = sensor_output_name
                 object_image_object.object_instance = o
-                print(object_image_object, object_image_object.img, object_image_object.object_instance)
+                # print(object_image_object, object_image_object.img, object_image_object.object_instance)
                 object_image_object.save()
                 # imgs.append(media_prefix + sensor_output_name)
                 # number_of_pictures += 1
@@ -282,4 +312,7 @@ for o in ObjectInstance.objects.all():  # type: ObjectInstance
             #         break
     # instance_imgs[o.id] = imgs if len(imgs) > 0 else [static_prefix+placeholder_img]
 
+
+with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "r+") as fp:
+    json.dump(obj=cached_instances, fp=fp)
 

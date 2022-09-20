@@ -32,12 +32,16 @@ class ObjectInstance(models.Model):
     common_name = models.CharField(max_length=100, null=True)
     other = models.JSONField(null=True)
     other_file = models.FileField(null=True)
+    has_image = models.BooleanField(default=False, null=True)
+    is_the_same_as = models.ForeignKey("ObjectInstance",
+                                       on_delete=models.PROTECT,
+                                       related_name="object_instances",
+                                       null=True)
 
     owner = models.ForeignKey('accounts.CustomUser',
                               on_delete=models.CASCADE,
                               related_name='object_instances',
-                              null=True
-                              )
+                              null=True)
 
 
 class Setup(models.Model):
