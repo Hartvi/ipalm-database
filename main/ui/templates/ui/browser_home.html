@@ -53,17 +53,10 @@
                     <li style="">
                         <div>
                             <a href="/ipalm/browser/object_instance/{{o.id}}/" class="btn btn-dark">
-                                {% if o.dataset is not None %}
-                                {{o.dataset}}:
-                                {% endif %}
-                                {% if o.dataset_id is not None %}
-                                {{o.dataset_id}},
-                                {% endif %}
-                                {% if o.maker is not None %}
-                                {{o.maker}}:
-                                {% endif %}
                                 {% if o.common_name is not None %}
                                 {{o.common_name}}
+                                {% elif o.dataset_id is not None %}
+                                {{o.dataset_id}},
                                 {% endif %}
                             </a>
                             <div class="padded">
@@ -83,17 +76,10 @@
                     <li style="">
                         <div>
                             <a href="/ipalm/browser/object_instance/{{o.id}}/" class="btn btn-dark">
-                                {% if o.dataset is not None %}
-                                {{o.dataset}}:
-                                {% endif %}
-                                {% if o.dataset_id is not None %}
-                                {{o.dataset_id}},
-                                {% endif %}
-                                {% if o.maker is not None %}
-                                {{o.maker}}:
-                                {% endif %}
                                 {% if o.common_name is not None %}
                                 {{o.common_name}}
+                                {% elif o.dataset_id is not None %}
+                                {{o.dataset_id}},
                                 {% endif %}
                             </a>
                             <div class="padded">

@@ -1,11 +1,10 @@
-<style>
-</style>
 
 {% extends 'base.html' %}
 
 {% block content %}
 
 {% load static %}
+{% load browser_extras %}
 <div align="center">
     <h1>Physical Object Database</h1>
     <p style="font-size:133%">
@@ -13,41 +12,57 @@
         Total number of objects measured: {{object_instance_len}}<br>
     </p>
 </div>
-<div>
-<div class="left">
-    <div class="wrapper" align="center">
-        <p style="font-size:200%">Database interface</p>
-        <a class="button btn btn-dark btn-lg" href="/ipalm/browser/" role="button">Visual browser</a>
-        <br>
-        <br>
-        <a class="button btn btn-dark btn-lg" href="/ipalm/api-auth/register/" role="button">Create account</a>
-        <hr>
-        <a class="button btn btn-dark btn-lg" href="{% url 'database:api-root' %}" role="button">Browse raw database</a>
-    </div>
-    <br>
-<!--    <div align="center">-->
-<!--        <p style="font-size:200%">Database structure</p>-->
-<!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.svg" role="button">svg</a>-->
-<!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.pdf" role="button">pdf</a>-->
-<!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.png" role="button">png</a>-->
-<!--        <br><br>-->
-<!--&lt;!&ndash;        <img src="/static/home_statistics.png">&ndash;&gt;-->
-<!--    </div>-->
-<!--    <img src="{% static 'database_structure.svg' %}" width="100%" />-->
-</div>
-<div class="right">
-    <div class="wrapper" align="center">
-        <p style="font-size:200%">Database documentation</p>
-        <a class="button btn btn-dark btn-lg" href="/ipalm/tutorial/" role="button">Tutorials</a>
-        <a class="button btn btn-dark btn-lg" href="/ipalm/butler-docs/index.html" role="button">Data collector docs</a>
-        <hr>
-        <p style="font-size:200%">Database structure</p>
-        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.svg" role="button">svg</a>
-        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.pdf" role="button">pdf</a>
-        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.png" role="button">png</a>
-        <br><br>
-    </div>
-</div>
-<!--    <hr>-->
-</div>
+<ul style="list-style: none; padding: 0; /* Remove padding */
+  margin: 0; /* Remove margins */">
+    <li>
+        <div>
+            <div class="left">
+                <div class="wrapper" align="center">
+                    <p style="font-size:200%">Database interface</p>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/browser/" role="button">Visual browser</a>
+                    <br>
+                    <br>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/api-auth/register/" role="button">Create account</a>
+                    <hr>
+                    <a class="button btn btn-dark btn-lg" href="{% url 'database:api-root' %}" role="button">Browse raw database</a>
+                </div>
+                <br>
+            <!--    <div align="center">-->
+            <!--        <p style="font-size:200%">Database structure</p>-->
+            <!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.svg" role="button">svg</a>-->
+            <!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.pdf" role="button">pdf</a>-->
+            <!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.png" role="button">png</a>-->
+            <!--        <br><br>-->
+            <!--&lt;!&ndash;        <img src="/static/home_statistics.png">&ndash;&gt;-->
+            <!--    </div>-->
+            <!--    <img src="{% static 'database_structure.svg' %}" width="100%" />-->
+            </div>
+            <div class="right">
+                <div class="wrapper" align="center">
+                    <p style="font-size:200%">Database documentation</p>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/tutorial/" role="button">Tutorials</a>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/butler-docs/index.html" role="button">Data collector docs</a>
+                    <hr>
+                    <p style="font-size:200%">Database structure</p>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.svg" role="button">svg</a>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.pdf" role="button">pdf</a>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.png" role="button">png</a>
+                    <br><br>
+                </div>
+            </div>
+            <!--    <hr>-->
+        </div>
+    </li>
+    <li>
+        <div align="center">
+            {% for oid in object_ids %}
+<!--            <div class="padded">-->
+            <a href="/ipalm/browser/object_instance/{{oid}}/" style="padding-bottom: 10px;">
+                <img class="lazyload" src="{{image_links|get_value:oid}}" alt="No image uploaded" height="150px">
+            </a>
+<!--            </div>-->
+            {% endfor %}
+        </div>
+    </li>
+</ul>
 {% endblock content %}

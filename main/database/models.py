@@ -172,6 +172,7 @@ class OutputQuantity(models.Model):
 
 
 class ObjectImage(models.Model):
+    # WARNING: this might have to have the media prefix added to it: /ipalm/media/ or /media/
     img = models.FileField(null=True)  # set with object_image.img.name = existing_name and then object_image.save()
     # source_field = models.ForeignKey(models.Model,
     #                                     on_delete=models.CASCADE, related_name='object_images', null=True)

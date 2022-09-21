@@ -19,6 +19,7 @@ from . import forms
 import os
 import re
 import json
+import random
 
 
 # import matplotlib.pyplot as plt
@@ -58,9 +59,26 @@ def home_view(request):
     #     print("time.time():", time.time())
     #     last_time = time.time()
 
+    # Measurement.objects.filter()
+    object_instances = ObjectInstance.objects.all()
+    instance_ids_for_context = list()
+    image_links = dict()
+
+    for o in object_instances:
+        oid = o.id
+        associated_imgs = ObjectImage.objects.filter(object_instance__id=oid)
+        if len(associated_imgs) > 0:
+            random_ass_image = random.choice(associated_imgs)  # type: ObjectImage
+            image_link = media_prefix + random_ass_image.img.name
+            image_links[oid] = image_link
+            instance_ids_for_context.append(oid)
+
+
     home_context = {"measurement_len": len(Measurement.objects.all()),
                     "setup_element_len": len(SetupElement.objects.all()),
                     "object_instance_len": len(ObjectInstance.objects.all()),
+                    "object_ids": instance_ids_for_context,
+                    "image_links": image_links
                     }
     return render(request=request, template_name=template_name, context=home_context)
 
@@ -105,14 +123,24 @@ class BrowserHomeView(View):
         else:
             object_instances = ObjectInstance.objects.all()
 
-        paginator = Paginator(object_instances, 24)  # Show page.
+        # TODO: sort by the number of images the objects have
+
+        objects_with_images = list()
+        objects_without_images = list()
+        instance_imgs = dict()
+        for o in object_instances:
+            instance_imgs[o.id] = list(map(lambda x: media_prefix + x.img.name, ObjectImage.objects.filter(object_instance=o)[:3]))
+            if len(instance_imgs[o.id]) > 0:
+                # print("image url: ", instance_imgs[o.id][0])
+                objects_with_images.append(o)
+            else:
+                objects_without_images.append(o)
+        display_objects = objects_with_images + objects_without_images
+        paginator = Paginator(display_objects, 24)  # Show page.
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         page_objects = page_obj.object_list
 
-        instance_imgs = dict()
-        for o in object_instances:
-            instance_imgs[o.id] = list(map(lambda x: x.img.name, ObjectImage.objects.filter(object_instance__id=oid)[:3]))
         # instance_imgs
         len_objects = len(page_objects)
         half_index = len_objects//2
@@ -148,7 +176,12 @@ class BrowserInstanceView(View):
         #     instance_imgs[o.id] = list(map(lambda x: x.img.name, ObjectImage.objects.filter(object_instance__id=oid)[:10]))
         # measurement_for_this_instance = Measurement.objects.filter(object_instance=object_instance)
         # number_of_pictures = 0
-        imgs = list(map(lambda x: x.img.name, ObjectImage.objects.filter(object_instance__id=oid)[:10]))
+
+
+        associated_imgs = ObjectImage.objects.filter(object_instance__id=object_instance.id)
+        ten_imgs = associated_imgs[:min(10, len(associated_imgs))]
+        imgs = list(map(lambda x: media_prefix + x.img.name, ten_imgs   ))
+        # print("len(imgs): ", len(imgs))
         # for m in measurement_for_this_instance.all():  # type: Measurement
         #     if (".png" or ".jpg") in m.png.name and number_of_pictures < 5:
         #         imgs.append(media_prefix + m.png.name)
@@ -258,27 +291,34 @@ class BrowserInstanceView(View):
         return self.get(request, request.session["id"], args, kwargs)
 
 
-try:
-    with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "r+") as fp:
-        cached_instances = json.load(fp)
-        # print("using cached instances")
-except:
-    with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "w") as fp:
-        pass
-    cached_instances = dict()
+# try:
+#     with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "r+") as fp:
+#         cached_instances = json.load(fp)
+#         # print("using cached instances")
+# except:
+#     with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "w") as fp:
+#         pass
+cached_instances = dict()
 
+
+
+# for o in ObjectInstance.objects.all():  # type: ObjectInstance
+#     ObjectImage.objects.filter(object_instance__id=o.id).delete()
+
+for o in ObjectImage.objects.all():
+    o.delete()
 
 for o in ObjectInstance.objects.all():  # type: ObjectInstance
     oid = o.id
-    # print("object instance id:", oid, " number of images:", len(imgs))
+    # if str(oid) not in cached_instances:
+    #     cached_instances[oid] = True
+    # else:
+    #     continue
     imgs = ObjectImage.objects.filter(object_instance__id=oid)
+    # print("object instance id:", oid, " number of images:", len(imgs))
     if len(imgs) > 0:
         o.has_image = True
         o.save()
-    if str(oid) not in cached_instances:
-        cached_instances[oid] = True
-    else:
-        continue
     measurement_for_this_instance = Measurement.objects.filter(object_instance__id=oid)
     # number_of_pictures = 0
     # imgs = list()
@@ -296,9 +336,9 @@ for o in ObjectInstance.objects.all():  # type: ObjectInstance
             sensor_output = so.sensor_output_file
             sensor_output_name = sensor_output.name if sensor_output.name is not None else ""
             if sensor_output_name is not None and (".png" in sensor_output_name or ".jpg" in sensor_output_name):
-                # print("sensour+outptu name", sensor_output_name)
+                # print("sensor_output_name: ", sensor_output_name)
                 object_image_object = ObjectImage.objects.create()  # type: ObjectImage
-                object_image_object.img.name = sensor_output_name
+                object_image_object.img.name = sensor_output_name  # TODO: media_prefix + img_name to get the link!!!
                 object_image_object.object_instance = o
                 # print(object_image_object, object_image_object.img, object_image_object.object_instance)
                 object_image_object.save()
@@ -313,6 +353,6 @@ for o in ObjectInstance.objects.all():  # type: ObjectInstance
     # instance_imgs[o.id] = imgs if len(imgs) > 0 else [static_prefix+placeholder_img]
 
 
-with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "r+") as fp:
-    json.dump(obj=cached_instances, fp=fp)
+# with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "r+") as fp:
+    # json.dump(obj=cached_instances, fp=fp)
 
