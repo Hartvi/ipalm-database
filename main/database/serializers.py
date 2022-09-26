@@ -113,6 +113,11 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
         view_name='database:user-detail'
     )  # should be DataEntry.owner.username
+    object_instance = serializers.HyperlinkedRelatedField(
+        many=False,
+        read_only=True,
+        view_name='database:object_instance-detail',  # this is predefined in the django rest framework as "[object_name]-detail"
+    )
 
     class Meta:
         model = Entry

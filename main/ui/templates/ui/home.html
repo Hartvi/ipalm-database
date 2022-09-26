@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
@@ -6,7 +5,7 @@
 {% load static %}
 {% load browser_extras %}
 <div align="center">
-    <h1>Physical Object Database</h1>
+    <h1>Database of object properties and measurements for robot manipulation</h1>
     <p style="font-size:133%">
         Total number of measurements performed: {{measurement_len}}<br>
         Total number of objects measured: {{object_instance_len}}<br>
@@ -22,31 +21,37 @@
                     <a class="button btn btn-dark btn-lg" href="/ipalm/browser/" role="button">Visual browser</a>
                     <br>
                     <br>
-                    <a class="button btn btn-dark btn-lg" href="/ipalm/api-auth/register/" role="button">Create account</a>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/api-auth/register/" role="button">Create
+                        account</a>
                     <hr>
-                    <a class="button btn btn-dark btn-lg" href="{% url 'database:api-root' %}" role="button">Browse raw database</a>
+                    <a class="button btn btn-dark btn-lg" href="{% url 'database:api-root' %}" role="button">Browse raw
+                        database</a>
                 </div>
                 <br>
-            <!--    <div align="center">-->
-            <!--        <p style="font-size:200%">Database structure</p>-->
-            <!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.svg" role="button">svg</a>-->
-            <!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.pdf" role="button">pdf</a>-->
-            <!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.png" role="button">png</a>-->
-            <!--        <br><br>-->
-            <!--&lt;!&ndash;        <img src="/static/home_statistics.png">&ndash;&gt;-->
-            <!--    </div>-->
-            <!--    <img src="{% static 'database_structure.svg' %}" width="100%" />-->
+                <!--    <div align="center">-->
+                <!--        <p style="font-size:200%">Database structure</p>-->
+                <!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.svg" role="button">svg</a>-->
+                <!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.pdf" role="button">pdf</a>-->
+                <!--        <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.png" role="button">png</a>-->
+                <!--        <br><br>-->
+                <!--&lt;!&ndash;        <img src="/static/home_statistics.png">&ndash;&gt;-->
+                <!--    </div>-->
+                <!--    <img src="{% static 'database_structure.svg' %}" width="100%" />-->
             </div>
             <div class="right">
                 <div class="wrapper" align="center">
                     <p style="font-size:200%">Database documentation</p>
                     <a class="button btn btn-dark btn-lg" href="/ipalm/tutorial/" role="button">Tutorials</a>
-                    <a class="button btn btn-dark btn-lg" href="/ipalm/butler-docs/index.html" role="button">Data collector docs</a>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/butler-docs/index.html" role="button">Data
+                        collector docs</a>
                     <hr>
                     <p style="font-size:200%">Database structure</p>
-                    <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.svg" role="button">svg</a>
-                    <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.pdf" role="button">pdf</a>
-                    <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.png" role="button">png</a>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.svg"
+                       role="button">svg</a>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.pdf"
+                       role="button">pdf</a>
+                    <a class="button btn btn-dark btn-lg" href="/ipalm/static/database_structure.png"
+                       role="button">png</a>
                     <br><br>
                 </div>
             </div>
@@ -54,29 +59,35 @@
         </div>
     </li>
     <li>
-           <div class="container">
-              <div class="row align-items-start">
-              <div class="col">
-            <img src="/ipalm/static/IPALMlogo.png">
-                  </div>
-                  <div class="col">
-                      <img src="/ipalm/static/chist-era_logo.jpeg">
-                  </div>
-              <div class="col">
-                  <img src="/ipalm/static/tacr.png">
+        <div class="container">
+            <div class="row align-items-start">
+                <div class="col">
+                    <img src="/ipalm/static/IPALMlogo.png" width="90%">
+                </div>
+                <div class="col">
+                    <img src="/ipalm/static/chist-era_logo.jpeg" width="99%">
+                </div>
+                <div class="col">
+                    <img src="/ipalm/static/tacr.png" width="99%">
+                </div>
+                <div class="col">
+                    <p>
+                        This work was supported by the project Interactive Perception-Action-Learning for Modelling
+                        Objects (IPALM) (H2020 -- FET -- ERA-NET Cofund -- CHIST-ERA III / Technology Agency of the
+                        Czech Republic, EPSILON, nr. TH05020001).
+                    </p>
+                </div>
             </div>
-              <div class="col">
-                  <p>
-                      This work was supported by the project Interactive Perception-Action-Learning for Modelling Objects (IPALM) (H2020 -- FET -- ERA-NET Cofund -- CHIST-ERA III / Technology Agency of the Czech Republic, EPSILON, nr. TH05020001).
-                  </p>
-              </div>
+        </div>
+        <br>
         <div align="center">
             {% for oid in object_ids %}
-<!--            <div class="padded">-->
+            <!--            <div class="padded">-->
             <a href="/ipalm/browser/object_instance/{{oid}}/" style="padding-bottom: 10px;">
-                <img class="lazyload" src="{{image_links|get_value:oid}}" alt="No image uploaded" height="150px">
+                <img class="lazyload" src="{{image_links|get_value:oid}}" alt="No image uploaded"
+                     height="150px">
             </a>
-<!--            </div>-->
+            <!--            </div>-->
             {% endfor %}
         </div>
     </li>
