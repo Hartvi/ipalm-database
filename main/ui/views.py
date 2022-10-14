@@ -305,52 +305,52 @@ cached_instances = dict()
 # for o in ObjectInstance.objects.all():  # type: ObjectInstance
 #     ObjectImage.objects.filter(object_instance__id=o.id).delete()
 
-for o in ObjectImage.objects.all():
-    o.delete()
-
-for o in ObjectInstance.objects.all():  # type: ObjectInstance
-    oid = o.id
-    # if str(oid) not in cached_instances:
-    #     cached_instances[oid] = True
-    # else:
-    #     continue
-    imgs = ObjectImage.objects.filter(object_instance__id=oid)
-    # print("object instance id:", oid, " number of images:", len(imgs))
-    if len(imgs) > 0:
-        o.has_image = True
-        o.save()
-    measurement_for_this_instance = Measurement.objects.filter(object_instance__id=oid)
-    # number_of_pictures = 0
-    # imgs = list()
-    for m in measurement_for_this_instance.all():  # type: Measurement
-        png_name = m.png.name
-        if ".png" in png_name or ".jpg" in png_name:
-            object_image_object = ObjectImage.objects.create()  # type: ObjectImage
-            object_image_object.img.name = png_name
-            object_image_object.object_instance = o
-            object_image_object.save()
-            # imgs.append(media_prefix+m.png.name)
-            # number_of_pictures += 1
-        sensor_output_for_this_instance = SensorOutput.objects.filter(measurements=m)
-        for so in sensor_output_for_this_instance.all():  # type: SensorOutput
-            sensor_output = so.sensor_output_file
-            sensor_output_name = sensor_output.name if sensor_output.name is not None else ""
-            if sensor_output_name is not None and (".png" in sensor_output_name or ".jpg" in sensor_output_name):
-                # print("sensor_output_name: ", sensor_output_name)
-                object_image_object = ObjectImage.objects.create()  # type: ObjectImage
-                object_image_object.img.name = sensor_output_name  # TODO: media_prefix + img_name to get the link!!!
-                object_image_object.object_instance = o
-                # print(object_image_object, object_image_object.img, object_image_object.object_instance)
-                object_image_object.save()
-                # imgs.append(media_prefix + sensor_output_name)
-                # number_of_pictures += 1
-            # if sensor_output_name is not None and ((".png" or ".jpg") in sensor_output_name):
-            #     if len(imgs) < 3:
-            #         imgs.append(media_prefix+sensor_output_name)
-            #         number_of_pictures += 1
-            #     else:
-            #         break
-    # instance_imgs[o.id] = imgs if len(imgs) > 0 else [static_prefix+placeholder_img]
+# for o in ObjectImage.objects.all():
+#     o.delete()
+#
+# for o in ObjectInstance.objects.all():  # type: ObjectInstance
+#     oid = o.id
+#     # if str(oid) not in cached_instances:
+#     #     cached_instances[oid] = True
+#     # else:
+#     #     continue
+#     imgs = ObjectImage.objects.filter(object_instance__id=oid)
+#     # print("object instance id:", oid, " number of images:", len(imgs))
+#     if len(imgs) > 0:
+#         o.has_image = True
+#         o.save()
+#     measurement_for_this_instance = Measurement.objects.filter(object_instance__id=oid)
+#     # number_of_pictures = 0
+#     # imgs = list()
+#     for m in measurement_for_this_instance.all():  # type: Measurement
+#         png_name = m.png.name
+#         if ".png" in png_name or ".jpg" in png_name:
+#             object_image_object = ObjectImage.objects.create()  # type: ObjectImage
+#             object_image_object.img.name = png_name
+#             object_image_object.object_instance = o
+#             object_image_object.save()
+#             # imgs.append(media_prefix+m.png.name)
+#             # number_of_pictures += 1
+#         sensor_output_for_this_instance = SensorOutput.objects.filter(measurements=m)
+#         for so in sensor_output_for_this_instance.all():  # type: SensorOutput
+#             sensor_output = so.sensor_output_file
+#             sensor_output_name = sensor_output.name if sensor_output.name is not None else ""
+#             if sensor_output_name is not None and (".png" in sensor_output_name or ".jpg" in sensor_output_name):
+#                 # print("sensor_output_name: ", sensor_output_name)
+#                 object_image_object = ObjectImage.objects.create()  # type: ObjectImage
+#                 object_image_object.img.name = sensor_output_name  # TODO: media_prefix + img_name to get the link!!!
+#                 object_image_object.object_instance = o
+#                 # print(object_image_object, object_image_object.img, object_image_object.object_instance)
+#                 object_image_object.save()
+#                 # imgs.append(media_prefix + sensor_output_name)
+#                 # number_of_pictures += 1
+#             # if sensor_output_name is not None and ((".png" or ".jpg") in sensor_output_name):
+#             #     if len(imgs) < 3:
+#             #         imgs.append(media_prefix+sensor_output_name)
+#             #         number_of_pictures += 1
+#             #     else:
+#             #         break
+#     # instance_imgs[o.id] = imgs if len(imgs) > 0 else [static_prefix+placeholder_img]
 
 
 # with open(os.path.join(settings.BASE_DIR, "object_instances.json"), "r+") as fp:

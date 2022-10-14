@@ -55,6 +55,8 @@
                             <a href="/ipalm/browser/object_instance/{{o.id}}/" class="btn btn-dark">
                                 {% if o.common_name is not None %}
                                 {{o.common_name}}
+                                {% elif o.dataset_id is not None %}
+                                {{o.dataset_id}}
                                 {% endif %}
                             </a>
                         </div>

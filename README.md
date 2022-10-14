@@ -23,7 +23,7 @@ NOTE: `python manage.py runserver` is by default only for http, for SSL or Postg
 3. [Deploy with Apache & PostgreSQL](https://dev.to/ajithklepsydra/how-to-set-up-and-deploy-a-django-application-on-a-linux-server-2dff)
 
 ### TODO
-- Todo: data visualization
+- TODO: data visualization
 - cache measurements connected to object instances so the browser loads quickly
   - doing it for images now
 - better tutorial how to upload things - maybe video?
@@ -47,6 +47,11 @@ NOTE: `python manage.py runserver` is by default only for http, for SSL or Postg
 Advanced things:
 - Differentiate between physical objects
   - compare images from the png; this could serve as something akin to the instance id
+
+### 10/14
+- added quantities to measurements/entries/sensor outputs
+- todo: frontend for the benchmark
+- todo: add quantities to existing objects on startup
 
 ### 07/28
 - done object instance updating/unifying (CANNOT SPLIT FUSED OBJECTS) in the item view

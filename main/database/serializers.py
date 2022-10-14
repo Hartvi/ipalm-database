@@ -22,10 +22,10 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    entries = serializers.HyperlinkedRelatedField(
-        many=True, view_name='database:entry-detail', read_only=True)
-    measurements = serializers.HyperlinkedRelatedField(
-        many=True, view_name='database:measurement-detail', read_only=True)
+    # entries = serializers.HyperlinkedRelatedField(
+    #     many=True, view_name='database:entry-detail', read_only=True)
+    # measurements = serializers.HyperlinkedRelatedField(
+    #     many=True, view_name='database:measurement-detail', read_only=True)
 
     class Meta:
         model = User
@@ -101,7 +101,16 @@ class PropertyElementSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {'url': {'view_name': 'database:property_element-detail'}}
 
 
+class QuantitySerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Quantity
+        fields = '__all__'
+        # extra_kwargs = {'url': {'view_name': 'database:property_element-detail'}}
+
+
 class EntrySerializer(serializers.HyperlinkedModelSerializer):
+    quantities = QuantitySerializer(many=True, read_only=True)
     # TODO: reverse foreignkey to property and so on
 
     # `source` CAN BE EMPTY IF THE VARIABLE NAME IS THE SAME, e.g. source="property"
@@ -117,6 +126,16 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
         many=False,
         read_only=True,
         view_name='database:object_instance-detail',  # this is predefined in the django rest framework as "[object_name]-detail"
+    )
+    setup_element = serializers.HyperlinkedRelatedField(
+        many=False,
+        read_only=True,
+        view_name='database:setup_element-detail',  # this is predefined in the django rest framework as "[object_name]-detail"
+    )
+    sensor_output = serializers.HyperlinkedRelatedField(
+        many=False,
+        read_only=True,
+        view_name='database:sensor_output-detail',  # this is predefined in the django rest framework as "[object_name]-detail"
     )
 
     class Meta:
@@ -189,6 +208,7 @@ class SensorOutputSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
+    quantities = QuantitySerializer(many=True, read_only=True)
     owner = serializers.HyperlinkedRelatedField(
         many=False,
         read_only=True,
@@ -301,6 +321,7 @@ class MeasurementSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SetupElementSerializer(serializers.HyperlinkedModelSerializer):
+    quantities = QuantitySerializer(many=True, read_only=True)
 
     sensor_outputs = serializers.HyperlinkedRelatedField(view_name='database:sensor_output-detail', read_only=True, many=True)
 

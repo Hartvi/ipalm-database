@@ -102,6 +102,11 @@ class PropertyElementViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PropertyElementSerializer
 
 
+class QuantityViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Quantity.objects.all()
+    serializer_class = QuantitySerializer
+
+
 class EntryViewSet(viewsets.ModelViewSet):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
@@ -207,7 +212,7 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             setup_element = SetupElement.objects.filter(name=setup_element_name)
             if setup_element.exists():
                 # update the sensor quantities & bind the SensorOutput to the SetupElement
-                the_actual_element = setup_element[0]  # type: SetupElement
+                the_actual_element = setup_element.first()  # type: SetupElement
                 if setup_element_name in active_sensor_names:
                     # add new output quantities if there are any new ones:
                     # NOTE: the_actual_element.name is the same as setup_element_name
@@ -418,6 +423,27 @@ class MeasurementViewSet(viewsets.ModelViewSet):
             gripper_pose=gripper_pose_object,
             object_instance=object_instance_object
         )
+        for k in sensor_modalities:  # dict: {"sensor_name": [quantity1, quantity2, ...]}
+            quantities = sensor_modalities[k]
+
+            for q in quantities:
+                # create/find quantity
+                quer = Quantity.objects.filter(name=q)  # only one cuz the name's unique
+                if quer.exists():
+                    new_q = quer.first()
+                else:
+                    new_q = Quantity.objects.create(name=q)
+
+                # adding new quantities:
+                measurement_object.quantities.add(new_q)
+                setup_element = SetupElement.objects.filter(name=k)
+                if setup_element.exists():
+                    setup_element.first().quantities.add(new_q)
+                if entry_dict is not None or entries_dict is not None:
+                    for entry_object in entry_objects:
+                        entry_object.quantities.add(new_q)
+                        entry_object.save()
+
         for soo in sensor_output_objects:
             # print(soo.sensor.name)
             soo.measurements = measurement_object

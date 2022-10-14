@@ -22,6 +22,10 @@ class MyBaseModel(models.Model):
 """
 
 
+class Quantity(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+
 class ObjectInstance(models.Model):
     is_instance = models.BooleanField(default=True)
     local_instance_id = models.IntegerField(null=True)
@@ -59,6 +63,7 @@ class SetupElement(models.Model):
     output_quantities = models.JSONField(null=True)  # e.g. time, position, current, force, rgb, depth, bw (as in black & white)
     parameters = models.JSONField(null=True)
     setup = models.ManyToManyField(Setup, related_name='setup_elements')
+    quantities = models.ManyToManyField(Quantity, related_name='setup_elements')
 
     # def __str__(self):
     #     return str(self.type) + ", " + str(self.name)
@@ -75,6 +80,7 @@ class Measurement(models.Model):
                               on_delete=models.PROTECT, null=True)
     consider_this_ground_truth = models.BooleanField(default=False, null=True)
     method = models.CharField(max_length=100, null=True)
+    quantities = models.ManyToManyField(Quantity, related_name='measurements')
 
     class Meta:
         ordering = ['created']
@@ -145,8 +151,9 @@ class Entry(models.Model):
     ground_truth = models.BooleanField(null=True, default=False)  # e.g. measured with a professional setup
     object_instance = models.ForeignKey(ObjectInstance,
                                         on_delete=models.CASCADE, related_name='entries', null=True)
-
-    # output_quantity = models.ForeignKey(Quantity, )
+    setup_element = models.ForeignKey(SetupElement, on_delete=models.CASCADE, related_name='entries', null=True)
+    sensor_output = models.ForeignKey(SensorOutput, on_delete=models.CASCADE, related_name='entries', null=True)
+    quantities = models.ManyToManyField(Quantity, related_name='entries')
 
     class Meta:
         ordering = ['created']
